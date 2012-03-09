@@ -47,9 +47,122 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>Integration</h2>
+            <h2>イベントカテゴリとイベントハンドラメソッド</h2>
+
+            <p>イベントの種類をイベントカテゴリと呼び、Oceanでは次のようにイベントを分類しています。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">カテゴリ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Node</td><td>サーバーに関するイベント。起動、終了、タイマー</td></tr>
+                <tr><td>Authen</td><td>認証に関するイベント</td></tr>
+                <tr><td>Connection</td><td>接続情報に関するイベント</td></tr>
+                <tr><td>People</td><td>友人リストやプロフィール情報などの要求イベント</td></tr>
+                <tr><td>Message</td><td>メッセージ配信に関するイベント</td></tr>
+                <tr><td>P2P</td><td>コネクション間でのダイレクトなやりとりを中継するためのイベント</td></tr>
+                <tr><td>Room</td><td>グループチャットに関するイベント</td></tr>
+              </tbody>
+            </table>
+
+            <p>イベントのカテゴリ毎に、そのイベントのハンドラメソッドを実装するモジュールが切り分けられます</p>
+            <p>プロジェクトテンプレート生成時に、例えばハンドラネームスペースをFoo::Handlerにした場合は、</p>
+
+            <ul>
+              <li>Foo::Handler::Node</li> 
+              <li>Foo::Handler::Authen</li> 
+              <li>Foo::Handler::Connection</li> 
+              <li>Foo::Handler::People</li> 
+              <li>Foo::Handler::Message</li> 
+              <li>Foo::Handler::P2P</li> 
+              <li>Foo::Handler::Room</li> 
+            </ul>
+
+            <p>の各モジュールが自動で生成され、これらの中に具体的な実装を書き込んでいくことになります。</p>
+
+            <p>全てのイベントハンドラは<b>on_</b>を接頭語にします。</p>
+            <p>引数は二つあり、一つ目はContextオブジェクトで、二つ目はHandleArgsオブジェクトになります。</p>
+            <p>この二つについては後ほど解説しますので、まずは雰囲気をつかむために実際のコードを見てみます。</p>
+
+            <img src="img/integration/event_handler_example.png">
+
+
           </div><!--/span-->
         </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>Context</h2>
+
+            <p>Oceanサーバーでは、起動時にコンフィグファイルで指定されたContextクラスのオブジェクトを生成し、そのオブジェクトのinitializeメソッドを呼び出します。</p>
+            <p>また、サーバー終了時にはfinalizeメソッドを呼び出します。</p>
+            <p>各イベントハンドラが呼び出されるときには必ず、このContextオブジェクトが渡されます。</p>
+            <p>Contextクラスは、プロジェクトテンプレート作成時に、Ocean::Contextを継承しただけの状態で生成されますので、そこに拡張を加えていくとよいでしょう。</p>
+
+            <img src="img/integration/context.png">
+
+            <p>一例として、initializeメソッドでデータベースへの接続を行い、その接続情報を保持し、finalize時に解放するということが出来ます。</p>
+            <p>各イベントハンドラからは、このContextを経由して、データベースの情報を取得することが出来るようになります。</p>
+
+            <p>Contextの例</p>
+
+            <img src="img/integration/context2.png">
+
+            <p>呼び出し側の例</p>
+
+            <img src="img/integration/context3.png">
+
+            <p>また、Contextにはget/setメソッドがあり、単純なstashとしても利用できます。</p>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>HandlerArgs</h2>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>DeliveryRequest</h2>
+
+            <p>ほとんどのイベントでは、配送処理が必要になります。</p>
+            <p>Request/Responseタイプのイベントでは、要求を行ったユーザー本人に結果を返します。</p>
+            <p>メッセージは、宛先となるユーザーにメッセージを配送します。</p>
+            <p>プレゼンス変更は、そのユーザーの友人全員にブロードキャストします。</p>
+
+            <p>これらのイベントは移送には、DeliveryRequestを利用します。</p>
+            <p>DeliveryRequestを生成するためには、それぞれのイベント専用のDeliveryRequestBuilderが用意されています。</p>
+
+            <p>DeliveryRequestBuilderを利用してビルドしたものを、Contextのdeliverメソッドに渡します</p>
+
+            <p>次のコードは、SASL認証失敗レスポンスを配送するときの例になります。</p>
+
+            <img src="img/integration/deliverrequest.png">
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>スタンドアロンプロジェクトの実装を参考にする</h2>
+
+            <p>イベントハンドラのオーソドックスな処理については、スタンドアロンプロジェクトでの動作を参考にするとよいでしょう。</p>
+            <p>スタンドアロンプロジェクトで利用されるコンテキストやハンドラは、Ocean::Standalone名前空間下のモジュールを継承しています。</p>
+            <p>Ocean::Standalone::Contextや、Ocean::Standalone::Handler::XXXなどを読むと、基本的な動作について、一通りの理解が得られます</p>
+
+            <p>例えばOcean::Standalone::Handler::Authenは次のようになっています。</p>
+
+            <img src="img/integration/events_handler1.png">
+
+            <p>このように、スタンドアロン用のハンドラには、標準的な動作で実装がされています。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
 
       </div><!--/span-->
     </div><!--/row-->
