@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Jingle offer/answer/transport-info/jingleinfo stanza
+desc: ""
+type: :feature
+component: jingle
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:29:08.914717 Z
+references: []
+
+id: 8aa31e5651355d6529145d9b6a4eabf9b2ea1653
+log_events: 
+- - 2011-12-09 05:29:10.322634 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

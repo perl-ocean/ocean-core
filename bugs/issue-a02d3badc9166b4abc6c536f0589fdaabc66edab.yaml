@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Frontend's Administration
+desc: Timer Report or something
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:32:57.682668 Z
+references: []
+
+id: a02d3badc9166b4abc6c536f0589fdaabc66edab
+log_events: 
+- - 2011-12-09 05:32:58.818494 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

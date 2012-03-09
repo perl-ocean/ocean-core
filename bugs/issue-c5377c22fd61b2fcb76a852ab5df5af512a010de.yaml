@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Support Frontend's Start/Exit Event on Clustered System
+desc: add event type and event handlers for on_server_init/on_server_exit
+type: :task
+component: cluster
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 04:58:24.196581 Z
+references: []
+
+id: c5377c22fd61b2fcb76a852ab5df5af512a010de
+log_events: 
+- - 2011-12-09 04:58:25.940196 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

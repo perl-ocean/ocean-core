@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Kestrel Support
+desc: add fetcher/deliverer for Kestrel
+type: :task
+component: cluster
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 04:54:57.340067 Z
+references: []
+
+id: 790f6cc7cf70675c8fe6242c37b67e9eece41fd9
+log_events: 
+- - 2011-12-09 04:55:00.139896 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

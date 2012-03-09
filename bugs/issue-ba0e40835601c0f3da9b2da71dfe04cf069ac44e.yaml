@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Support STUN Server
+desc: ""
+type: :feature
+component: jingle
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:11:44.144293 Z
+references: []
+
+id: ba0e40835601c0f3da9b2da71dfe04cf069ac44e
+log_events: 
+- - 2011-12-09 05:11:45.591953 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

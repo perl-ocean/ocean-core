@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Cookie Auth for External WebSocket
+desc: ""
+type: :feature
+component: http-binding
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:09:19.237249 Z
+references: []
+
+id: fecc085cfca8708562353fec9c42570ef7fd8cc1
+log_events: 
+- - 2011-12-09 05:09:21.341060 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

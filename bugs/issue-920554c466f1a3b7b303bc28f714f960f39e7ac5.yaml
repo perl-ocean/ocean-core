@@ -1,0 +1,22 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Better Storage Class for Test
+desc: write persistent storage class for test to work with paralle::prefork
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :closed
+disposition: :fixed
+creation_time: 2011-12-09 03:50:21.933815 Z
+references: []
+
+id: 920554c466f1a3b7b303bc28f714f960f39e7ac5
+log_events: 
+- - 2011-12-09 03:50:25.981614 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""
+- - 2011-12-16 07:13:46.301053 Z
+  - lyokato <lyo.kato@gmail.com>
+  - closed with disposition fixed
+  - ""

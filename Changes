@@ -1,0 +1,6 @@
+Revision history for Perl extension Ocean.
+
+0.01  Wed Jan 12 15:54:03 2011
+	- original version; created by h2xs 1.23 with options
+		-XA Ocean
+

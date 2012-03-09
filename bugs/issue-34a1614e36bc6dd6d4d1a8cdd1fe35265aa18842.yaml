@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Max Buffer Size Check on HTTP Binding
+desc: ""
+type: :task
+component: http-binding
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:09:50.995976 Z
+references: []
+
+id: 34a1614e36bc6dd6d4d1a8cdd1fe35265aa18842
+log_events: 
+- - 2011-12-09 05:09:52.563989 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

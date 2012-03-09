@@ -1,0 +1,35 @@
+server:
+  type: xmpp
+  domain: xmpp.example.org
+  host: 127.0.0.1
+  port: 5222
+  backlog: 5
+  max_connection: 100
+  timeout: 10
+  report_interval: 60
+  max_read_buffer: 1000
+
+event_handler:
+  node:       Ocean::Standalone::Handler::Node
+  authen:     Ocean::Standalone::Handler::Authen
+  connection: Ocean::Standalone::Handler::Connection
+  message:    Ocean::Standalone::Handler::Message
+  people:     Ocean::Standalone::Handler::Poeple
+  room:       Ocean::Standalone::Handler::Room
+  p2p:       Ocean::Standalone::Handler::P2P
+
+log:
+  type: print
+  level: info
+
+tls:
+  ca_file: /dev/null
+
+sasl:
+  mechanisms:
+    - PLAIN
+    - X-OAUTH
+
+handler:
+  my_handler_param1: 100
+  my_handler_param2: 200

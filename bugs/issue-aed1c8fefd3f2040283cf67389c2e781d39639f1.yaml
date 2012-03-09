@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Add Authentication/ResourceBinding Transaction Test
+desc: ""
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-12 07:57:58.604302 Z
+references: []
+
+id: aed1c8fefd3f2040283cf67389c2e781d39639f1
+log_events: 
+- - 2011-12-12 07:58:00.308147 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

@@ -1,0 +1,62 @@
+package Ocean::Standalone::Handler::Message;
+
+use strict;
+use warnings;
+
+use parent 'Ocean::Handler::Message';
+
+use Ocean::Stanza::DeliveryRequestBuilder::ChatMessage;
+
+sub on_message {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid   = $args->from;
+    my $receiver_jid = $args->to;
+
+    # XXX check relation?
+    my $receiver = 
+        $ctx->get('db')->find_user_by_username($receiver_jid->node);
+    return unless $receiver;
+
+    if ($receiver->is_echo) {
+
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::ChatMessage->new;
+        $builder->to($sender_jid);
+        $builder->from($receiver_jid);
+        $builder->body($args->body);
+        $builder->html($args->html);
+        $builder->thread($args->thread);
+
+        $ctx->deliver($builder->build());
+
+    } else {
+
+        my @conns = $ctx->get('db')->search_available_connection_by_username( 
+            $receiver_jid->node );
+
+        for my $conn ( @conns ) {
+
+            my $builder = 
+                Ocean::Stanza::DeliveryRequestBuilder::ChatMessage->new;
+
+            my $to_jid = Ocean::JID->build(
+                $conn->username,
+                $self->domain,
+                $conn->resource,
+            );
+
+            $builder->to($to_jid);
+            $builder->from($sender_jid);
+            $builder->body($args->body);
+            $builder->html($args->html);
+            $builder->thread($args->thread);
+            $builder->state($args->state);
+
+            $ctx->deliver($builder->build());
+
+        }
+    }
+}
+
+1;

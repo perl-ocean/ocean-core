@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Support IM-XHTML
+desc: ""
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-16 07:15:39.025317 Z
+references: []
+
+id: 3a673bcb7c236ddd7db8d279fe5b42154e043457
+log_events: 
+- - 2011-12-16 07:15:40.512672 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

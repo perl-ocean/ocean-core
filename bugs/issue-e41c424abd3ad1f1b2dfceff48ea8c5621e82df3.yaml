@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Better Generator
+desc: add flavor and build script with Xslate & Data::Section::Simple
+type: :task
+component: tools
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:07:11.217735 Z
+references: []
+
+id: e41c424abd3ad1f1b2dfceff48ea8c5621e82df3
+log_events: 
+- - 2011-12-09 05:07:12.753708 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

@@ -1,0 +1,22 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Change Config File Format
+desc: change config file format from ini to yaml
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :closed
+disposition: :fixed
+creation_time: 2011-12-09 03:52:21.001620 Z
+references: []
+
+id: 37202966d7cdd5784ff132a910242c7f757f246c
+log_events: 
+- - 2011-12-09 03:52:23.401471 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""
+- - 2011-12-09 09:50:07.285658 Z
+  - lyokato <lyo.kato@gmail.com>
+  - closed with disposition fixed
+  - completed

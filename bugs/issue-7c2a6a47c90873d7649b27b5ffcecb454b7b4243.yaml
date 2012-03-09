@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Refactoring Decoder's Dispatcher
+desc: ""
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:02:07.828759 Z
+references: []
+
+id: 7c2a6a47c90873d7649b27b5ffcecb454b7b4243
+log_events: 
+- - 2011-12-09 05:02:09.900505 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

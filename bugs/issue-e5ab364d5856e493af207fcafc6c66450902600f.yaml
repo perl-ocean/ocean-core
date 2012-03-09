@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: RabbitMQ Support
+desc: add fetcher/deliverer for RabbitMQ
+type: :task
+component: cluster
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 04:56:32.832640 Z
+references: []
+
+id: e5ab364d5856e493af207fcafc6c66450902600f
+log_events: 
+- - 2011-12-09 04:56:34.888402 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

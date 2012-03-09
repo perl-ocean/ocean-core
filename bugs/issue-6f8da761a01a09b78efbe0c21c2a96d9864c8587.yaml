@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Initial TLS/SSL Support
+desc: add support for AnyEvent::Handle with TLS params
+type: :feature
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:03:48.553093 Z
+references: []
+
+id: 6f8da761a01a09b78efbe0c21c2a96d9864c8587
+log_events: 
+- - 2011-12-09 05:03:50.424894 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

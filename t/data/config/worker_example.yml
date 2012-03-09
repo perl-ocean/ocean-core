@@ -1,0 +1,34 @@
+worker:
+  domain: xmpp.example.org
+  max_workers: 1
+  node_inboxes:
+    - node_id: xmpp00
+      address: 192.168.84.70:7002
+    - node_id: websocket00
+      address: 192.168.84.70:7003
+  broker_servers: 
+    - 192.168.84.70:7001
+  context_class: Ocean::Standalone::Cluster::Backend::Context
+  queue_name: ocean_default
+log:
+  type: print
+  level: debug
+  filepath: /Users/lyokato/Dropbox/src/perl/Ocean/perl/Ocean/bin/cfoo/log/ocean.log
+
+event_handler:
+  worker:     Ocean::Standalone::Cluster::Backend::Handler::Worker
+  node:       Ocean::Standalone::Cluster::Backend::Handler::Node
+  authen:     Ocean::Standalone::Cluster::Backend::Handler::Authen
+  connection: Ocean::Standalone::Cluster::Backend::Handler::Connection
+  message:    Ocean::Standalone::Cluster::Backend::Handler::Message
+  people:     Ocean::Standalone::Cluster::Backend::Handler::People
+  pubsub:     Ocean::Standalone::Cluster::Backend::Handler::PubSub
+  room:       Ocean::Standalone::Cluster::Backend::Handler::Room
+  p2p:        Ocean::Standalone::Cluster::Backend::Handler::P2P
+
+handler:
+  my_handler_param1: 100
+  my_handler_param2: 200
+  db_file_path: t/data/database/test01.db
+  fixture_file_path: t/data/fixture/test01.pl
+  fixture_evaluator: perl

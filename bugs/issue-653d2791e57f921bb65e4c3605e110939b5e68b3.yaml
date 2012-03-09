@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: check behavior of Socket::shutdown on TLS
+desc: is stopTLS needed?
+type: :task
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:04:59.734158 Z
+references: []
+
+id: 653d2791e57f921bb65e4c3605e110939b5e68b3
+log_events: 
+- - 2011-12-09 05:05:01.494411 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

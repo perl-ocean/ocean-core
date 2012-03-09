@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Add Benchmark Tools
+desc: ""
+type: :task
+component: tools
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:05:39.189177 Z
+references: []
+
+id: f3613c437293d918e9d0f314d9411746fbdc897d
+log_events: 
+- - 2011-12-09 05:05:41.028830 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Support MUC
+desc: |-
+  added componenta on server's dico-info/disco-item.
+  event handlers for MUC.
+type: :feature
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:30:05.208903 Z
+references: []
+
+id: c443f2036360702bd7a25e2d9469f4daba87738c
+log_events: 
+- - 2011-12-09 05:30:06.896650 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

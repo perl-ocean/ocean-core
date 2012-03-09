@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: WebSocket PING Support
+desc: added PING Support. dicide how to handle difference between XMPP and WebSocket
+type: :task
+component: http-binding
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:08:45.150372 Z
+references: []
+
+id: 1edcf702a3e8436b58702764909f7ffab150d005
+log_events: 
+- - 2011-12-09 05:08:48.094322 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

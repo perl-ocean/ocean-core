@@ -1,0 +1,22 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Fixed Resource Binding Transaction
+desc: fix auth event and resource-binding event. auth event should return session-id
+type: :bugfix
+component: core
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :closed
+disposition: :fixed
+creation_time: 2011-12-09 05:00:51.799386 Z
+references: []
+
+id: 1e2e5c36a4a0eb040cce9b8062c3d1bc84892f32
+log_events: 
+- - 2011-12-09 05:00:53.871164 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""
+- - 2011-12-12 05:15:21.701306 Z
+  - lyokato <lyo.kato@gmail.com>
+  - closed with disposition fixed
+  - ""

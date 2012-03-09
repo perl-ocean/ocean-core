@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: ORIGIN/PATH check on WebSocket
+desc: ""
+type: :task
+component: http-binding
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:10:18.259276 Z
+references: []
+
+id: c86d012dc9c4c87294046b431ea22d783cdae815
+log_events: 
+- - 2011-12-09 05:10:19.963076 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""

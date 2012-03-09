@@ -1,0 +1,12 @@
+Ocean version 0.01
+==================
+
+Dependencies
+
+- openssl
+- libevent
+- libidn
+
+Please install these libraries beforehand.
+
+

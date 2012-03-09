@@ -1,0 +1,18 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Support direct-IQ disco-info
+desc: direct iq should be relayed to target entity. but its is for only iq-discoinfo-get/result
+type: :feature
+component: jingle
+release: 
+reporter: lyokato <lyo.kato@gmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2011-12-09 05:13:26.740475 Z
+references: []
+
+id: d81e57ced81ad11e213c0fc2c3b4c7055f3d9a8f
+log_events: 
+- - 2011-12-09 05:13:28.443819 Z
+  - lyokato <lyo.kato@gmail.com>
+  - created
+  - ""
