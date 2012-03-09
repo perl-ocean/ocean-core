@@ -3,94 +3,155 @@
 <head>
   <meta charset='utf-8'>
 
-  <title>lyokato/ocean-core @ GitHub</title>
+  <title>Perl Ocean</title>
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #e45209;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #ffffff;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #1badf6; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #1badf6; }
-    h3 { text-align: center; color: #1badf6; }
-    a { color: #1badf6; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <a href="https://github.com/lyokato/ocean-core"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
 
-  <div id="container">
-
-    <div class="download">
-      <a href="https://github.com/lyokato/ocean-core/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/lyokato/ocean-core/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" href="#">Perl Ocean</a>
+      <div class="container">
+        <ul class="nav">
+          <li class="active">
+            <a href="#">Home</a>
+          </li>
+        </ul>
+      </div>
     </div>
-
-    <h1><a href="https://github.com/lyokato/ocean-core">perl-ocean</a>
-      <span class="small">by <a href="https://github.com/lyokato">lyokato</a></span></h1>
-
-    <div class="description">
-      XMPP Framework Suite
-    </div>
-
-    
-
-    
-      <h2>Dependencies</h2>
-      <p>openssl
-libidn
-libevent</p>
-    
-
-    
-
-    
-      <h2>License</h2>
-      <p>MIT</p>
-    
-
-    
-      <h2>Authors</h2>
-      <p>lyokato (lyo.kato@gmail.com)<br/>      </p>
-    
-
-    
-      <h2>Contact</h2>
-      <p>Lyo Kato (lyo.kato@gmail.com)<br/>      </p>
-    
-
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/lyokato/ocean-core/zipball/master">zip</a> or
-      <a href="https://github.com/lyokato/ocean-core/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/lyokato/ocean-core</pre>
-    </p>
-
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/lyokato/ocean-core">lyokato/ocean-core</a>
-    </div>
-
   </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">Menu</li>
+            <li class="active"><a href="#">Overview</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li><a href="getting_started.html">Getting Started</a></li>
+            <li><a href="protocol.html">Protocol</a></li>
+            <li><a href="configuration.html">Configuration</a></li>
+            <li><a href="integration.html">Integration</a></li>
+            <li><a href="inside.html">Inside Ocean</a></li>
+            <li><a href="cluster.html">Cluster</a></li>
+            <li><a href="http_binding.html">HTTP Binding</a></li>
+            <li><a href="media.html">Media Support</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+        <div class="hero-unit">
+
+          <h1>Perl Ocean</h1>
+          <p>XMPP based realtime communication framework suite</p>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>1. Overview</h2>
+            <p>Oceanは、XMPPプロトコルを中心とする、リアルタイムコミュニケーションフレームワークスイートです(XMPPプロトコルについては <a href="protocol.html">Chapter4. Protocol</a>で解説します)。つまり、リアルタイムコミュニケーションサービスを実現するためのフレームワークの集合で、次のような機能の提供を実現することを目指しています。</p>
+            <ul>
+              <li>一対一のインスタントメッセンジャー</li> 
+              <li>プレゼンスサービス</li> 
+              <li>グループチャット</li> 
+              <li>オーディオチャット、ビデオチャット</li> 
+              <li>イベントのプッシュ通知</li> 
+            </ul>
+            <p>また、他のJabber/XMPPライブラリやフレームワークと比べたときの特徴として、次のようなものを目指しています。</p>
+            <ul>
+              <li>Webサービスとのインテグレーションを前提とした設計</li> 
+              <li>クラスタリングサポート</li> 
+              <li>デファクトスタンダードな拡張を一通り標準サポートしたフルスタックフレームワーク</li> 
+              <li>WebSocketなどを利用したHTTP Bindingの独自サポート</li> 
+            </ul>
+            <p>スタンドアロンのXMPPサービスを構築するのが主目的ではなく、既に運営されている、あるいはこれから作成する、Webサービスとインテグレーションすることを前提として作られています。</p>
+            <p>そのために、XMPPの仕様のうち、インテグレーションに必要の無い、オーバースペックな箇所は削減しています。逆に、Webサービスとのインテグレーションにおいて、不便で物足りない点については、独自拡張仕様を採用しています。また、XMPP拡張仕様(XEPs)のうち、デファクトスタンダードでよく使われるものや、Webサービスとのインテグレーションで必要だと思われるものを最初から取り込んでいます。これらの点についても、<a href="protocol.html">Chapter4. Protocol</a>で解説します。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>2. Installation</h2>
+            <p>Ocean自身のインストール方法や、Oceanが依存するミドルウェアについて解説します。</p>
+            <p><a class="btn" href="installation.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>3. Getting Started</h2>
+            <p>最小限の準備で、とりあえずサービスを起動してみます。</p>
+            <p><a class="btn" href="getting_started.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>4. Protocol</h2>
+            <p>Oceanが採用しているXMPPプロトコルの基礎や、Oceanでの仕様のアレンジについて解説します。</p>
+            <p><a class="btn" href="protocol.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>5. Configuration</h2>
+            <p>コンフィグファイルの各パラメータについて解説します。</p>
+            <p><a class="btn" href="configuration.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>6. Integration</h2>
+            <p>Webサービスとのインテグレーションのためには、データベースの準備や、イベントハンドラの実装が必要です。どのようなデータベースが必要か、どのようなイベントが存在し、ハンドラメソッドでどのように処理をすればよいかを解説します。</p>
+            <p><a class="btn" href="integration.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>7. Inside Ocean</h2>
+            <p>Oceanの内部のコンポーネント設計について解説します。</p>
+            <p><a class="btn" href="inside.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>8. Cluster</h2>
+            <p>Oceanのクラスタサポートにより、サービスのスケーリングが可能です。</p>
+            <p><a class="btn" href="cluster.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>9. HTTP Binding</h2>
+            <p>Oceanでは、WebSocketなどを通してのHTTP Bindingをサポートしています。</p>
+            <p><a class="btn" href="http_binding.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>10. Media Support</h2>
+            <p><a class="btn" href="media.html">View details &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
 
 </body>
 </html>

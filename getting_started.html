@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <a class="brand" href="#">Perl Ocean</a>
+      <div class="container">
+        <ul class="nav">
+          <li class="active">
+            <a href="#">Home</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">Menu</li>
+            <li><a href="index.html">Overview</a></li>
+            <li><a href="installation.html">Installation</a></li>
+            <li class="active"><a href="#">Getting Started</a></li>
+            <li><a href="protocol.html">Protocol</a></li>
+            <li><a href="configuration.html">Configuration</a></li>
+            <li><a href="integration.html">Integration</a></li>
+            <li><a href="inside.html">Inside Ocean</a></li>
+            <li><a href="cluster.html">Cluster</a></li>
+            <li><a href="http_binding.html">HTTP Binding</a></li>
+            <li><a href="media.html">Media Support</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>スタンドアロンプロジェクトの実験</h2>
+            <p>Oceanでは、Webサービスとのインテグレーションを主目的としています。ただし、Webサービスと連携をしない、単体でのサービスも提供することが出来ます。ここでは、そのようなプロジェクトのことを、スタンドアロンプロジェクトと呼ぶことにします。スタンドアロンプロジェクトでは、データベースなどは自動で用意され、非常に簡単にサービスを開始することが可能です。</p>
+
+            <p>特にWebサービスとの連携が必要なく、小規模での利用が目的の場合は、スタンドアロンプロジェクトが最適です。</p>
+
+            <p>まずはOceanの使い方の感覚をつかむために、スタンドアロンプロジェクトでサーバーを起動し、Jabber/XMPPプロトコルをサポートするクライアントアプリケーションから実際につないでみましょう。</p>
+
+            <p>この例では、Macで実験を行い、クライアントにはiChatを利用してみます。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>プロジェクトテンプレートの作成</h2>
+            <p>Oceanのインストールが完了すると、いくつかのコマンドが使えるようになります。</p>
+            <p>まずは、任意のディレクトリに移動し、次のように <b>ocean-standalone</b> コマンドを打ってみましょう</p>
+
+            <pre>ocean-standalone</pre>
+
+            <img src="img/getting_started/prompt.png"/>
+
+            <p>対話方式のシェルの開始されるので、任意に回答を打ち込むと、それに従ってプロジェクトテンプレートが生成されます。ここでは仮に、最初のプロジェクト名の問いに対して <b>foo</b> と回答することにします。残りの問いには、何も回答せずにEnterを押し、デフォルトの設定にします。</p>
+            <img src="img/getting_started/prompt2.png"/>
+
+            <img src="img/getting_started/prompt3.png"/>
+
+            <p>カレントディレクトリ内に、新たにfooディレクトリが生成され、さらにその下に、様々なファイルが生成されたことを確認して下さい。このfooディレクトリが、<b>プロジェクトルートディレクトリ</b>となります。</p>
+
+            <p>fooの中に移動します。</p>
+            <pre>cd ./foo</pre>
+            <p>スタンドアロンプロジェクトでは、</p>
+            <ul>
+              <li><b>コンフィグファイルの編集</b></li> 
+              <li><b>フィクスチャデータの編集</b></li> 
+              <li><b>起動コマンドの実行</b></li> 
+            </ul>
+            <p>という三つの段階を踏むだけで、簡単にサービスを開始することが出来ます。</p>
+            <p>まずはコンフィグファイルを編集してみましょう。</p>
+            <p>コンフィグファイルは、必要最低限のものがデフォルト値で埋められた状態で生成されています。</p>
+            <p>場所は、<b>プロジェクトルートディレクトリ/config/ocean.yml</b>になります。</p>
+            <p>では早速編集してみましょう。</p>
+
+            <pre>vi ./config/ocean.yml</pre>
+
+            <img src="img/getting_started/config.png"/>
+
+            <p>hostを <b>192.168.0.1</b> から、<b>127.0.0.1</b> に変更し、domainを、<b>xmpp.example.org</b>から、<b>localhost</b> に変更しておきます。</p>
+
+            <img src="img/getting_started/config2.png"/>
+
+            <p>次に、<b>フィクスチャファイル</b>を覗いてみます。</p>
+            <p>ファイルパスは、<b>プロジェクトルートディレクトリ/config/fixture.yml</b>です。</p>
+
+            <pre>vi ./config/fixture.yml</pre>
+
+            <img src="img/getting_started/fixture.png"/>
+
+            <p>ユーザー名、ニックネーム、プロフィール画像等、ユーザーの最低限の情報が設定されていることがわかります。プロジェクトテンプレート生成時に、8人のデモユーザーが登録されています。</p>
+            <p>必要であれば、このファイルを編集して、ユーザーの追加、削除、編集を行います。</p>
+            <p>今回は、デフォルト状態のままデモユーザーを使用して進めることにして、変更は加えずにファイルの編集を終わります。</p>
+            <p>これで準備が出来ました。</p>
+            <p>起動するときは、次のように <b>プロジェクトルートディレクトリ/bin/ocean-start</b>スクリプトを実行します。</p>
+
+            <pre>perl ./bin/ocean-start</pre>
+
+            <img src="img/getting_started/starter.png"/>
+
+            <p>ログが流れ始めました。サーバーを起動することが出来たのが分かります。</p>
+
+            <p>では次に、iChatを起動してみましょう。</p>
+            <p>対話の実験のために、ユーザー二人分を登録します。</p>
+
+            <img src="img/getting_started/ichat_account.png"/>
+
+            <p>アカウント管理画面左下の「+」ボタンを押してユーザーを追加します。</p>
+            <p>次のように設定項目を埋めて、新規アカウントを登録します。</p>
+
+            <img src="img/getting_started/ichat_account2.png"/>
+
+            <p>パスワードにはfoobarを入れます。デフォルトで作成されるデモユーザーの初期パスワードは全てfoobarになっています。これは上記のフィクスチャファイルで設定されています。(今回は実験なのでこのままパスワードを利用しますが、実運用する際には勿論パスワードは変更することが推奨されます。)</p>
+
+            <p>同様にもう一人登録します。</p>
+
+            <img src="img/getting_started/ichat_account3.png"/>
+
+            <p>アカウント欄を確認すると、二つのアカウントが追加されたことが分かります。</p>
+
+            <img src="img/getting_started/ichat_account4.png"/>
+
+            <p>アカウントをダブルクリックしてウィンドウを開き、現在の状態を「チャット可能」にしてみます。</p>
+            <img src="img/getting_started/ichat_account5.png"/>
+
+            <p>ウィンドウがログイン状態になりました。</p>
+            <p>オフラインの友人がグレーで表示されているのがわかるでしょうか。</p>
+
+            <img src="img/getting_started/ichat_account6.png"/>
+
+            <p>サーバー側でログが流れていることを確認しておきましょう。</p>
+
+            <img src="img/getting_started/ichat_account7.png"/>
+
+            <p>同様にもう一人のユーザーも、状態を「チャット可能」にしてログインしてみます。</p>
+
+            <img src="img/getting_started/ichat_account8.png"/>
+
+            <p>kusanagiとaramaki、お互いに相手がログイン状態になっていることが確認できます。</p>
+            <p>相手に話しかけてみましょう。</p>
+
+            <img src="img/getting_started/ichat_account9.png"/>
+
+            <p>対話できることが確認できたでしょうか</p>
+
+            <img src="img/getting_started/ichat_account10.png"/>
+
+            <p>このように、スタンドアロンプロジェクトを利用すると、非常に簡単にJabber/XMPPのサービスを開始することが可能です。</p>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>
