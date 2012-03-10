@@ -12,14 +12,42 @@
 
   <div class="navbar">
     <div class="navbar-inner">
-      <a class="brand" href="#">Perl Ocean</a>
       <div class="container">
-        <ul class="nav">
-          <li class="active">
-            <a href="#">Home</a>
-          </li>
-        </ul>
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li class="active">
+              <a href="#">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li>
+              <a href="integration.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="installation.html">インストール</a></li>
+        <li class="active"><a href="#">チュートリアル</a></li>
+      </ul>
     </div>
   </div>
 
@@ -29,16 +57,11 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">Menu</li>
-            <li><a href="index.html">Overview</a></li>
-            <li><a href="installation.html">Installation</a></li>
-            <li class="active"><a href="#">Getting Started</a></li>
-            <li><a href="protocol.html">Protocol</a></li>
-            <li><a href="configuration.html">Configuration</a></li>
-            <li><a href="integration.html">Integration</a></li>
-            <li><a href="inside.html">Inside Ocean</a></li>
-            <li><a href="cluster.html">Cluster</a></li>
-            <li><a href="http_binding.html">HTTP Binding</a></li>
-            <li><a href="media.html">Media Support</a></li>
+            <li><a href="#section1">スタンドアロンプロジェクト</a></li>
+            <li><a href="#section2">プロジェクトテンプレート</a></li>
+            <li><a href="#section3">設定ファイルの編集</a></li>
+            <li><a href="#section4">サーバーの起動</a></li>
+            <li><a href="#section5">iChatで確認</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -47,20 +70,20 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>スタンドアロンプロジェクトの実験</h2>
+            <h2 id="section1">スタンドアロンプロジェクトの実験</h2>
             <p>Oceanでは、Webサービスとのインテグレーションを主目的としています。ただし、Webサービスと連携をしない、単体でのサービスも提供することが出来ます。ここでは、そのようなプロジェクトのことを、スタンドアロンプロジェクトと呼ぶことにします。スタンドアロンプロジェクトでは、データベースなどは自動で用意され、非常に簡単にサービスを開始することが可能です。</p>
 
             <p>特にWebサービスとの連携が必要なく、小規模での利用が目的の場合は、スタンドアロンプロジェクトが最適です。</p>
 
             <p>まずはOceanの使い方の感覚をつかむために、スタンドアロンプロジェクトでサーバーを起動し、Jabber/XMPPプロトコルをサポートするクライアントアプリケーションから実際につないでみましょう。</p>
 
-            <p>この例では、Macで実験を行い、クライアントにはiChatを利用してみます。</p>
+            <p>この例では、MacOSXで実験を行い、クライアントアプリケーションにはMacOSXに標準で付属しているiChatを利用してみます。</p>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>プロジェクトテンプレートの作成</h2>
+            <h2 id="section2">プロジェクトテンプレートの作成</h2>
             <p>Oceanのインストールが完了すると、いくつかのコマンドが使えるようになります。</p>
             <p>まずは、任意のディレクトリに移動し、次のように <b>ocean-standalone</b> コマンドを打ってみましょう</p>
 
@@ -75,6 +98,11 @@
 
             <p>カレントディレクトリ内に、新たにfooディレクトリが生成され、さらにその下に、様々なファイルが生成されたことを確認して下さい。このfooディレクトリが、<b>プロジェクトルートディレクトリ</b>となります。</p>
 
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="section3">設定ファイルの編集</h2>
             <p>fooの中に移動します。</p>
             <pre>cd ./foo</pre>
             <p>スタンドアロンプロジェクトでは、</p>
@@ -108,6 +136,12 @@
             <p>必要であれば、このファイルを編集して、ユーザーの追加、削除、編集を行います。</p>
             <p>今回は、デフォルト状態のままデモユーザーを使用して進めることにして、変更は加えずにファイルの編集を終わります。</p>
             <p>これで準備が出来ました。</p>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="section4">サーバーの起動</h2>
             <p>起動するときは、次のように <b>プロジェクトルートディレクトリ/bin/ocean-start</b>スクリプトを実行します。</p>
 
             <pre>perl ./bin/ocean-start</pre>
@@ -116,6 +150,11 @@
 
             <p>ログが流れ始めました。サーバーを起動することが出来たのが分かります。</p>
 
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="section5">iChatで確認</h2>
             <p>では次に、iChatを起動してみましょう。</p>
             <p>対話の実験のために、ユーザー二人分を登録します。</p>
 

@@ -12,14 +12,42 @@
 
   <div class="navbar">
     <div class="navbar-inner">
-      <a class="brand" href="#">Perl Ocean</a>
       <div class="container">
-        <ul class="nav">
-          <li class="active">
-            <a href="#">Home</a>
-          </li>
-        </ul>
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li class="active">
+              <a href="#">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li>
+              <a href="integration.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#">インストール</a></li>
+        <li><a href="tutorial.html">チュートリアル</a></li>
+      </ul>
     </div>
   </div>
 
@@ -29,55 +57,36 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">Menu</li>
-            <li><a href="index.html">Overview</a></li>
-            <li class="active"><a href="#">Installation</a></li>
-            <li><a href="getting_started.html">Getting Started</a></li>
-            <li><a href="protocol.html">Protocol</a></li>
-            <li><a href="configuration.html">Configuration</a></li>
-            <li><a href="integration.html">Integration</a></li>
-            <li><a href="inside.html">Inside Ocean</a></li>
-            <li><a href="cluster.html">Cluster</a></li>
-            <li><a href="http_binding.html">HTTP Binding</a></li>
-            <li><a href="media.html">Media Support</a></li>
+            <li><a href="#dependencies">依存の解決</a></li>
+            <li><a href="#download">ダウンロード</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
 
       <div class="span9">
 
-        <div class="row-fluid">
-          <div class="span12">
-            <h2> Download</h2>
-            <p>Oceanは、github上で開発、管理されています。</p>
-            <p>次のURLからソースコードを取得するか、あるいは下のボタンからtar.gzやzipファイルを直接取得できます。</p>
-            <p>cpanmを利用すると簡単にインストールすることが可能で、CPAN Moduleの依存も解決してくれます。</p>
-            <p>ここでは、cpanmの利用を推奨します。</p>
-            <p><a href="https://github.com/lyokato/ocean-core">https://github.com/lyokato/ocean-core</a></p>
-            <p><a class="btn" href="https://github.com/lyokato/ocean-core/zipball/master">download zip &raquo;</a></p>
-            <p><a class="btn" href="https://github.com/lyokato/ocean-core/tarball/master">download tar.gz &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
+        <h2 id="dependencies">依存の解決</h2>
 
-        <h2>Dependencies</h2>
+        <p>Oceanをインストールする前に、Oceanが必要とするライブラリのインストールをしておきましょう。</p>
 
         <div class="row-fluid">
           <div class="span12">
-            <h3>Libraries</h3>
             <p>Oceanは次のライブラリに依存しています。事前にインストールをすませておくとよいでしょう。</p>
             <ul>
               <li>openssl</li> 
               <li>libidn</li> 
               <li>libevent</li> 
             </ul>
+            <p>これらのライブラリの他にも、様々なPerlのCPAN Moduleに依存していますが、こちらについては下の<b>ダウンロード</b>の項を参照してください。</p>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
-          <div class="span12">
-            <h3>Message Queue</h3>
-            <p>Oceanのクラスタリングサポートにおいて、サードパーティ製のMessage Queueミドルウェアが必要になります。</p>
+          <div class="span12 well">
+            <h3>メッセージキュー</h3>
+            <p>クラスタ環境でサービスを開始する場合は、複数サーバー間のデータ配送のために、サードパーティ製のメッセージキューミドルウェアが必要になります。</p>
             <p>将来は複数のミドルウェアのサポートを目指していますが、現在はGearmanのみで動作が確認されています。</p>
-            <p>クラスタリングに関して、詳しくは<a href="cluster.html">Cluster Guide</a>を参照して下さい。</p>
+            <p>クラスタ環境に関して、詳しくは<a href="cluster.html">Cluster Guide</a>を参照して下さい。</p>
             <ul>
               <li><a href="http://gearman.org/">Gearman</a></li>
               <li>Kestrel(未サポート)</li>
@@ -85,6 +94,43 @@
             </ul>
           </div><!--/span-->
         </div><!--/row-->
+
+        <hr/>
+
+        <h2 id="download">ダウンロード</h2>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <p>Oceanは、github上で開発、管理されています。</p>
+            <p><a href="https://github.com/lyokato/ocean-core">https://github.com/lyokato/ocean-core</a></p>
+            <p>上のURLからソースコードを取得するか、あるいは下のボタンからtar.gzやzipファイルを直接取得できます。</p>
+            <p>cpanmを利用すると簡単にインストールすることが可能で、CPAN Moduleの依存も解決してくれます。</p>
+            <p>ここでは、cpanmの利用を推奨します。</p>
+
+            <div class="alert alert-block">
+              <h4 class="alert-heading">バージョンについて</h4>
+              <p>現在はまだバージョン1.00が完成しておらず適切なバージョン管理がされていません。</p>
+              <p>バージョン1.00が完成後、それをstableバージョンとしてブランチ管理がされる予定です。</p>
+              <p>とりあえず現在は最新のものを利用してください。</p>
+            </div>
+
+            <p>
+              <a class="btn" href="https://github.com/lyokato/ocean-core/zipball/master">download zip &raquo;</a>
+              <a class="btn" href="https://github.com/lyokato/ocean-core/tarball/master">download tar.gz &raquo;</a>
+            </p>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <hr/>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <p>はじめて利用する場合は、チュートリアルを参考にして一度スタンドアロンプロジェクトで実験をしてみるとよいでしょう。</p>
+            <p><a href="tutorial.html" class="btn btn-primary btn-large">チュートリアルへ &raquo;</a></p>
+          </div><!--/span-->
+        </div><!--/row-->
+
 
       </div><!--/span-->
     </div><!--/row-->

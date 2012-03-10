@@ -12,14 +12,45 @@
 
   <div class="navbar">
     <div class="navbar-inner">
-      <a class="brand" href="#">Perl Ocean</a>
       <div class="container">
-        <ul class="nav">
-          <li class="active">
-            <a href="#">Home</a>
-          </li>
-        </ul>
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li class="active">
+              <a href="#">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
       </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="#">概要</a></li>
+        <li class="active"><a href="#">イベント</a></li>
+        <li><a href="#">ハンドラドキュメント</a></li>
+        <li><a href="#">コンフィグ</a></li>
+        <li><a href="#">サーバーの起動</a></li>
+      </ul>
     </div>
   </div>
 
@@ -29,16 +60,9 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">Menu</li>
-            <li><a href="index.html">Overview</a></li>
-            <li><a href="installation.html">Installation</a></li>
-            <li><a href="getting_started.html">Getting Started</a></li>
-            <li><a href="protocol.html">Protocol</a></li>
-            <li><a href="configuration.html">Configuration</a></li>
-            <li class="active"><a href="#">Integration</a></li>
-            <li><a href="inside.html">Inside Ocean</a></li>
-            <li><a href="cluster.html">Cluster</a></li>
-            <li><a href="http_binding.html">HTTP Binding</a></li>
-            <li><a href="media.html">Media Support</a></li>
+            <li><a href="#event">イベント</a></li>
+            <li><a href="#eventcategory">イベントカテゴリ</a></li>
+            <li><a href="#eventhandler">イベントハンドラ</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -47,7 +71,15 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>イベントカテゴリとイベントハンドラメソッド</h2>
+            <h2 id="event">イベント</h2>
+
+            <p><a href="">概要</a>で説明した通り、Oceanは、接続されたストリームからのイベントを受け取ると、自動的に対処できないものは、イベントハンドラに渡し、その処理を任せます。サービス開発者は、このハンドラの中身を実装していくことになります。</p>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="eventcategory">イベントカテゴリ</h2>
 
             <p>イベントの種類をイベントカテゴリと呼び、Oceanでは次のようにイベントを分類しています。</p>
 
@@ -84,6 +116,11 @@
 
             <p>の各モジュールが自動で生成され、これらの中に具体的な実装を書き込んでいくことになります。</p>
 
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="eventhandler">イベントハンドラ</h2>
             <p>全てのイベントハンドラは<b>on_</b>を接頭語にします。</p>
             <p>引数は二つあり、一つ目はContextオブジェクトで、二つ目はHandleArgsオブジェクトになります。</p>
             <p>この二つについては後ほど解説しますので、まずは雰囲気をつかむために実際のコードを見てみます。</p>
@@ -96,7 +133,7 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>Context</h2>
+            <h3>Context</h3>
 
             <p>Oceanサーバーでは、起動時にコンフィグファイルで指定されたContextクラスのオブジェクトを生成し、そのオブジェクトのinitializeメソッドを呼び出します。</p>
             <p>また、サーバー終了時にはfinalizeメソッドを呼び出します。</p>
@@ -123,13 +160,13 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>HandlerArgs</h2>
+            <h3>HandlerArgs</h3>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>DeliveryRequest</h2>
+            <h3>DeliveryRequest</h3>
 
             <p>ほとんどのイベントでは、配送処理が必要になります。</p>
             <p>Request/Responseタイプのイベントでは、要求を行ったユーザー本人に結果を返します。</p>
@@ -149,7 +186,7 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>スタンドアロンプロジェクトの実装を参考にする</h2>
+            <h3>スタンドアロンプロジェクトの実装を参考にする</h3>
 
             <p>イベントハンドラのオーソドックスな処理については、スタンドアロンプロジェクトでの動作を参考にするとよいでしょう。</p>
             <p>スタンドアロンプロジェクトで利用されるコンテキストやハンドラは、Ocean::Standalone名前空間下のモジュールを継承しています。</p>

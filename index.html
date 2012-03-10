@@ -12,38 +12,37 @@
 
   <div class="navbar">
     <div class="navbar-inner">
-      <a class="brand" href="#">Perl Ocean</a>
       <div class="container">
-        <ul class="nav">
-          <li class="active">
-            <a href="#">Home</a>
-          </li>
-        </ul>
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li class="active">
+              <a href="#">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li>
+              <a href="integration.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span3">
-        <div class="well sidebar-nav">
-          <ul class="nav nav-list">
-            <li class="nav-header">Menu</li>
-            <li class="active"><a href="#">Overview</a></li>
-            <li><a href="installation.html">Installation</a></li>
-            <li><a href="getting_started.html">Getting Started</a></li>
-            <li><a href="protocol.html">Protocol</a></li>
-            <li><a href="configuration.html">Configuration</a></li>
-            <li><a href="integration.html">Integration</a></li>
-            <li><a href="inside.html">Inside Ocean</a></li>
-            <li><a href="cluster.html">Cluster</a></li>
-            <li><a href="http_binding.html">HTTP Binding</a></li>
-            <li><a href="media.html">Media Support</a></li>
-          </ul>
-        </div><!--/.well -->
-      </div><!--/span-->
-
-      <div class="span9">
+      <div class="container">
         <div class="hero-unit">
 
           <h1>Perl Ocean</h1>
@@ -52,8 +51,8 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>1. Overview</h2>
-            <p>Oceanは、XMPPプロトコルを中心とする、リアルタイムコミュニケーションフレームワークスイートです(XMPPプロトコルについては <a href="protocol.html">Chapter4. Protocol</a>で解説します)。つまり、リアルタイムコミュニケーションサービスを実現するためのフレームワークの集合で、次のような機能の提供を実現することを目指しています。</p>
+            <h2>Overview</h2>
+            <p>Oceanは、XMPPプロトコルを中心とする、リアルタイムコミュニケーションフレームワークスイートです(XMPPプロトコルについては <a href="protocol.html">プロトコルガイド</a>で解説します)。つまり、リアルタイムコミュニケーションサービスを実現するためのフレームワークの集合で、次のような機能の提供を実現することを目指しています。</p>
             <ul>
               <li>一対一のインスタントメッセンジャー</li> 
               <li>プレゼンスサービス</li> 
@@ -69,86 +68,21 @@
               <li>WebSocketなどを利用したHTTP Bindingの独自サポート</li> 
             </ul>
             <p>スタンドアロンのXMPPサービスを構築するのが主目的ではなく、既に運営されている、あるいはこれから作成する、Webサービスとインテグレーションすることを前提として作られています。</p>
-            <p>そのために、XMPPの仕様のうち、インテグレーションに必要の無い、オーバースペックな箇所は削減しています。逆に、Webサービスとのインテグレーションにおいて、不便で物足りない点については、独自拡張仕様を採用しています。また、XMPP拡張仕様(XEPs)のうち、デファクトスタンダードでよく使われるものや、Webサービスとのインテグレーションで必要だと思われるものを最初から取り込んでいます。これらの点についても、<a href="protocol.html">Chapter4. Protocol</a>で解説します。</p>
-          </div><!--/span-->
-        </div><!--/row-->
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>2. Installation</h2>
-            <p>Ocean自身のインストール方法や、Oceanが依存するミドルウェアについて解説します。</p>
-            <p><a class="btn" href="installation.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>3. Getting Started</h2>
-            <p>最小限の準備で、とりあえずサービスを起動してみます。</p>
-            <p><a class="btn" href="getting_started.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>4. Protocol</h2>
-            <p>Oceanが採用しているXMPPプロトコルの基礎や、Oceanでの仕様のアレンジについて解説します。</p>
-            <p><a class="btn" href="protocol.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
+            <p>そのために、XMPPの仕様のうち、インテグレーションに必要の無い、オーバースペックな箇所は削減しています。逆に、Webサービスとのインテグレーションにおいて、不便で物足りない点については、独自拡張仕様を採用しています。また、XMPP拡張仕様(XEPs)のうち、デファクトスタンダードでよく使われるものや、Webサービスとのインテグレーションで必要だと思われるものを最初から取り込んでいます。これらの点についても、<a href="protocol.html">プロトコルガイド</a>で解説します。</p>
+            <p>まずは<a href="installation.html">インストールガイド</a>を参考に、Oceanをインストールしたのち、<a href="tutorial.html">チュートリアル</a>に従って、一度スタンドアロンで動かしてみるとよいでしょう。</p>
 
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>5. Configuration</h2>
-            <p>コンフィグファイルの各パラメータについて解説します。</p>
-            <p><a class="btn" href="configuration.html">View details &raquo;</a></p>
+            <p><a href="tutorial.html">チュートリアル</a>で雰囲気をつかみ、<a href="protocol.html">プロトコルガイド</a>でJabber/XMPPについて把握ができたなら、<a href="">開発ガイド</a>を見ながら実際にサービスとつなぎこんでみましょう。</p>
+
+            <p>一定規模を超えるユーザーを抱えているならばスケーリングも考慮しなくてはなりません。<a href="cluster.html">クラスタガイド</a>を参考にするとよいでしょう。</p>
           </div><!--/span-->
         </div><!--/row-->
-
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>6. Integration</h2>
-            <p>Webサービスとのインテグレーションのためには、データベースの準備や、イベントハンドラの実装が必要です。どのようなデータベースが必要か、どのようなイベントが存在し、ハンドラメソッドでどのように処理をすればよいかを解説します。</p>
-            <p><a class="btn" href="integration.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>7. Inside Ocean</h2>
-            <p>Oceanの内部のコンポーネント設計について解説します。</p>
-            <p><a class="btn" href="inside.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>8. Cluster</h2>
-            <p>Oceanのクラスタサポートにより、サービスのスケーリングが可能です。</p>
-            <p><a class="btn" href="cluster.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>9. HTTP Binding</h2>
-            <p>Oceanでは、WebSocketなどを通してのHTTP Bindingをサポートしています。</p>
-            <p><a class="btn" href="http_binding.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-
-        <div class="row-fluid">
-          <div class="span12">
-            <h2>10. Media Support</h2>
-            <p><a class="btn" href="media.html">View details &raquo;</a></p>
-          </div><!--/span-->
-        </div><!--/row-->
-
-      </div><!--/span-->
-    </div><!--/row-->
 
     <hr />
+
     <footer>
       <p>&copy; Lyo Kato 2012</p>
     </footer>
-  </div>
+    </div><!--/row-->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
