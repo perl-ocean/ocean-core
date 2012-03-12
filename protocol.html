@@ -46,9 +46,7 @@
     <div class="subnav">
       <ul class="nav nav-tabs">
         <li class="active"><a href="#">概要</a></li>
-        <li><a href="#">データ</a></li>
-        <li><a href="#">スタンザ</a></li>
-        <li><a href="#">ストリーム</a></li>
+        <li><a href="protocolspec.html">プロトコル仕様</a></li>
         <li><a href="#">サポート</a></li>
       </ul>
     </div>
@@ -59,10 +57,10 @@
       <div class="span3">
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
-            <li class="nav-header">Menu</li>
-            <li><a href="">Hoge</a></li>
-            <li><a href="">Hoge</a></li>
-            <li><a href="">Hoge</a></li>
+            <li class="nav-header">目次</li>
+            <li><a href="#history">プロトコル紹介</a></li>
+            <li><a href="#applications">アプリケーション</a></li>
+            <li><a href="#xeps">拡張仕様</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -71,7 +69,54 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>Jabber/XMPP</h2>
+            <h2 id="history">Jabber/XMPPプロトコルとは</h2>
+            <p>2000年前後から、Yahoo! Messenger, Microsoft LiveやAOL AIMといったメッセンジャーアプリが登場し、多くのユーザーに使われてきましたが、それらはそれぞれ独自の仕様に従って作られていました。</p>
+            <p>そのようなインスタントメッセンジャーに要求される仕様を標準化するために登場したのが<b>Jabber</b>です。<b>Jabber</b>は名前を<b>XMPP(Extensible Messaging And Presence Protocol:拡張可能なメッセージとプレゼンスのプロトコル)</b>と変えて2004年にRFCになりました。なので<b>Jabber/XMPP</b>のように併記されることも多いですし、クライアントアプリケーションによっては、設定項目などで、現在でもJabberの名前が使われている場合もあります。</p>
+
+            <p>XMPPに名前が変更となりRFCに登録される際に、単純にインスタントメッセンジャーのための一つの仕様とされていたものから、２つの仕様に分離しました。</p>
+            <p>その２つとは、永続コネクション上でのメッセージとプレゼンスを扱うためのコア機能の仕様(RFC3920)と、そのコア機能の上でインスタントメッセージングを実現するための仕様(RFC3921)になります。</p>
+            
+            <p>2011年3月に仕様がアップデートされて、RFC6120, RFC6121になっていますので、これから仕様について調査をしたい方は、そちらの方を参照するとよいでしょう。</p>
+
+            <p><a href="http://xmpp.org/xmpp-protocols/rfcs/">XMPPに関連するRFCリンク集</a></p>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="applications">XMPPを使ったアプリケーション</h2>
+
+            <p>Jabber/XMPPの出現以降は、Google TalkやFacebookチャットをはじめとして、メッセンジャー系のアプリケーションで積極的に採用されるようになってきています。</p>
+            <p>Microsoft Liveも上記の通り独自プロトコルでしたが、2011年12月にXMPPに変更されました。</p>
+            
+            <ul>
+              <li><a href="http://code.google.com/intl/ja/apis/talk/talk_developers_home.html">Google Talk</a></li> 
+              <li><a href="http://www.facebook.com/sitetour/chat.php">Facebook Chat</a></li> 
+              <li><a href="http://msdn.microsoft.com/en-us/windowslive/hh528487">MSN Live</a></li>
+            </ul>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="xeps">XMPPの拡張仕様</h2>
+            <p>様々な拡張機能の仕様が定義されていて、それらは<b>XEP(XMPP Extension Protocol)</b>と呼ばれています(Jabber時代はJEPと呼ばれていました)。</p>
+            <p>その中には、例えばグループチャットのための仕様やオーディオ、ビデオチャットのための仕様などもあります。</p>
+
+            <p><a href="http://xmpp.org/xmpp-protocols/xmpp-extensions/">XEPリスト</a></p>
+            
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <hr/>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <p>サービスを提供するためには、最低限のプロトコル仕様について知っておく必要があります。</p>
+            <p>次のページから、少しずつ仕様について学んでいきましょう。</p>
+            <p><a href="protocolspec.html" class="btn btn-primary btn-large">プロトコル仕様 &raquo;</a></p>
           </div><!--/span-->
         </div><!--/row-->
 
