@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li class="active">
+              <a href="#">Protocol</a>
+            </li>
+            <li>
+              <a href="integration.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="protocol.html">概要</a></li>
+        <li><a href="protocoldatamodel.html">データモデル</a></li>
+        <li class="active"><a href="#">シナリオ</a></li>
+        <li><a href="#">サポート</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="#stream">状態変化</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="stream">ストリームの状態変化</h2>
+            <p>前節で、クライアントはサーバーと、ストリームを通して様々なデータをやり取りすると説明しました。
+            ただし、ストリームはいくつかの<b>状態</b>でもって管理されており、手続きを進めて<b>有効状態</b>になってからでないとメッセージやプレゼンスの送受信はできません。いわゆるログイン処理のような手続きを進め、それが完了すると、はじめて<b>有効状態</b>になり、サービスの様々な機能を利用できるようになるわけです。</p>
+
+            <p>IMサービスにおける一般的なログイン処理の流れは次のような手順になります。</p>
+
+            <ol>
+              <li>ストリームの開始</li> 
+              <li>TLSの開始(サーバーが要求するならば)</li> 
+              <li>SASL認証</li>
+              <li>リソースのバインディング</li>
+              <li>セッションの確立</li>
+              <li>ロスタの取得(クライアントが必要とするならば)</li>
+              <li>イニシャルプレゼンスの送信</li>
+            </ol>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="stream">ストリームの開始</h2>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="tls">TLSの開始</h2>
+            <p>サーバーが要求する場合は、まずはTLSのネゴシエーションから始まります。</p>
+            <p>例えば、HTTPでTLS(SSL)を利用する場合は、はじめにネゴシエーションを完了してからリクエストを送信しますが、XMPPの場合は、上述のようにプレーンな状態でstream要素のやり取りを行なってから、TLSネゴシエーションを開始します。(サーバーによっては、HTTPのように最初にTLS化してからstreamのやり取りを開始するものもあります)</p>
+            <p>Oceanでは、設定ファイルのtlsセクションを記述すれば、自動的にTLSを要求し、手続きを進めます。このあたりの詳細に関しては、<a href="">コンフィギュレーションガイド</a>を参照してください。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="sasl">SASL認証</h2>
+            <p>XMPPでは、<a href="http://tools.ietf.org/html/rfc2222">RFC2222</a>で定義されている<b>SASL</b>というチャレンジ/レスポンス型の認証方式を使って、ユーザーの認証を行います。</p>
+            <p>大まかな手順は次のようになります</p>
+            <ol>
+              <li>サーバーはサポートしている認証メカニズムのリストを提示</li> 
+              <li>クライアントは、提示されたものの中から認証メカニズムを選択</li>
+              <li>選択した認証メカニズムの仕様に従って、認証が完了するまで、クライアントとサーバー間でチャレンジとレスポンスの応答を繰り返す</li>
+            </ol>
+
+            <p>XMPPで利用される、SASLの認証メカニズムはだいたい決まっていて、次の3つをサポートしているサーバーやクライアントが多いようです。</p>
+
+            <ul>
+              <li>PLAIN</li>
+              <li>CRAM-MD5</li>
+              <li>DIGEST-MD5</li>
+            </ul>
+
+            <p>Oceanでも、この3つをサポートしています。</p>
+
+            <p>さらに最近では多くのWebサービスが、OAuthのような三者間の認可のメカニズムの上でAPIを提供していますが、OAuthで発行したトークンを、このSASLで使えるように、独自のメカニズムを定義しているケースも多いようです。</p>
+
+            <p>以下のようなものが使われていたりします。</p>
+
+            <ul>
+              <li>X-FACEBOOK-PLATFORM</li> 
+              <li>X-OAUTH2</li> 
+              <li>X-MESSENGER-OAUTH2</li>
+            </ul>
+
+            <p>Oceanでは、<b>X-OAUTH2</b>をサポートし、<b>PLAIN</b>認証とほぼ同じような手続で、単純にアクセストークンにをbase64エンコードしたものを渡せばよいようになっています。</p>
+
+            <div class="alert alert-block alert-error">
+              <h4 class="alert-heading">認証メカニズムの安全性</h4>
+              <p>例えばiChatを利用したときに、TLSを利用しない状態で、あるいはTLSを利用したとしても自己署名の証明書を利用したような場合に、SASLのメカニズムに<b>PLAIN</b>を選択すると、警告ウィンドウが出ます。</p>
+              <p><b>PLAIN</b>メカニズムでは、ユーザー名とパスワードをつなげたものをBase64エンコードしただけのものを送信するだけなので、平文、あるいはいい加減な証明書を使ったTLS接続上で流すのは危険だ、ということなのでしょう。</p>
+
+              <p><b>DIGEST-MD5</b>や<b>CRAM-MD5</b>のようなメカニズムを選択した場合は、TLSではない接続の上でも警告は出ません。</p>
+
+              <p>DIGEST-MD5やCRAM-MD5では、パスワードを含めた文字列を最終的にハッシュ化してから送信するので、送信経路で見られても安全だ、という判断なのでしょう。</p>
+
+              <p>ということで、PLAINよりもDIGEST-MD5やCRAM-MD5のほうが安全で推奨されているかというと、それも間違いです。</p>
+
+              <p>実際にはいくつかの問題があります。</p>
+
+              <p>まず、このようにパスワードをハッシュ化して送信するタイプの認証方式を利用する場合、クライアントが送信してきたデータを検証するために、サーバー側も同じようにパスワードをハッシュ化して比較しなしなければならないのです。つまり、ユーザーの<b>生パスワード</b>をデータベースのどこかに保存しておかなければなりません。これは、現在のサービス運営においてやってはいけないことの一つとなっています。</p>
+
+              <p>あるいは、DIGEST-MD5などと全く同じ方式であらかじめハッシュ化したものをデータベースに保存しておく、という方法も考えられますが、ハッシュ化の方式を外部から推測できてしまうのも問題です。またMD5の強度も現在では問題になります。</p>
+
+              <p>ハッシュ系のメカニズムが安全だというのは、あくまで通信経路に限った話であって、生でパスワードを保存しているようなサービスにアカウントを預けていることがそもそも安全とは言えません。</p>
+
+              <p>ここで話をPLAINに戻します。上でPLAINの危険性に注意しましたが、それはあくまで通信経路が暗号化されてなかった場合の話です。適切にTLSを利用すればその問題はなくなります。</p>
+
+              <p>なので、サービスとしてきちんとしたものを提供するならば、サーバーは自己署名ではない証明書を準備して、設定ファイルでTLSを有効にして、メカニズムは<b>PLAIN</b>か<b>X-OAUTH2</b>のどちらか、あるいは両方を許可するのがよいでしょう。</p>
+
+            </div>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="resource">リソースのバインディング</h2>
+            <p>認証までが完了すると、ストリームは次に、リソースと紐付けられなくてはなりません。</p>
+            <p>前章でのJIDの話を覚えているでしょうか？e-mailアドレスのようなフォーマットに加え、ユーザーだけでなく、ストリームまでを特定するために、リソースというものを使うのでした。</p>
+            <p>基本的には次のような手順になります。</p>
+            <ol>
+              <li>クライアントがサーバーにリソースの紐付けを要求</li> 
+              <li>サーバーはリソースを確保し、データベースに記録後、クライアントにフルJIDを返す</li> 
+            </ol>
+            <p>仕様上は、1のステップで、クライアントはリソース紐付け要求を出すと同時に、希望するリソースを指定することができるようになっています。前章の例で出した<b>home</b>とか<b>work</b>みたいなものですね。ただし、これも説明の通り、現状セマンティックリソースはあまり意味はありません。</p>
+
+            <p>ですので、Oceanでは、1でクライアントに希望されたリソースは無視し、2のステップで、サーバーが強制的に新たなリソースを生成してしまう方式にしています。</p>
+            <p>この方式にはいくつかメリットがあるのでそうしています。一つは、無駄なコンフリクトから発生するサーバーとクライアント間のラウンドトリップの削減です。他にもクラスタリングやHTTPバインディングを行うときに利点があるのですが、ここでは解説を省略しておきます。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="session">セッションの確立</h2>
+            <p>次にセッションの確立を行うのですが、実はこれは空の<b>session</b> IQスタンザをクライアントがサーバーに送り、サーバーも空のスタンザで返すだけで他には実際何もしません。歴史的経緯で、仕様上の後方互換のためだけにこの処理が残っています。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="roster">ロスターの要求</h2>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="initialpresence">イニシャルプレゼンス</h2>
+          </div><!--/span-->
+        </div><!--/row-->
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>

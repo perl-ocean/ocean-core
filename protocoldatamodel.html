@@ -46,7 +46,8 @@
     <div class="subnav">
       <ul class="nav nav-tabs">
         <li><a href="protocol.html">概要</a></li>
-        <li class="active"><a href="#">プロトコル仕様</a></li>
+        <li class="active"><a href="#">データモデル</a></li>
+        <li><a href="protocolscenario.html">シナリオ</a></li>
         <li><a href="#">サポート</a></li>
       </ul>
     </div>
@@ -153,6 +154,22 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="subscription">サブスクリプション</h3>
+            <p>ロスタに存在する友人との関係を表すのがサブスクリプションです。日本語だと<b>購読</b>と訳されることが多いようですが、現在ならTwitterでいうところの<b>follow</b>と言ったほうがわかりやすいかもしれませんね。</p>
+            <p>ロスターアイテムで相手との関係性を表すには次の種類があります。</p>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">種類</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>TO</td><td>その相手を一方的にフォローしている。そのユーザーのプレゼンスが変更されたら通知される。</td></tr>
+                <tr><td>FROM</td><td>その相手から一方的にフォローされている。自分のプレゼンスが変更されたら相手に通知される。</td></tr>
+                <tr><td>BOTH</td><td>お互いにフォローしあっている。それぞれのプレゼンスが変更されたら、相手に通知される。</td></tr>
+                <tr><td>NONE</td><td>フォローはお互いにしてない。</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -201,9 +218,11 @@
         <div class="row-fluid">
           <div class="span12">
             <h2 id="results">まとめ</h2>
-            <p>このページでは、ストリームと、その上でやりとりされるスタンザを中心に、XMPPでの登場人物について解説しました。</p>
+            <p>このページでは、ストリームと、その上でやりとりされるスタンザを中心に、XMPPでの主要な登場人物について解説しました。</p>
+            <p>ここで説明に出てきたデータモデルが、XMPPにおける全ての登場人物ではありません。拡張仕様などを利用すると、他にも覚えなければならないことはいくつも出てきますが、今回は主要なところだけを押さえておきましょう。</p>
             <p>次は、実際にクライアントがログインしてからログアウトするまでの間に、裏でどのような処理がなされるのか、ストリームがどのように状態変化していくのかを見ていくことにします。</p>
-            <p><a href="tutorial.html" class="btn btn-primary btn-large">ストリームライフサイクル &raquo;</a></p>
+
+            <p><a href="protocolscenario.html" class="btn btn-primary btn-large">シナリオ &raquo;</a></p>
           </div>
         </div>
 
