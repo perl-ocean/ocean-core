@@ -59,7 +59,16 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="#stream">状態変化</a></li>
+            <li><a href="#streamstate">状態変化</a></li>
+            <li><a href="#streamstart">ストリームの開始</a></li>
+            <li><a href="#tls">TLSの開始</a></li>
+            <li><a href="#sasl">SASL認証</a></li>
+            <li><a href="#resource">リソースバインディング</a></li>
+            <li><a href="#session">セッション確立</a></li>
+            <li><a href="#roster">ロスター要求</a></li>
+            <li><a href="#initialpresence">イニシャルプレゼンス</a></li>
+            <li><a href="#available">有効状態</a></li>
+            <li><a href="#unavailable">ログアウト</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -68,7 +77,7 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="stream">ストリームの状態変化</h2>
+            <h2 id="streamstate">ストリームの状態変化</h2>
             <p>前節で、クライアントはサーバーと、ストリームを通して様々なデータをやり取りすると説明しました。
             ただし、ストリームはいくつかの<b>状態</b>でもって管理されており、手続きを進めて<b>有効状態</b>になってからでないとメッセージやプレゼンスの送受信はできません。いわゆるログイン処理のような手続きを進め、それが完了すると、はじめて<b>有効状態</b>になり、サービスの様々な機能を利用できるようになるわけです。</p>
 
@@ -83,21 +92,82 @@
               <li>ロスタの取得(クライアントが必要とするならば)</li>
               <li>イニシャルプレゼンスの送信</li>
             </ol>
+
+            <p>ここでは、一つ一つのステップについて詳しく説明していくと同時に、実際にクライアントとサーバー間で送信されるXMLの例も紹介します。ただしここでは、全体の流れを把握することを優先し、細かい異常系の制御については省略し、正常系のみのやりとりを紹介します。</p>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="stream">ストリームの開始</h2>
+            <h2 id="streamstart">ストリームの開始</h2>
+            <p>TCP接続完了後、クライアントは次のように<b>stream</b>を開始します。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream to="xmpp.example.org" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;</pre>
+
+            <p>サーバーはストリームに対し<b>id</b>を発行し、次のように、発行したIDや、サーバーがサポートする<b>features</b>を返します。</p>
+            <span class="label label-success">server to client</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream from="xmpp.example.org" id="1f6d1a" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;
+  &lt;stream:features&gt;
+    &lt;starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'&gt;
+      &lt;required/&gt;
+    &lt;/starttls&gt;
+  &lt;/stream:features&gt;</pre>
+            <p>上の例は、TLSを要求する場合です。TLSを要求する場合はこのような形で<b>stream</b>を返し、次の<a href="#tls">TLSの開始</a>に進みます。TLSを要求しない場合は、次のようにfeaturesを返し、<a href="#sasl">SASL認証</a>のステップに飛びます。</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream from="xmpp.example.org" id="7de8a2" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;
+  &lt;stream:features&gt;
+    &lt;mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'&gt;
+      &lt;mechanism&gt;DIGEST-MD5&lt;/mechanism&gt;
+      &lt;mechanism&gt;CRAM-MD5&lt;/mechanism&gt;
+      &lt;mechanism&gt;X-OAUTH2&lt;/mechanism&gt;
+      &lt;mechanism&gt;PLAIN&lt;/mechanism&gt;
+    &lt;/mechanisms&gt;
+  &lt;/stream:features&gt;</pre>
+            
+            <p>TLSをサポートする場合は、必ず<a href="#sasl">SASL認証</a>の前に<a href="#tls">TLSの開始</a>を行わなくてはなりません。パスワードなどの機密情報が、暗号化された接続の上でやりとりされるようにするためです。</p>
+
+            <p>Oceanでは、設定ファイルのtlsセクションを記述すれば、自動的にTLSを要求し、手続きを進めます。このあたりの詳細に関しては、<a href="">コンフィギュレーションガイド</a>を参照してください。</p>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
             <h2 id="tls">TLSの開始</h2>
-            <p>サーバーが要求する場合は、まずはTLSのネゴシエーションから始まります。</p>
-            <p>例えば、HTTPでTLS(SSL)を利用する場合は、はじめにネゴシエーションを完了してからリクエストを送信しますが、XMPPの場合は、上述のようにプレーンな状態でstream要素のやり取りを行なってから、TLSネゴシエーションを開始します。(サーバーによっては、HTTPのように最初にTLS化してからstreamのやり取りを開始するものもあります)</p>
-            <p>Oceanでは、設定ファイルのtlsセクションを記述すれば、自動的にTLSを要求し、手続きを進めます。このあたりの詳細に関しては、<a href="">コンフィギュレーションガイド</a>を参照してください。</p>
+            <p>サーバーがセキュアな接続を要求する場合は、まずはTLSのネゴシエーションから始まります。</p>
+            <p>例えば、HTTPでTLS(SSL)を利用する場合は、はじめにネゴシエーションを完了してからリクエストを送信しますが、XMPPの場合は、上述のようにプレーンな状態で<a href="#streamstart">ストリーム開始</a>のやり取りを行なってから、TLSネゴシエーションを開始します。(サーバーによっては、HTTPのように最初にTLS化してからstreamのやり取りを開始するものもあります)</p>
+
+            <p>まず、クライアントがTLS開始の意思をサーバーに伝えます。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/&gt;</pre>
+
+            <p>サーバーはproceedを返すと、TLSネゴシエーションを待ち受けます。</p>
+            <span class="label label-success">server to client</span>
+            <pre>&lt;proceed xmlns='urn:ietf:params:xml:ns:xmpp-tls'/&gt;</pre>
+
+            <p>ここでTLSの交渉を行い、成功すると、クライアントは<b>stream</b>をリフレッシュします。(あくまでXMLをリフレッシュするだけで、TCP接続自体を一度切断して接続し直すわけではありません。)</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream to="xmpp.example.org" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;</pre>
+
+            <p>サーバーは前回と同様にIDを発行して、<b>features</b>を含めて返します。<br />
+            今回は、次の<a href="#sasl">SASL認証</a>に必要な情報を<b>features</b>に含めます。</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream from="xmpp.example.org" id="7de8a2" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;
+  &lt;stream:features&gt;
+    &lt;mechanisms xmlns='urn:ietf:params:xml:ns:xmpp-sasl'&gt;
+      &lt;mechanism&gt;DIGEST-MD5&lt;/mechanism&gt;
+      &lt;mechanism&gt;CRAM-MD5&lt;/mechanism&gt;
+      &lt;mechanism&gt;X-OAUTH2&lt;/mechanism&gt;
+      &lt;mechanism&gt;PLAIN&lt;/mechanism&gt;
+    &lt;/mechanisms&gt;
+  &lt;/stream:features&gt;</pre>
           </div><!--/span-->
         </div><!--/row-->
 
@@ -134,6 +204,32 @@
 
             <p>Oceanでは、<b>X-OAUTH2</b>をサポートし、<b>PLAIN</b>認証とほぼ同じような手続で、単純にアクセストークンにをbase64エンコードしたものを渡せばよいようになっています。</p>
 
+
+            <p>ここでは、メカニズムに<b>PLAIN</b>を選択した場合の手続きの例を示すことにします。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'&gt;AGp1bGlldAByMG0zMG15cjBtMzA=&lt;/auth&gt;</pre>
+
+            <p>サーバーは受け取ったデータを検証します。認証が成功した場合は、次のように<b>success</b>を返します。失敗した場合はfailureを返しますが、ここではその例を省略します。</p>
+            <span class="label label-success">server to client</span>
+            <pre>&lt;success xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/&gt;</pre>
+
+            <p>クライアントは<b>success</b>を受け取って認証が完了したことを確認すると、上で説明したTLS完了時の処理と同様に<b>stream</b>をリフレッシュします。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream to="xmpp.example.org" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;</pre>
+
+            <p>サーバーは、今度は<b>bind</b>と<b>session</b>を<b>features</b>に含めて返します。</p>
+            <span class="label label-success">server to client</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream from="xmpp.example.org" id="9f8ee5" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;
+  &lt;stream:features&gt;
+    &lt;bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/&gt;
+    &lt;session xmlns='urn:ietf:params:xml:ns:xmpp-session'/&gt;
+  &lt;/stream:features&gt;</pre>
+
+            <p><b>bind</b>、<b>session</b>については、それぞれ、次に続く<a href="#resource">リソースのバインディング</a>、<a href="#session">セッションの確立</a>で解説します。</p>
+
             <div class="alert alert-block alert-error">
               <h4 class="alert-heading">認証メカニズムの安全性</h4>
               <p>例えばiChatを利用したときに、TLSを利用しない状態で、あるいはTLSを利用したとしても自己署名の証明書を利用したような場合に、SASLのメカニズムに<b>PLAIN</b>を選択すると、警告ウィンドウが出ます。</p>
@@ -147,7 +243,7 @@
 
               <p>実際にはいくつかの問題があります。</p>
 
-              <p>まず、このようにパスワードをハッシュ化して送信するタイプの認証方式を利用する場合、クライアントが送信してきたデータを検証するために、サーバー側も同じようにパスワードをハッシュ化して比較しなしなければならないのです。つまり、ユーザーの<b>生パスワード</b>をデータベースのどこかに保存しておかなければなりません。これは、現在のサービス運営においてやってはいけないことの一つとなっています。</p>
+              <p>まず、このようにパスワードをハッシュ化して送信するタイプの認証方式を利用する場合、クライアントが送信してきたデータを検証するために、サーバー側も同じようにパスワードをハッシュ化して比較しなしなければならないのです。つまり、ユーザーの<b>生パスワード</b>をデータベースのどこかに保存しておかなければなりません。これは、現在のサービス運営において、やってはいけないことの一つとなっています。</p>
 
               <p>あるいは、DIGEST-MD5などと全く同じ方式であらかじめハッシュ化したものをデータベースに保存しておく、という方法も考えられますが、ハッシュ化の方式を外部から推測できてしまうのも問題です。またMD5の強度も現在では問題になります。</p>
 
@@ -172,29 +268,152 @@
               <li>クライアントがサーバーにリソースの紐付けを要求</li> 
               <li>サーバーはリソースを確保し、データベースに記録後、クライアントにフルJIDを返す</li> 
             </ol>
-            <p>仕様上は、1のステップで、クライアントはリソース紐付け要求を出すと同時に、希望するリソースを指定することができるようになっています。前章の例で出した<b>home</b>とか<b>work</b>みたいなものですね。ただし、これも説明の通り、現状セマンティックリソースはあまり意味はありません。</p>
+            <p>仕様上は、1のステップで、クライアントはリソース紐付け要求を出すと同時に、希望するリソースを指定することができるようになっています。前章の例で出した<b>home</b>とか<b>work</b>みたいなものですね。ただし、これも前章で説明の通り、現状セマンティックリソースはあまり意味はありません。</p>
 
             <p>ですので、Oceanでは、1でクライアントに希望されたリソースは無視し、2のステップで、サーバーが強制的に新たなリソースを生成してしまう方式にしています。</p>
             <p>この方式にはいくつかメリットがあるのでそうしています。一つは、無駄なコンフリクトから発生するサーバーとクライアント間のラウンドトリップの削減です。他にもクラスタリングやHTTPバインディングを行うときに利点があるのですが、ここでは解説を省略しておきます。</p>
+
+            <p>それでは、実際のデータのやり取りを見てみましょう</p>
+
+            <p>クライアントはサーバーに<b>bind</b>リクエストを送信します。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq id='tn281v37' type='set'&gt;
+  &lt;bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'/&gt;
+&lt;/iq&gt;</pre>
+
+            <p>次のように使いたいリソースを希望することも出来ます。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq id='tn281v37' type='set'&gt;
+  &lt;bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'&gt;
+    &lt;resource&gt;balcony&lt;/resource&gt;
+  &lt;/bind&gt;
+&lt;/iq&gt;</pre>
+
+
+            <p>サーバーは<b>bind</b>リクエストを受け取ると、適切にリソースを生成し、このストリームと紐づけてデータベースなどに記録したのち、割り当てられたJIDを返します。クライアントからリソースの指定があった場合に、それを使うか、あるいは希望を無視して、サーバー側で生成したものを強制的に割り当ててしまうかはサーバー側の実装次第です。(上述の通り、Oceanでは後者を採用しています)</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq id='tn281v37' type='result'&gt;
+  &lt;bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'&gt;
+    &lt;jid&gt;juliet@xmpp.example.com/4db06f06-1ea4-11dc-aca3-000bcd821bfb&lt;/jid&gt;
+  &lt;/bind&gt;
+&lt;/iq&gt;</pre>
+
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
             <h2 id="session">セッションの確立</h2>
-            <p>次にセッションの確立を行うのですが、実はこれは空の<b>session</b> IQスタンザをクライアントがサーバーに送り、サーバーも空のスタンザで返すだけで他には実際何もしません。歴史的経緯で、仕様上の後方互換のためだけにこの処理が残っています。</p>
+            <p>次にセッションの確立を行うのですが、実はこれは空の<b>session</b> IQスタンザをクライアントがサーバーに送り、サーバーも空のスタンザで返すだけで他には何もしません。歴史的経緯で、仕様上の後方互換のためだけにこの処理が残っています。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq to='xmpp.example.com' type='set' id='sess_1'&gt;
+  &lt;session xmlns='urn:ietf:params:xml:ns:xmpp-session'/&gt;
+&lt;/iq&gt;</pre>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq from='xmpp.example.com' type='result' id='sess_1'/&gt;</pre>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
             <h2 id="roster">ロスターの要求</h2>
+            <p>ここまで来たら後少しです。クライアントはサーバーに対して、この段階で、ロスターの要求をすることになっています。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq from='juliet@xmpp.example.com/balcony' id='hu2bac18' type='get'&gt;
+    &lt;query xmlns='jabber:iq:roster'/&gt;
+&lt;/iq&gt;</pre>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq id='hu2bac18' to='juliet@example.com/balcony' type='result'&gt;
+  &lt;query xmlns='jabber:iq:roster'&gt;
+    &lt;item jid='romeo@example.net' name='Romeo' subscription='both'&gt;&lt;group&gt;Friends&lt;/group&gt;&lt;/item&gt;
+    &lt;item jid='mercutio@example.com' name='Mercutio' subscription='from'/&gt;
+    &lt;item jid='benvolio@example.net' name='Benvolio' subscription='both'/&gt;
+  &lt;/query&gt;
+</iq></pre>
+            <h3 id="rosterver">ロスターのバージョニング</h3>
+            <p>さて、毎回ログインの度にロスターを要求することになると、登録された友人が多い場合は、通信の転送量が馬鹿になりません。1000人友人がいるような場合は毎回ログイン時に1000個のロスターアイテムを要求することになってしまいます。</p>
+            <p>そこでRFC6121より、ロスターのバージョニング仕様が導入されました</p>
+            <div class="alert alert-block">
+              <p>ただし、RFC6121が登場したのは2011年3月なので、かなり最近の話です。<br/>ほとんどのアプリケーション、ライブラリではまだ利用されていません。</p>
+            </div>
+
+            <p>サーバーがクライアントからのロスター要求に答えて、リストを返すところをもう一度みてみましょう。<br />
+            バージョニングをサポートする場合は、<b>query</b>要素に<b>ver</b>属性を付けてバージョン番号を入れておくように変更します。</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq id='hu2bac18' to='juliet@example.com/balcony' type='result'&gt;
+  &lt;query xmlns='jabber:iq:roster' ver='ver11'&gt;
+    &lt;item jid='romeo@example.net' name='Romeo' subscription='both'&gt;&lt;group&gt;Friends&lt;/group&gt;&lt;/item&gt;
+    &lt;item jid='mercutio@example.com' name='Mercutio' subscription='from'/&gt;
+    &lt;item jid='benvolio@example.net' name='Benvolio' subscription='both'/&gt;
+  &lt;/query&gt;
+</iq></pre>
+
+            <p>クライアントはこのようなバージョン番号付きのリストを受け取ると、ロスターの内容をローカルのデータベースにキャッシュしておき、バージョン番号も記録しておきます。</p>
+
+            <p>次回以降、クライアントはロスター要求を行う場合、次のようにバージョン番号を加えます。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq from='juliet@xmpp.example.com/balcony' id='hu2bac18' type='get'&gt;
+    &lt;query xmlns='jabber:iq:roster' ver='ver11'/&gt;
+&lt;/iq&gt;</pre>
+
+            <p>サーバーは、バージョン番号を確認します。指定されたバージョン番号が最新のものである場合は、次のように空の結果を返すとよいでしょう。</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq from='juliet@xmpp.example.net' id='hu2bac18' to='juliet@xmpp.example.net/home' type='result'/&gt;</pre>
+            <p>これで無駄なデータベースアクセスやペイロードが削減できました。</p>
+
+            <p>では指定されたバージョン以降、友人が追加、削除されるなどの変更があった場合はどうすればよいでしょうか。<br />
+            サーバーは二つのパターンのうちのどちらかを採用することになっています。</p>
+
+            <ol>
+              <li>最新バージョンの値を含めた上で、全てのロスターアイテムを含めて返す。</li> 
+              <li>まず空の結果を返し、アップデート分はロスタープッシュとして後で順番に渡していく。</li> 
+            </ol>
+
+            <h3 id="vcard">vCardリクエスト</h3>
+            <p>名簿にリストアップされたそれぞれのユーザーの詳細な情報を取るために、あわせてvCardのリクエストのリクエストを行うのが定番の処理になっていて、ほとんどのクライアントがそうしています。vCardに関しては<a href="xeps.html">拡張</a>の章で別途解説します。</p>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
             <h2 id="initialpresence">イニシャルプレゼンス</h2>
+            <p>ログイン処理の最後の手続きとして、クライアントはサーバーに対し、プレゼンスを送信することになっています。<br />
+            中身は空のシンプルなプレゼンスです。</p>
+            <span class="label label-info">client to server</span>
+            <pre> &lt;presence/&gt; </pre>
+            <p>このプレゼンスを<b>イニシャルプレゼンス</b>と呼び、サーバーはこれを受けると次のように処理します。</p>
+
+            <p>このユーザーがログインした事を、このユーザーをフォローしている友人の、全てのオンラインのストリームに対して通知する。</p>
+            <p>このユーザーがフォローしている友人の、全てのオンラインのストリームに関するプレゼンス情報を、このユーザーに対して通知する。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="available">有効状態</h2>
+            <p>ここまでの手続きで、認証も済み、セッションIDにあたりリソースを発行してフルJIDを取得しました。友人の名簿も手元にあり、誰がオンラインかが分かっています。また、友人の側も、自分がオンラインになったことが分かっています。</p>
+            <p>あとはオンラインの友人に対してメッセージを送信し、コミュニケーションを開始するだけです。</p>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="unavailable">ログアウト</h2>
+            <p>ログアウトするときには、クライアントは、<b>無効プレゼンス</b>をサーバーに送信してから、ストリームを閉じて、TCPコネクションを切断します。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;presence type="unavailable"/&gt;&lt;/stream&gt;</pre>
+            <p>サーバーはこれを受け取ると、このユーザーをフォローしている友人の、全てのオンラインストリームに対して、このユーザーがログアウトしたことを通知します。</p>
+            <p>さらに、場合によっては、サーバーはここで様々な後始末をしなければならないかもしれません。例えば、サーバーがグループチャット機能をサポートしていた場合、このユーザーが参加していた部屋からの退出処理を済ませていなかったとしたら、この段階で自動的に退出処理も行わなければならないわけです。</p>
+
+            <p>また、ユーザーがお行儀よく<b>無効プレゼンス</b>を送信せずに切断してしまった場合は、サーバーが自動的にフォロワーに対する通知をを始めとする後始末を行ってあげなければなりません。</p>
           </div><!--/span-->
         </div><!--/row-->
 
