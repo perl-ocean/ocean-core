@@ -48,8 +48,8 @@
         <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
         <li><a href="#">ハンドラドキュメント</a></li>
-        <li class="active"><a href="#">コンフィグ</a></li>
-        <li><a href="runserver.html">サーバーの起動</a></li>
+        <li><a href="configuration.html">コンフィグ</a></li>
+        <li class="active"><a href="#">サーバーの起動</a></li>
       </ul>
     </div>
   </div>
@@ -60,7 +60,8 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="#"></a></li>
+            <li><a href="#server">サーバーの起動</a></li>
+            <li><a href="#daemon">デーモン</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -69,39 +70,36 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="config">設定ファイルの編集</h2>
+            <h2 id="server">サーバーの起動</h2>
 
-            <p>設定ファイルはプロジェクトルートの中の<b>configディレクトリ</b>の中にあります。</p>
+            <p>起動スクリプトはプロジェクトルートディレクトリの<b>binディレクトリ</b>以下にあります。</p>
 
-            <pre>vi ./config/ocean.yml</pre>
+            <p>次のように起動できます。</p>
 
-            <p>サーバーの挙動をコントロールするために、このファイルを編集していくことになります。</p>
-            <p>ファイルはYAMLで書かれており、複数のセクションにわかれています。</p>
-
+            <pre>./bin/ocean-start</pre>
           </div>
         </div>
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="core">コア設定</h2>
-          </div>
-        </div>
+            <h2 id="daemon">デーモン</h2>
 
-        <div class="row-fluid">
-          <div class="span12">
-            <h2 id="log">ログ設定</h2>
-          </div>
-        </div>
+            <p>デーモン化したい場合は次のようにしてください。<br />
+            設定ファイルで<b>pid</b>が適切に設定されていることを事前に確認しておくとよいでしょう。<br/>
+            詳しくは<a href="configuration.html">コンフィギュレーションガイド</a>を参考にしてください。</p>
 
-        <div class="row-fluid">
-          <div class="span12">
-            <h2 id="tls">TLS設定</h2>
-          </div>
-        </div>
+            <pre>./bin/ocean-start --daemonize</pre>
 
-        <div class="row-fluid">
-          <div class="span12">
-            <h2 id="sasl">認証設定</h2>
+            <p>デーモン化したプロセスを停止するには、次のように<b>ocean-stop</b>を利用してください。</p>
+
+            <pre>./bin/ocean-stop</pre>
+
+            <div class="alert alert-block">
+              <h4 class="alert-heading">ログファイルについて</h4>
+              <p>デーモン化してしまった場合、ログを標準出力などに出していたら意味がありません。<br />
+              設定ファイルを編集し、ログタイプを<b>print</b>ではなく、<b>file</b>などにしておくとよいでしょう。こちらについても詳しくは<a href="configuration.html">コンフィギュレーションガイド</a>を参照してください。</p>
+              <p>ただし<b>daemontools</b>などを利用する場合はこの限りではありません。</p>
+            </div>
           </div>
         </div>
 

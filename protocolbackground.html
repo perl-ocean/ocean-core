@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li class="active">
+              <a href="#">Protocol</a>
+            </li>
+            <li>
+              <a href="integration.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="protocol.html">概要</a></li>
+        <li><a href="protocoldatamodel.html">サービス</a></li>
+        <li class="active"><a href="#">バックグラウンド</a></li>
+        <li><a href="protocolscenario.html">ケーススタディ</a></li>
+        <li><a href="#">拡張</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="#data">データ紹介</a></li>
+            <li><a href="#roster">ロスター</a></li>
+            <li><a href="#presence">プレゼンス</a></li>
+            <li><a href="#message">メッセージ</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="background">クライアント/サーバー間のやりとり</h2>
+            <p>前章では、クライアントアプリケーションのGUIのビジュアルを通して、XMPPサービスがどのようなデータを扱うのかを見てきました。次はさらに、クライアントとサーバーの間でどのようなやり取りが行われているかを詳しく説明し、クライアントのGUIの裏で何が行われているのか、サーバーはどのようにサービスを提供しているのかを明らかにしていきます。</p>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="stream">ストリーム</h2>
+
+            <p>XMPPでは、ログインからログアウトまでの間、一つのTCPコネクションを維持し、そのコネクション上で、前章で紹介したようなメッセージやプレゼンスをはじめとする様々なデータのやりとりを行います。このような性質から、HTTPとは違って<b>ステートフル</b>なサービスと呼ぶことが出来ます。</p>
+
+            <div class="alert alert-block">
+              <p>例えば、会員限定のWebサービスでは、ログインからログアウトまでの間のクライアントとサーバー間のやり取りは、それぞれ独立しており、Cookieなどを利用してセッションのトラッキングを行うのが一般的です。このような性質からHTTPは<b>ステートレス</b>だと言われます。</p>
+            </div>
+
+            <p>XMPPプロトコルでは、このようなコネクションの事を<b>ストリーム</b>と呼び、前章で説明したような、クライアントとサーバー間のストリームについては特に<b>C2Sストリーム</b>と呼びます。<b>C2S</b>は<b>Client to Server</b>の略語です。</p>
+
+            <p>クライアントは接続完了すると、まず次のように<b>stream</b>をルート要素としたXMLを送信します。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream to="xmpp.example.org" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;</pre>
+
+            <p>サーバーはクライアントから<b>stream</b>開始タグを受信すると次のようにXMLをクライアントに向けて送信します。</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;?xml version="1.0"?&gt;
+&lt;stream:stream from="xmpp.example.org" id="1f6d1a" version="1.0" xmlns="jabber:client" xmlns:stream="http://etherx.jabber.org/streams"&gt;</pre>
+
+            <p>接続を閉じるときは次のように<b>stream</b>の終了タグを送信しあいます。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;/stream:stream&gt;</pre>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;/stream:stream&gt;</pre>
+
+            <div class="alert alert-block">
+              <p>実際は、上の例のように行儀よく終了タグを送らずに、いきなりTCPの切断処理をするケースも多いですが、<br/>それで特に何の問題もありません。</p>
+            </div>
+
+            <p>また、異なる事業者を利用しているユーザー間でも通信できるよう、サーバー間での通信を行うためのストリームについても定義されています。これを<b>S2Sストリーム</b>と呼び、<b>Server to Server</b>の略になります。</p>
+            <p>このS2Sを利用すれば、例えば<b>xmpp.example.org</b>のユーザーから、<b>xmpp.example2.org</b>のユーザーに対してメッセージを送信できるわけです。こちらもe-mail(SMTP)を彷彿とさせますが、プロキシは使わず、ダイレクトにTLS接続を行い証明書を検証するなどして、サーバー間の認証をしっかり行おうということになっています。e-mailでのプロキシサーバーを踏み台としたスパム問題の鉄を踏まないように、ということですね。</p>
+            <div class="alert alert-block">
+              <h4 class="alert-heading">S2Sのコスト</h4>
+              <p><b>Distributed</b>というのはインターネットの思想ですので、「どんな事業者間でもプロトコルにさえ従えば連携できる」、というのは素晴らしいことのように聞こえるのですが、色々な問題も出てくるのが実情です。</p>
+              <p>スパムの問題に関しても、上記の対策で解決したかというと必ずしもそうではありません。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="stanza">スタンザ</h2>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="stanza">宛先指定送信</h3>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="stanza">ブロードキャスト</h3>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="stanza">リクエスト/レスポンス</h3>
+          </div>
+        </div>
+
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="jid">JID - ユーザーやコネクションの特定</h3>
+            <p>XMPPではユーザーのIDを表現するために<b>JID</b>というフォーマットを利用します。
+            上で説明したロスターアイテムにおけるユーザーIDの表現にもJIDが使われていますし、メッセージ送信時には宛先をJIDで指定します。</p>
+            <p><b>JID</b>は<b>Jabber ID</b>の略であり、プロトコル名がXMPPになる前、まだJabberだった頃の定義でそのまま残っています。</p>
+            <p>具体的にどんなフォーマットなのかを確認します。次の例を見てください。</p>
+            <pre>taro@xmpp.example.org</pre>
+            <p>ほとんどの人が気づいたかと思いますが、e-mailアドレスとほぼ一緒ですね。ユーザーIDの後に@が続き、その後ろにサービスドメインが続きます。</p>
+            <p>このようなIDを利用してメッセージの送受信を行います。ほとんどe-mail(SMTP)と同じだ、と感じた人も多いでしょう。</p>
+
+            <p>さて、JIDにはさらに次のような形態も存在します。</p>
+
+            <pre>taro@xmpp.example.org/home</pre>
+            <pre>taro@xmpp.example.org/work</pre>
+
+            <p>上で説明したe-mailアドレスと同じようなIDの後に、<b>/(スラッシュ)</b>が続き、さらにその後にhomeやworkが続いているのがわかりますね。このhomeとかworkを<b>リソース</b>と呼びます。<b>リソース</b>というのは言ってしまえばコネクションIDのようなものです。</p>
+
+            <p>とにかくtaroさんにメッセージが送りたいのなら、taro@xmpp.example.org宛にメッセージを送ります。サーバーは接続中のtaroさんのコネクションに対してメッセージを配信します。</p>
+
+            <p>taroさんの特定のコネクションに対してメッセージを送りたいのなら、<b>リソース</b>も含めたJIDを指定してメッセージを送ります。例えばtaro@xmpp.example.org/home宛にメッセージを送信すると、サーバーは、taroさんのすべてのコネクションにはメッセージを送らず、<b>リソース</b>がhomeになっているコネクションにだけメッセージを配信します。</p>
+
+            <p>(実際はサーバーの実装次第なのでこれはあくまで一例です)</p>
+
+            <p><b>リソース</b>まで含めたJIDを<b>フルJID</b>、そうでないものを<b>ベアJID</b>と呼びます</p>
+
+            <p class="well">現在はJIDの仕様がひとつのRFCで定められるようになりました。<br /> 厳密な仕様が知りたい場合は<a href="http://xmpp.org/rfcs/rfc6122.html">RFC6122</a>を確認するとよいでしょう。</p>
+
+            <div class="alert alert-block">
+              <h4 class="alert-heading">セマンティックリソースについて</h4>
+              <p>上記の例では、<b>home</b>、<b>work</b>など、セマンティックなリソースを使いました。つまり、そのコネクションが自宅からのものであるとか職場からのものであるとかを推測することができるような文字列を利用したわけです。</p>
+              <p>ところが実際メッセンジャークライアントでは、このようなセマンティックなリソースが有意義に使われている例はほとんどありません。</p>
+              <p>上の画像のように、クライアントアプリケーションで、コネクション情報を集約してしまうのがよくあるパターンで、一つ一つのコネクション情報を分類して表示することはあまりありません。</p>
+              <p>エンドユーザーからしたら、<b>「友人のコネクションがふたつある」</b>とか<b>「そのうちのひとつがhomeで、もうひとつがwork」</b>であるとかはどうでもいい情報で、一番大事なのは<b>「友人がオンラインでチャット可能か、メッセージが届くかどうか」</b>ということであり、クライアントアプリケーションのUIもそのように最適化がされてきたというわけです。</p>
+
+              <p>そういう現状を鑑みるに、リソースがセマンティックである必要はなく、コネクションの識別子としてコンピュータが判断できればそれでいいわけです。ハッシュ関数などを利用してランダムな文字列を生成してしまえばよいでしょう。</p>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="results">まとめ</h2>
+            <p>このページでは、ストリームと、その上でやりとりされるスタンザを中心に、XMPPでの主要な登場人物について解説しました。</p>
+            <p>ここで説明に出てきたデータモデルが、XMPPにおける全ての登場人物ではありません。拡張仕様などを利用すると、他にも覚えなければならないことはいくつも出てきますが、今回は主要なところだけを押さえておきましょう。</p>
+            <p>次は、実際にクライアントがログインしてからログアウトするまでの間に、裏でどのような処理がなされるのか、ストリームがどのように状態変化していくのかを見ていくことにします。</p>
+
+            <p><a href="protocolscenario.html" class="btn btn-primary btn-large">シナリオ &raquo;</a></p>
+          </div>
+        </div>
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>
