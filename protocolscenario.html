@@ -148,7 +148,11 @@
           <div class="span12">
             <h2 id="tls">TLSの開始</h2>
             <p>サーバーがセキュアな接続を要求する場合は、まずはTLSのネゴシエーションから始まります。</p>
-            <p>例えば、HTTPでTLS(SSL)を利用する場合は、はじめにネゴシエーションを完了してからリクエストを送信しますが、XMPPの場合は、上述のようにプレーンな状態で<a href="#streamstart">ストリーム開始</a>のやり取りを行なってから、TLSネゴシエーションを開始します。(サーバーによっては、HTTPのように最初にTLS化してからstreamのやり取りを開始するものもあります)</p>
+            <p>例えば、HTTPでTLS(SSL)を利用する場合は、はじめにネゴシエーションを完了してからリクエストを送信しますが、XMPPの場合は、上述のようにプレーンな状態で<a href="#streamstart">ストリーム開始</a>のやり取りを行なってから、TLSネゴシエーションを開始します。</p>
+            
+            <div class="alert alert-block">
+              <p>サーバーによっては、HTTPのように最初にTLS化してからstreamのやり取りを開始するものもありますが、正確には、仕様に沿った挙動ではありません。</p>
+            </div>
 
             <p>まず、クライアントがTLS開始の意思をサーバーに伝えます。</p>
             <span class="label label-info">client to server</span>
@@ -158,7 +162,11 @@
             <span class="label label-success">server to client</span>
             <pre>&lt;proceed xmlns='urn:ietf:params:xml:ns:xmpp-tls'/&gt;</pre>
 
-            <p>ここでTLSの交渉を行い、成功すると、クライアントは<b>stream</b>をリフレッシュします。(あくまでXMLをリフレッシュするだけで、TCP接続自体を一度切断して接続し直すわけではありません。)</p>
+            <p>ここでTLSの交渉を行い、成功すると、クライアントは<b>stream</b>をリフレッシュします。</p>
+            
+            <div class="alert alert-block">
+              <p>XMLをルートエレメントから送信しなおすだけで、TCP接続自体を一度切断して接続し直すわけではありません。</p>
+            </div>
 
             <span class="label label-info">client to server</span>
             <pre>&lt;?xml version="1.0"?&gt;
