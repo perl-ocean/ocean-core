@@ -294,7 +294,7 @@
 
             <div class="alert alert-block alert-info">
               <p>ですので、Oceanでは、1のステップでクライアントが候補として提出したリソースは無視し、2のステップで、サーバーが強制的に新たなリソースを生成してしまう方式にしています。</p>
-              <p>この方式にはいくつかメリットがあるのでそうしています。一つは、無駄なコンフリクトから発生するサーバーとクライアント間のラウンドトリップの削減です。他にもクラスタリングやHTTPバインディングを行うときに利点があるのですが、ここでは解説を省略しておきます。</p>
+              <p>この方式にはいくつかメリットがあるのでそうしています。一つは、無駄なコンフリクトから発生するサーバーとクライアント間のラウンドトリップの削減です。他にもクラスターの構築やHTTPバインディングを行うときに利点があるのですが、ここでは解説を省略しておきます。</p>
             </div>
 
             <p>それでは、実際のデータのやり取りを見てみましょう</p>
@@ -350,8 +350,8 @@
             <p>ここまで来たら後少しです。クライアントはサーバーに対して、この段階で、ロスターの要求をすることになっています。</p>
 
             <span class="label label-info">client to server</span>
-            <pre>&lt;iq from='juliet@xmpp.example.com/balcony' id='hu2bac18' type='get'&gt;
-    &lt;query xmlns='jabber:iq:roster'/&gt;
+            <pre>&lt;iq id='hu2bac18' type='get'&gt;
+  &lt;query xmlns='jabber:iq:roster'/&gt;
 &lt;/iq&gt;</pre>
 
             <span class="label label-success">server to client</span>
@@ -361,7 +361,7 @@
     &lt;item jid='mercutio@example.com' name='Mercutio' subscription='from'/&gt;
     &lt;item jid='benvolio@example.net' name='Benvolio' subscription='both'/&gt;
   &lt;/query&gt;
-</iq></pre>
+&lt;/iq&gt;</pre>
             <h3 id="rosterver">ロスターのバージョニング</h3>
             <p>さて、毎回ログインの度にロスターを要求することになると、登録された友人が多い場合は、通信の転送量が馬鹿になりません。1000人友人がいるような場合は毎回ログイン時に1000個のロスターアイテムを要求することになってしまいます。</p>
             <p>そこでRFC6121より、ロスターのバージョニング仕様が導入されました</p>

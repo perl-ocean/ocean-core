@@ -150,7 +150,7 @@
   &lt;/presence&gt;
 ...
 &lt;/stream:stream&gt;</pre>
-            <p>前章でクライアントアプリケーションのGUIを通して紹介した、メッセージやプレゼンスのようなデータは、実際は裏でこのようにサーバーとやり取りされています。上記コード例の<b>message</b>や<b>presence</b>のように、ストリームの中でやりとりされる第一深度のXMLエレメントを<b>スタンザ</b>と呼びます。直訳すると<b>「節」</b>になります。</p>
+            <p>前章でクライアントアプリケーションのGUIを通して紹介した、メッセージやプレゼンスのようなデータは、実際は裏でこのようにサーバーとやり取りされています。上記コード例の<b>message</b>や<b>presence</b>のように、ストリームの中でやりとりされる第一深度のXMLエレメントを<b>スタンザ ( stanza )</b>と呼びます。直訳すると<b>「節」</b>になります。</p>
 
               <p class="well">まとめると、XMPPサービスでは、クライアントとサーバー間で双方向のTCP通信を行い、そのデータはXMLで表現します。<b>stream</b>をルートエレメントとして、その下にくる第一深度のそれぞれのXMLエレメントを<b>スタンザ</b>と呼びます。<b>スタンザ</b>をイベントの単位として、クライアントとサーバーの間で<b>メッセージ送信</b>や、<b>プレゼンス変更</b>をはじめとする様々なやりとりをします。</p>
           </div>
@@ -199,18 +199,17 @@
             <h2 id="stanzakinds">スタンザの種類</h2>
             <p>スタンザにはいくつか種類があります。主要なものは次の三つです。</p>
             <ul>
+              <li>iq</li> 
               <li>message</li> 
               <li>presence</li> 
-              <li>iq</li> 
             </ul>
             <div class="alert alert-block">
-              <p>他にもいくつか存在するのですが、上の三つ以外のものは、基本的にログイン処理でしか利用しません。
+              <p>他にもいくつか存在するのですが、上の三つ以外のものは、基本的にログイン手続きの中でしか利用しません。
               次の章<a href="protocolbackground.html">「ケーススタディ: ログインからログアウトまで」</a>を読むときに注意してみておくとよいでしょう。</p>
-              <p>ログイン後は基本的に上の三つしか利用しません。</p>
+              <p>ログイン後は上の三つしか利用しません。</p>
             </div>
-            <h3 id="stanzamessage">message</h3>
-            <h3 id="stanzapresence">presence</h3>
-            <h3 id="stanzaiq">iq</h3>
+            <p>これら三つのスタンザについて詳しく説明していきますが、その前に把握しておかなければならないことが一つあります。</p>
+
           </div>
         </div>
 
@@ -233,13 +232,15 @@
 
             <p>上で説明したe-mailアドレスと同じようなIDの後に、<b>/(スラッシュ)</b>が続き、さらにその後にhomeやworkが続いているのがわかりますね。このhomeとかworkを<b>リソース</b>と呼びます。<b>リソース</b>というのは言ってしまえばコネクションIDのようなものです。</p>
 
-            <p>とにかくtaroさんにメッセージが送りたいのなら、taro@xmpp.example.org宛にメッセージを送ります。サーバーは接続中のtaroさんのコネクションに対してメッセージを配信します。</p>
+            <p>とにかくtaroさんにメッセージが送りたいのなら、taro@xmpp.example.org宛にメッセージを送ります。サーバーは接続中のtaroさんの全てのコネクションに対してメッセージを配信します。</p>
 
             <p>taroさんの特定のコネクションに対してメッセージを送りたいのなら、<b>リソース</b>も含めたJIDを指定してメッセージを送ります。例えばtaro@xmpp.example.org/home宛にメッセージを送信すると、サーバーは、taroさんのすべてのコネクションにはメッセージを送らず、<b>リソース</b>がhomeになっているコネクションにだけメッセージを配信します。</p>
 
-            <p>(実際はサーバーの実装次第なのでこれはあくまで一例です)</p>
+            <div class="alert alert-block">
+              <p>これはあくまで一例です。実際はサーバーの実装次第になります。リソースを特定してメッセージを送信しても、相手の全てのコネクションにメッセージを配送するサーバーもあります。</p>
+            </div>
 
-            <p><b>リソース</b>まで含めたJIDを<b>フルJID</b>、そうでないものを<b>ベアJID</b>と呼びます</p>
+            <p><b>リソース</b>まで含めたJIDを<b>フルJID ( Full JID )</b>、そうでないものを<b>ベアJID ( Bare JID )</b>と呼びます</p>
 
             <p class="well">現在はJIDの仕様がひとつのRFCで定められるようになりました。<br /> 厳密な仕様が知りたい場合は<a href="http://xmpp.org/rfcs/rfc6122.html">RFC6122</a>を確認するとよいでしょう。</p>
 
@@ -258,12 +259,59 @@
           </div>
         </div>
 
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="iq">iqスタンザ</h2>
+            <p>IQは<b>Information Query</b>の略です。Queryという名の通り、上で解説したサーバーとクライアントのやりとりの種別のうち、<a href="#reqres">リクエスト/レスポンス型</a>のやりとりにおいてこのスタンザを利用します。</p>
+
+            <p>ロスター要求を例に上げて説明しましょう。</p>
+
+            <p>クライアントはサーバーに次のようにIQスタンザを送信します。iqには、必ず<b>id</b>属性と<b>type</b>属性を含めなければなりません。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq id='hu2bac18' type='get'&gt;
+  &lt;query xmlns='jabber:iq:roster'/&gt;
+&lt;/iq&gt;</pre>
+
+            <p><b>id</b>の値は何でもよいです。クライアントアプリケーションが、リクエストに対するレスポンスをトラッキングするために、任意の値を生成します。</p>
+            <p>リクエストする側では、<b>type</b>属性に、<b>get</b>か<b>set</b>のどちらかを利用します。HTTPの<b>GET</b>、<b>POST</b>のようなメソッドをイメージすればよいでしょう。</p>
+
+            <p>iqの子エレメントは、何を要求するかによって変化します。</p>
+
+            <p>サーバー側は次のようにレスポンスを返します。リクエストと同様に<b>id</b>属性と<b>type</b>属性を含んでいなければなりません。</p>
+
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq id='hu2bac18' to='juliet@example.com/balcony' type='result'&gt;
+  &lt;query xmlns='jabber:iq:roster'&gt;
+    &lt;item jid='romeo@example.net' name='Romeo' subscription='both'&gt;&lt;group&gt;Friends&lt;/group&gt;&lt;/item&gt;
+    &lt;item jid='mercutio@example.com' name='Mercutio' subscription='from'/&gt;
+    &lt;item jid='benvolio@example.net' name='Benvolio' subscription='both'/&gt;
+  &lt;/query&gt;
+&lt;/iq&gt;</pre>
+
+            <p>レスポンスにおいては<b>type</b>属性は、<b>result</b>か、<b>error</b>のどちらかになります。</p>
+
+            <p><b>id</b>属性の値は、クライアントが送信したリクエストのiqスタンザにつけられていたものを、そのまま利用します。それによって、クライアントは、自分がいままでに送信したリクエストのうち、どのリクエストに対するレスポンスを受信したのかを判断できるようになります。</p>
+
+          </div>
+        </div>
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="results">まとめ</h2>
-            <p>このページでは、ストリームと、その上でやりとりされるスタンザを中心に、XMPPでの主要な登場人物について解説しました。</p>
-            <p>ここで説明に出てきたデータモデルが、XMPPにおける全ての登場人物ではありません。拡張仕様などを利用すると、他にも覚えなければならないことはいくつも出てきますが、今回は主要なところだけを押さえておきましょう。</p>
+            <h2 id="message">messageスタンザ</h2>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="presence">presenceスタンザ</h2>
+          </div>
+        </div>
+
+
+        <hr />
+        <div class="row-fluid">
+          <div class="span12">
             <p>次は、実際にクライアントがログインしてからログアウトするまでの間に、裏でどのような処理がなされるのか、ストリームがどのように状態変化していくのかを見ていくことにします。</p>
 
             <p><a href="protocolscenario.html" class="btn btn-primary btn-large">ケーススタディ: ログインからログアウトまで &raquo;</a></p>
