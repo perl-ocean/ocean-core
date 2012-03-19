@@ -49,7 +49,7 @@
         <li><a href="protocoldatamodel.html">サービス</a></li>
         <li class="active"><a href="#">バックグラウンド</a></li>
         <li><a href="protocolscenario.html">ケーススタディ</a></li>
-        <li><a href="#">拡張</a></li>
+        <li><a href="xep.html">拡張</a></li>
       </ul>
     </div>
   </div>
@@ -299,12 +299,151 @@
         <div class="row-fluid">
           <div class="span12">
             <h2 id="message">messageスタンザ</h2>
+            <p><b>message</b>スタンザは非常に単純で、メッセージの配信のみがその役割になります。</p>
+            <p>まず<b>type</b>属性を指定しなければなりません。次の種類があります。</p>
+            <ul>
+              <li><b>normal</b></li> 
+              <li><b>chat</b></li> 
+              <li><b>headline</b></li> 
+              <li><b>groupchat</b></li> 
+            </ul>
+
+            <p>一般的には、IMでの一対一のチャットでは<b>chat</b>が選択されます。グループチャットでは文字通り<b>groupchat</b>が選択されます。<b>headline</b>は、「X月Y日のZ時からメンテナンスします。」というような、サーバーからの警告やお知らせに使えばよいでしょう。<b>normal</b>は、独立したメッセージで、メールのようなイメージを持てばよいかと思います。</p>
+
+            <div class="alert alert-block">
+              <p><b>type</b>属性を省略されている場合は<b>normal</b>として扱うことになっています。</p>
+            </div>
+
+            <p>ほかには、宛先を示す<b>to</b>属性や、送信元を示す<b>from</b>属性があります。</p>
+
+            <div class="alert alert-block">
+              <p>クライアントがメッセージを送信するときは、<b>from</b>をつけなくても、サーバー側が自動的に補填するようにします。むしろ、クライアントが<b>from</b>属性をつけた状態でメッセージを送信してきたとしても、詐称を防ぐために、サーバー側はそれを信じることなく、<b>from</b>属性を上書きするようにするのがよいでしょう。</p>
+            </div>
+
+            <p><b>message</b>の小要素として、次のようなものがあります。それぞれ省略可能です。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">要素名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>body</td><td>本文です。特に説明はいらないでしょう。たいていのメッセージには本文がつきますが例外もあります。<a href="xep.html">拡張ガイド</a>のチャットステートの章で説明します。</td></tr>
+                <tr><td>subject</td><td>サブジェクト。e-mailでおなじみですね。</td></tr>
+                <tr><td>thread</td><td>チャットの履歴などをトラッキングできるようにする目的で、クライアントが任意の値を生成します。</td></tr>
+              </tbody>
+            </table>
+
+            <p>メッセージのやり取りの例を挙げてみましょう。</p>
+
+            <p>まず、太郎さんは次郎さんと話したいと思い、次郎さん宛にメッセージを送信します。</p>
+
+            <span class="label label-info">taro to server</span>
+            <pre>&lt;message type='normal' to='jiro@xmpp.example.org'&gt;
+  &lt;subject&gt;こんにちは&lt;/subject&gt;
+  &lt;body&gt;チャットしましょう&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <p>サーバーは、それを受け取ると、次郎さんの全てのコネクションに対して、メッセージを配送します。このとき、自動的に太郎さんのJIDを<b>from</b>属性に補填しておきます。この例では、次郎さんは<b>home</b>と<b>work</b>の二つのリソースで接続していることにしますので、二つのコネクションにメッセージが配送されます。</p>
+
+            <span class="label label-success">server to jiro1</span>
+            <pre>&lt;message type='normal' from='taro@xmpp.example.org/home' to='jiro@xmpp.example.org/home'&gt;
+  &lt;subject&gt;こんにちは&lt;/subject&gt;
+  &lt;body&gt;チャットしましょう&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <span class="label label-success">server to jiro2</span>
+            <pre>&lt;message type='normal' from='taro@xmpp.example.org/home' to='jiro@xmpp.example.org/work'&gt;
+  &lt;subject&gt;こんにちは&lt;/subject&gt;
+  &lt;body&gt;チャットしましょう&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <p>次郎さんは、リソースが<b>home</b>になっているほうの接続で、チャットを開始するために返信します。この時<b>type</b>属性を<b>chat</b>にし、チャットの履歴をトラッキングできるように、クライアントアプリケーションが任意の<b>thread</b>値を加えます。</p>
+
+            <span class="label label-info">jiro1 to server</span>
+            <pre>&lt;message type='chat' to='taro@xmpp.example.org/home'&gt;
+  &lt;thread&gt;12345&lt;/thread&gt;
+  &lt;body&gt;おっけー&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <p>サーバーは太郎さんにメッセージを配送します。</p>
+
+            <span class="label label-success">server to taro</span>
+            <pre>&lt;message type='chat' from='jiro@xmpp.example.org/home' to='taro@xmpp.example.org/home'&gt;
+  &lt;thread&gt;12345&lt;/thread&gt;
+  &lt;body&gt;おっけー&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <p>太郎さんは、同じ<b>thread</b>値を使って次郎さんとのチャットを開始します。</p>
+
+            <span class="label label-info">taro to server</span>
+            <pre>&lt;message type='chat' to='jiro@xmpp.example.org/home'&gt;
+  &lt;thread&gt;12345&lt;/thread&gt;
+  &lt;body&gt;やっほー&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <div class="alert alert-block">
+              <p>上で挙げた例は、あくまで一例にしか過ぎず、どの<b>type</b>属性をどう扱うか、<b>body</b>以外のエレメントをどう扱うかは、結局のところ、クライアントアプリケーションの仕様次第です。サーバーはクライアントからクライアントへの配送を中継してあげるだけに過ぎません。XMPPのスペック上ではアバウトな分類があるだけで、厳格な細かいルールはありません。</p>
+            </div>
           </div>
         </div>
 
         <div class="row-fluid">
           <div class="span12">
             <h2 id="presence">presenceスタンザ</h2>
+            <p><b>presence</b>スタンザには大きくわけて二種類の仕事があります。
+            一つは、今までのプレゼンスの説明であった通りの、<b>プレゼンス変更情報のブロードキャスト</b>です。
+            もう一つは、<b>サブスクリプションの制御</b>になります。前章で説明したように、Twitterでいうところの、いわゆる「フォロー」「アンフォロー」などがこれにあたり、XMPPでは、これらの処理も<b>presence</b>スタンザで行います。
+            つまり、<b>presence</b>スタンザというのは、プレゼンス情報の<b>publish/subscribe</b>を行うスタンザです。</p>
+
+            <p>他のスタンザと同じく、いくつかの<b>type</b>属性の種類がありますが、上記のように、二種類の仕事がありますので、二つに分けて分類してから説明していきます。</p>
+
+            <h3 id="presencechange">プレゼンス情報変更に使われる種別</h3>
+            <ul>
+              <li><b>available</b></li> 
+              <li><b>unavailable</b></li> 
+            </ul>
+
+            <p><b>presence</b>スタンザは次のような子要素を持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">要素名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>show</td><td>状態の種別。<b>chat(チャット可能)</b>, <b>away(ちょっと離席中)</b>、<b>xa(Extended Awayの略、長時間離席中)</b>、<b>dnd(Do not Disturbの略、邪魔しないで)</b>の四つがある。</td></tr>
+                <tr><td>status</td><td>ユーザーが編集可能な状態を表すテキストメッセージ。Skypeなどでムードメッセージと呼ばれるもの。</td></tr>
+                <tr><td>priority</td><td>優先値を表す数値。-127から128までの範囲。</td></tr>
+              </tbody>
+            </table>
+
+            <div class="alert alert-block">
+              <p>上であげたような子要素の全てが有効に利用されているかというとそうではありません。<br/>
+              例えば<b>show</b>要素の値にしても本当に4種類も必要なのでしょうか。オフライン、オンライン(チャット可能)、オンライン(離席中)の三つだけで十分だという意見もありますし、場合によっては、オフラインかオンラインかわかれば十分だという意見もあります。</p>
+              <p><b>priority</b>の値に関しても同様に、大多数のエンドユーザーがこの値を有効に利用できるかどうかは疑問が残ります。多くのユーザーは、「自分が複数のコネクションをつないでいて、こっちのコネクションの優先値を10にして、あっちのコネクションの優先値を1にして」などと意識することはほぼ無いと言えるでしょう。</p>
+              <p><b>message</b>スタンザの時の話と同様に、このあたりの仕様もクライアントアプリケーション次第です。仕様がエンドユーザーにとって複雑すぎると判断したら、UI側でアレンジしてしまいましょう。サーバー側はパッシングするだけです。</p>
+            </div>
+
+            <h3 id="subscription">サブスクリプション制御に使われる種別</h3>
+            <p>上で説明した通り、サブスクリプションの制御にも<b>presence</b>スタンザが使われます。この場合は<b>type</b>属性として、次のような値が使われます。</p>
+            <ul>
+              <li><b>subscribe</b></li> 
+              <li><b>subscribed</b></li> 
+              <li><b>unsubscribe</b></li> 
+              <li><b>unsubscribed</b></li> 
+            </ul>
+
+            <p>サブスクリプション制御は、<b>メッセージの送信</b>や、<b>プレゼンス情報変更のブロードキャスト</b>に比べると、かなり複雑な処理になります。なぜなら、リクエストやレスポンスの配送だけでなく、サーバー、クライアントでそれぞれロスターの適切な編集や同期も必要になるからです。</p>
+
+            <div class="alert alert-block">
+              <p>Webサービスと連動する場合、「フォローをはじめとする友人リストの管理のような作業は、Webサービス上でやってもらうことを推奨し、XMPP上ではサブスクリプション機能はサポートしない」と割り切ってしまってもいいでしょう。最近のソーシャルネットワーク系のWebサービスの場合は、そういった機能を既に持っていることがほとんどです。</p>
+            </div>
+
           </div>
         </div>
 

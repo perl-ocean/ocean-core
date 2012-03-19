@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li class="active">
+              <a href="#">Protocol</a>
+            </li>
+            <li>
+              <a href="integration.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="protocol.html">概要</a></li>
+        <li><a href="protocoldatamodel.html">サービス</a></li>
+        <li><a href="protocolbackground.html">バックグラウンド</a></li>
+        <li><a href="protocolscenario.html">ケーススタディ</a></li>
+        <li class="active"><a href="#">拡張</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="#">vcard-temp</a></li>
+            <li><a href="#">チャットステート</a></li>
+            <li><a href="#">XHTML</a></li>
+            <li><a href="#">MUC</a></li>
+            <li><a href="#">Jingle</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="xeps">拡張について</h2>
+            <p>XMPPには様々な拡張仕様が存在します。</p>
+            <p>それらのうち、よく利用されているものを紹介していきます。</p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="vcard">vCard</h2>
+            <p><a href="http://xmpp.org/extensions/xep-0054.html">XEP-0054 vcard-temp</a></p>
+            <p><a href="http://xmpp.org/extensions/xep-0153.html">XEP-0153 vCard Based Avatar</a></p>
+            <p>vCardフォーマットを利用し、指定されたユーザーのプロフィール情報を返す仕様です。</p>
+            <div class="alert alert-block">
+              <p>ほとんどの場合、<b>ニックネーム</b>と<b>プロフィール画像</b>の二つのデータだけが目的で利用されます。</p>
+            </div>
+
+            <p>次のように、クライアントはIQスタンザを送信します。</p>
+            <span class="label label-info">client to server</span>
+            <pre>&lt;iq to='jiro@xmpp.example.org' type='get' id='vc2'&gt;
+  &lt;vCard xmlns='vcard-temp'/&gt;
+&lt;/iq&gt;</pre>
+
+            <p>サーバーはそのユーザーのプロフィールデータを次のように返します。</p>
+            
+            <span class="label label-success">server to client</span>
+            <pre>&lt;iq from='jiro@xmpp.example.org' type='result' id='vc2'&gt;
+  &lt;vCard xmlns='vcard-temp'&gt;
+    &lt;NICKNAME&gt;じろう&lt;/NICKNAME&gt;
+    &lt;N&gt;&lt;GIVEN&gt;次郎&lt;/GIVEN&gt;&lt;FAMILY&gt;山田&lt;/FAMILY&gt;&lt;/N&gt;
+    &lt;PHOTO&gt;
+      &lt;TYPE&gt;image/jpeg&lt;/TYPE&gt;
+      &lt;BINVAL&gt;
+      Base64-encoded-avatar-file-here!
+      &lt;/BINVAL&gt;
+    &lt;/PHOTO&gt;
+  &lt;/vCard&gt;
+&lt;/iq&gt;</pre>
+
+            <div class="alert alert-block">
+              <p>こんなバイナリデータのBase64ではなく、画像データのURLを返せばいいのに、と思ってしまいますが、そうするとWebサービスとの連動が前提になってしまい、XMPPサービス単独ではサービス提供できなくなってしまいます。とはいえ、最近ではWebサービスと連動させたいケースも多いでしょう。実際Facebookでは次のような拡張仕様を提供し、プロフィール画像データのURLを返せるようにしています。<a href="https://github.com/facebook/xmpp-release-notes#id16">facebook xmpp-release-notes</a></p>
+            </div>
+
+            <p>一般的に、ログイン処理でロスターの取得を行った直後に、ロスター内の各ユーザーの詳細情報(というよりプロフィール画像)を取得するために、vCardリクエストを発信します。<a href="protocolscenario.html#roster">ログインからログアウトまでのケーススタディ</a>を参照してください。</p>
+
+            <p>クライアントはこの画像データを取得すると、SHA1でバイナリのハッシュ値を取得しておき、そのハッシュ値とひもづけた上で、ファイルシステムなどのローカルデータベースに保存しておきます。</p>
+
+            <p>この拡張をサポートしているサーバーでは、次のように子要素を追加してプレゼンスを配信します。</p>
+            <span class="label label-success">server to client</span>
+            <pre>&lt;presence from='jiro@xmpp.example.org/foo'&gt;
+  &lt;x xmlns='vcard-temp:x:update'&gt;
+    &lt;photo&gt;sha1-hash-of-image&lt;/photo&gt;
+  &lt;/x&gt;
+&lt;/presence&gt;</pre>
+
+            <p>クライアントは、このようなプレゼンスを受け取ると、「ローカルに保存してあるjiroのプロフィール画像のハッシュ値が、今送られてきたプレゼンス内に含まれているハッシュ値と同じものかどうか」を検証します。これが同じものでなかった場合、jiroのプロフィール画像は変更されたとみなして、新たにvCardリクエストのIQスタンザを送信し、最新の画像を取得するとよいでしょう。</p>
+
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="chatstate">Chat State Notification</h2>
+            <p><a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085 Chat State Notification</a></p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="xhtml">XHTML-IM</h2>
+            <p><a href="http://xmpp.org/extensions/xep-0071.html">XEP-0071 XHTML-IM</a></p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="muc">Multi-User Chat</h2>
+            <p><a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045 Multi-User Chat</a></p>
+          </div>
+        </div>
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>
