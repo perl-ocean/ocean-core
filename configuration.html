@@ -60,7 +60,12 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="#"></a></li>
+            <li><a href="#core">サーバーセクション</a></li>
+            <li><a href="#log">ログセクション</a></li>
+            <li><a href="#tls">TLSセクション</a></li>
+            <li><a href="#sasl">SASL認証セクション</a></li>
+            <li><a href="#eventhandler">イベントハンドラセクション</a></li>
+            <li><a href="#custom">カスタムセクション</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -77,31 +82,307 @@
 
             <p>サーバーの挙動をコントロールするために、このファイルを編集していくことになります。</p>
             <p>ファイルはYAMLで書かれており、複数のセクションにわかれています。</p>
+            <p>プロジェクトテンプレート生成時にでフォルト値である程度項目を埋められていますので、基本的には、一からコンフィグを生成することなく、値の編集や自分に必要な項目の追加削除を行っていくことになります。</p>
 
           </div>
         </div>
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="core">コア設定</h2>
+            <h2 id="core">サーバーセクション</h2>
+            <p>サーバーセクションの設定例です。プロジェクトテンプレート生成時のものです。</p>
+            <pre>server:
+  type: xmpp
+  domain: xmpp.example.org
+  host: 127.0.0.1
+  port: 5222
+  backlog: 1024
+  max_connection: 100000
+  timeout: 300 
+  max_read_buffer: 10000
+  report_interval: 60
+  pid_file: __path_to(var/run/ocean.pid)__
+  context_class: Hoge::Context
+</pre>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>type</td><td>基本的には<b>xmpp</b>にしておきます。</td></tr>
+                <tr><td>domain</td><td>サービスのドメインです。</td></tr>
+                <tr><td>host</td><td>サーバーのlistenポートに使われるIPアドレスです。</td></tr>
+                <tr><td>port</td><td>サーバーのlistenポートに使われるポートナンバーです。XMPPのC2Sには5222を利用することが推奨されています。</td></tr>
+                <tr><td>backlog</td><td>サーバーで接続要求を保持するlistenキューの長さです。</td></tr>
+                <tr><td>max_connection</td><td>サーバーで許容する同時接続数の最大値です。<a href="runserver.html#kernel">サービスの開始 [ カーネルチューニング - ソケット数のリミット ]</a>も参照するとよいでしょう。</td></tr>
+                <tr><td>timeout</td><td>ここで指定した秒数分、クライアントから何の反応も無い場合、その接続を切断します。</td></tr>
+                <tr><td>max_read_buffer</td><td></td></tr>
+                <tr><td>report_interval</td><td></td></tr>
+                <tr><td>pid_file</td><td></td></tr>
+                <tr><td>context_class</td><td></td></tr>
+              </tbody>
+            </table>
+
           </div>
         </div>
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="log">ログ設定</h2>
+            <h2 id="log">ログセクション</h2>
+            <p>ログセクションの設定例です。</p>
+            <pre>log:
+  type: print
+  formatter: color
+  level:  info
+  filepath: __path_to(var/log/ocean.log)__</pre>
+            <p>ログセクションでは、<b>type</b>の値次第で、他に要求される設定項目が変わります。例えば、<b>type</b>を<b>file</b>にした場合は、ログをファイルに保存するモードになり、保存先を指定する<b>filepath</b>項目の記述が必要になります。</p>
+
+            <p>まずは、どの<b>type</b>でも共通して必要になる、基本的な項目の説明をします。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>type</td><td><b>print</b>、<b>warn</b>、<b>file</b>、<b>syslog</b>の四つから選択します。</td></tr>
+                <tr><td>formatter</td><td><b>default</b>、<b>color</b>、<b>simple</b>の三つから選択します。</td></tr>
+                <tr><td>level</td><td><b>crit</b>、<b>warn</b>、<b>info</b>、<b>debug</b>の四つから選択します。</td></tr>
+              </tbody>
+            </table>
+
+            <h3>ログレベル</h3>
+
+            <p>次の四つのログレベルが存在します。</p>
+
+            <ul>
+              <li>crit</li> 
+              <li>warn</li> 
+              <li>info</li> 
+              <li>debug</li> 
+            </ul>
+
+            <p>指定されたレベルに従い、どのレベルまでのログを出力するかを決定します。</p>
+            <p>例えば<b>info</b>を指定した場合、<b>info</b>を含み、それよりレベルが高いログ、つまり<b>info</b>、<b>warn</b>、<b>crit</b>の三つのレベルのログを出力します。<b>debug</b>を指定した場合、全てのログを出力します。</p>
+
+            <h3>ログフォーマット</h3>
+
+            <p>次の三つのフォーマットから選択します。</p>
+
+            <ul>
+              <li>simple</li> 
+              <li>default</li> 
+              <li>color</li> 
+            </ul>
+
+            <p><b>simple</b>は、単純にメッセージを吐き出すだけです。</p>
+
+            <p><b>default</b>は、次のように "日付 [ログレベル] メッセージ"という整形がなされます。</p>
+            <pre>2012-03-21T15:23:17 [DEBUG] <Stream> <Decoder> @send_iq_toward_user</pre>
+
+            <p><b>color</b>の場合は、<b>default</b>と同じように整形されますが、ログレベルによって色が異なり、クリティカルや警告のログを発見しやすくなります。</p>
+
+            <div class="alert alert-block">
+              <p>ログタイプが<b>file</b>などの場合は、カラーモードには何の意味もありません。カラーコードがノイズになるだけなので気をつけましょう。</p>
+            </div>
+
+
+            <h3>ログタイプ</h3>
+
+            <p><b>type</b>の値によってログの動作が変わります。各種ログタイプについて解説します。</p>
+
+            <div class="alert alert-block">
+              <p>開発時は<b>print</b>で標準出力に流し、サービス運用時には<b>file</b>などにしておくのが一般的です。サーバーをデーモン化する場合は、標準出力にログを流しても仕方ないので<b>file</b>にしますが、<b>daemontools</b>などを利用する場合は、標準出力にしておく必要があるので<b>print</b>にします。</p>
+              <p>詳しくは<a href="runserver.html#daemon">サービスの開始 [ デーモン ]</a>を参照して下さい。</p>
+            </div>
+
+            <h4><b>print</b>タイプ</h4>
+            <p>ログは標準出力に流れます。</p>
+
+            <h4><b>warn</b>タイプ</h4>
+            <p>ログはエラー出力に流れます。</p>
+
+            <h4><b>file</b>タイプ</h4>
+            <p>ログはファイルに出力されます。このタイプを選んだ場合は次のような項目を設定します。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>filepath</td><td>ログファイルのパスを指定します。</td></tr>
+                <tr><td>size</td><td>サイズベースでローテーションを行う場合は、ここでログファイルのバイトサイズを指定します。</td></tr>
+                <tr><td>date_pattern</td><td>日付でローテーションを行う場合は、ここで日付のフォーマットを指定します。<b>yyyy-MM-dd</b>がデフォルト値になります。</td></tr>
+                <tr><td>tz</td><td>タイムゾーンを指定できます。</td></tr>
+              </tbody>
+            </table>
+
+            <p><b>size</b>パラメータが設定されていればサイズベースのローテーションになります。<b>size</b>パラメータが設定されていなければ日付ベースのローテーションになります。
+            日付ベースのローテーションの場合は、<b>date_pattern</b>で指定されたフォーマットのファイル名を利用します。<b>date_pattern</b>が指定されていなかった場合は<b>yyyy-MM-dd</b>をデフォルトフォーマットとして利用します。<b>tz</b>が指定されていた場合はその値をタイムゾーンとして利用します。</p>
+
+
+            <h4><b>syslog</b>タイプ</h4>
+            <p>ログはsyslogdに出力されます。このタイプを選んだ場合は次のような項目を設定します。</p>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>unixdomain</td><td>UNIXドメインソケットを通じて出力する場合は1にします。</td></tr>
+                <tr><td>tag</td><td>タグです。省略された場合、デフォルトとして<b>ocean</b>が使われます。</td></tr>
+                <tr><td>facility</td><td>ファシリティ値です。省略された場合、<b>local0</b>が使われます。</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="tls">TLS設定</h2>
+            <h2 id="tls">TLSセクション</h2>
+            <p>TLSの設定項目です。デフォルトでは、次のように設定されたものが、コメントアウトされた状態になっています。</p>
+            <pre>tls:
+  cert_file: __path_to(certs/cert.pem)__
+  key_file: __path_to(certs/server.nopass.key)__
+  cipher_list: ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:-LOW:-SSLv2:-EXP:+eNULL</pre>
+
+            <div class="alert alert-block">
+              <p>プロジェクトテンプレート生成時に利用されている<b>cert.pm</b>, <b>server.nopass.key</b>は、あくまでデモやテストのために同梱してある自己署名の証明書ですので、TLSをサポートした正式なサービスを提供する場合は、必ず自分で証明書を準備して下さい。</p>
+            </div>
+
+            <p>このセクションが存在するかどうか自体がTLSをサポートするかどうかのスイッチとなっています。このセクションがコメントアウトされている状態ではTLSはサポートされません。TLSをサポートするためには、このセクションがコメントアウトされていないことを確認し、証明書を準備し、適切にこのセクションを設定して下さい。</p>
+
+            <p>証明書の準備に関しては、<a href="runserver.html#cert">サービスの開始 [ TLS証明書の準備 ]</a>を参照して下さい。</p>
+
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>verify</td><td>-</td></tr>
+                <tr><td>ca_file</td><td>-</td></tr>
+                <tr><td>ca_path</td><td>-</td></tr>
+                <tr><td>cert_file</td><td>-</td></tr>
+                <tr><td>key_file</td><td>-</td></tr>
+                <tr><td>cert</td><td>-</td></tr>
+                <tr><td>cert_password</td><td>-</td></tr>
+                <tr><td>dh_file</td><td>-</td></tr>
+                <tr><td>dh_single_use</td><td>-</td></tr>
+                <tr><td>cipher_list</td><td>-</td></tr>
+              </tbody>
+            </table>
+
+            <p><b>cipher_list</b>による強度は次のように、<b>openssl</b>コマンドで確認できます。</p>
+
+            <pre>openssl ciphers -v 'ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:-LOW:-SSLv2:-EXP:+eNULL' | sort</pre>
+
+            <p>次のようにアルゴリズムがリストアップされます。</p>
+
+            <pre>AES128-SHA              SSLv3 Kx=RSA      Au=RSA  Enc=AES(128)  Mac=SHA1
+AES256-SHA              SSLv3 Kx=RSA      Au=RSA  Enc=AES(256)  Mac=SHA1
+DES-CBC3-SHA            SSLv3 Kx=RSA      Au=RSA  Enc=3DES(168) Mac=SHA1
+DHE-DSS-AES128-SHA      SSLv3 Kx=DH       Au=DSS  Enc=AES(128)  Mac=SHA1
+DHE-DSS-AES256-SHA      SSLv3 Kx=DH       Au=DSS  Enc=AES(256)  Mac=SHA1
+DHE-DSS-SEED-SHA        SSLv3 Kx=DH       Au=DSS  Enc=SEED(128) Mac=SHA1
+DHE-RSA-AES128-SHA      SSLv3 Kx=DH       Au=RSA  Enc=AES(128)  Mac=SHA1
+DHE-RSA-AES256-SHA      SSLv3 Kx=DH       Au=RSA  Enc=AES(256)  Mac=SHA1
+DHE-RSA-SEED-SHA        SSLv3 Kx=DH       Au=RSA  Enc=SEED(128) Mac=SHA1
+EDH-DSS-DES-CBC3-SHA    SSLv3 Kx=DH       Au=DSS  Enc=3DES(168) Mac=SHA1
+EDH-RSA-DES-CBC3-SHA    SSLv3 Kx=DH       Au=RSA  Enc=3DES(168) Mac=SHA1
+RC4-MD5                 SSLv3 Kx=RSA      Au=RSA  Enc=RC4(128)  Mac=MD5 
+RC4-SHA                 SSLv3 Kx=RSA      Au=RSA  Enc=RC4(128)  Mac=SHA1
+SEED-SHA                SSLv3 Kx=RSA      Au=RSA  Enc=SEED(128) Mac=SHA1</pre>
+          </div>
+
+          <p>サポートしたいクライアントのカバレッジやセキュリティ強度などのバランスを取りながら、適切なcipher_listを設定するようにしましょう。</p>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="sasl">SASL認証セクション</h2>
+            <p>SASL認証セクションの設定例です。SASL認証について詳しくは<a href="protocolscenario.html#sasl">ログインからログアウトまでのケーススタディ [ SASL認証 ]</a>を参照するとよいでしょう。</p>
+            <pre>sasl:
+  max_attempt: 10
+  mechanisms:
+    - PLAIN
+    - CRAM-MD5
+    - DIGEST-MD5
+    - X-OAUTH2</pre>
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>max_attempt</td><td>一つの接続からの認証試行回数の最大値です。この数をオーバーして認証失敗すると、サーバーは接続を切断し、<b>Authen</b>カテゴリの <b>on_too_many_auth_attempt</b> イベントを呼びます。</td></tr>
+                <tr><td>mechanisms</td><td>サーバーが許可するSASL認証のメカニズムのリストです。<b>PLAIN</b>、<b>CRAM-MD5</b>、<b>DIGEST-MD5</b>、<b>X-OAUTH2</b>の四つから複数選択できます。</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="sasl">認証設定</h2>
+            <h2 id="eventhandler">イベントハンドラセクション</h2>
+
+            <p>イベントハンドラセクションの設定例です。プロジェクトテンプレートジェネレータの応答に従い、回答した名前空間をベースにして自動生成されています。この設定項目は基本的には自分で編集する必要はありません。</p>
+
+            <p>イベントカテゴリやハンドラクラスについて詳しくは前章の<a href="integration.html">イベント</a>を参照してください。</p>
+
+            <pre>event_handler:
+  node:       Hoge::Handler::Node
+  authen:     Hoge::Handler::Authen
+  connection: Hoge::Handler::Connection
+  message:    Hoge::Handler::Message
+  people:     Hoge::Handler::People
+  room:       Hoge::Handler::Room
+  p2p:        Hoge::Handler::P2P</pre>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th class="blue header">設定項目</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>node</td><td>Nodeイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+                <tr><td>authen</td><td>Authenイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+                <tr><td>connection</td><td>Connectionイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+                <tr><td>people</td><td>Peopleイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+                <tr><td>message</td><td>Messageイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+                <tr><td>room</td><td>Roomイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+                <tr><td>p2p</td><td>P2Pイベントカテゴリ用ハンドラクラスを指定します。</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="custom">カスタムセクション</h2>
+
+            <p>ハンドラ内から利用したい項目をここで独自に定義しておくとよいでしょう。</p>
+
+            <pre>handler:
+</pre>
+
           </div>
         </div>
 

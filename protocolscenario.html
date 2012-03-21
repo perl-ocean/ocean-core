@@ -278,6 +278,11 @@
 
             </div>
 
+            <div class="alert alert-block">
+              <p>新しいRFCである<a href="http://xmpp.org/rfcs/rfc6120.html">RFC6120</a>では、DIGEST系の認証の代わりに<b>SCRAM</b>という仕組みが推奨されるようになりました。<b>SCRAM-SHA-1</b>や<b>SCRAM-SHA-1-PLUS</b>というのがそのためのSASLメカニズムになります。くわしくは<a href="http://tools.ietf.org/html/rfc5802">RFC5802 Salted Challenge Response Authentication Mechanism ( SCRAM ) SASL and GSS-API Mechanisms</a>を参照するとよいでしょう。</p>
+              <p>ただし、ほとんどのXMPPサーバー、クライアントでは対応がまだ進んでいない状況です。</p>
+            </div>
+
           </div><!--/span-->
         </div><!--/row-->
 
@@ -285,7 +290,7 @@
           <div class="span12">
             <h2 id="resource">リソースのバインディング</h2>
             <p>認証までが完了すると、ストリームは次に、リソースと紐付けられなくてはなりません。</p>
-            <p>前章でのJIDの話を覚えているでしょうか？e-mailアドレスのようなフォーマットに加え、ユーザーだけでなく、ストリームまでを特定するために、リソースというものを使うのでした。</p>
+            <p>この段階でリソースを発行し、コネクションとJIDを紐づけることになります。JIDやリソースについては前章での解説を参照して下さい。<a href="protocolbackground.html#jid">クライアント/サーバー間のやりとり[ JID - 宛先の特定 ]</a></p>
             <p>基本的には次のような手順になります。</p>
             <ol>
               <li>クライアントがサーバーにリソースの紐付けを要求</li> 

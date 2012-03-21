@@ -64,6 +64,7 @@
             <li><a href="#daemon">デーモン</a></li>
             <li><a href="#dns">DNSの設定</a></li>
             <li><a href="#kernel">カーネルチューニング</a></li>
+            <li><a href="#cert">TLS証明書の準備</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -182,6 +183,113 @@ eval exec "S4"</pre>
               <li>net.ipv4.tcp_tw_recycle</li> 
               <li>net.ipv4.tcp_fin_timeout</li> 
             </ul>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="cert">TLS証明書の準備</h2>
+
+            <p>TLSをサポートしてサービスを公開するためには、証明書を準備しなくてはなりません。</p>
+
+            <p>ここでは<b>openssl</b>コマンドを利用して必要な書類を揃える例を挙げておきます。</p>
+
+            <div class="alert alert-block">
+              <p>あくまで一例なので細かいパラメータの解説はしません。詳しくは<b>openssl</b>などのドキュメントをあたるとよいでしょう。</p>
+            </div>
+
+            <h3>秘密鍵の作成</h3>
+
+            <p>次のように、まずは秘密鍵を作成します。パスフレーズが要求されるので適切なパスワードを入力します。このフレーズは忘れないように覚えておきましょう。</p>
+            <pre>openssl genrsa -des3 -out server.key 2048</pre>
+
+            <p>秘密鍵である<b>server.key</b>ファイルが作成されました。</p>
+
+            <p>パスフレーズ無しのものを作成したい場合は、今作成したばかりの<b>server.key</b>を指定して、次のようにコマンドを実行します。</p>
+            <pre>openssl rsa -n server.key -out server.nopass.key</pre>
+
+            <p>パスフレーズなしの秘密鍵である<b>server.nopass.key</b>ファイルが作成されました。</p>
+
+            <h3>署名要求書の作成</h3>
+
+            <p>上で作った秘密鍵である<b>server.key</b>を元にして、<b>署名要求書</b>を作成します。</p>
+
+            <pre>openssl req -new -days 365 -key server.key -out csr.pem</pre>
+
+            <p>いくつかの項目について入力を求められるので適切に回答して下さい。</p>
+            <p>これで、<b>署名要求書</b>である<b>csr.pem</b>ファイルが作成されました。</p>
+
+            <h3>署名</h3>
+
+            <p>上で作った署名要求書である<b>csr.pem</b>を認証局運営事業者に送って、署名済みの証明書を作成してもらいます。</p>
+            <p>認証局運営事業者に作成してもらった証明書を適切に配置して、コンフィグファイルの設定を行うとよいでしょう。詳しくは<a href="configuration.html#tls">コンフィギュレーションガイド [ TLSセクション] </a>を参照して下さい。</p>
+
+            <p>これで準備は完了ですが、ここではテストのために、認証局を自分で作成して、自己署名を行う方法も解説しておきます。</p>
+            
+            <div class="alert alert-block">
+              <p>自己署名の証明書はプロジェクトテンプレートとして生成されるので、本来であれば一から作成する必要はないですが、自分で作ってみたい場合のみ、以降の解説を参照するとよいでしょう。</p>
+
+            </div>
+
+            <p>まず自分でCA (認証局) を用意しなければなりません。</p>
+            <p>CA作成のための設定ファイルテンプレートや、シェルスクリプトは、たいていの環境で準備されています。</p>
+
+            <p>まず自分の環境から、設定ファイルのテンプレートを探してきます。</p>
+
+            <ul>
+              <li><b>Cent</b>: /etc/pki/openssl.cnf</li> 
+              <li><b>Debian</b>: /usr/lib/ssl/openssl.cnf</li>
+            </ul>
+
+            <p>これを任意の場所にコピーして、中身を編集します。各種ディレクトリパスや暗号強度などを適切に編集して下さい。</p>
+
+            <p>編集された設定ファイルが利用されるように、環境変数を設定しておくとよいでしょう。</p>
+            <pre>export OPENSSL_CONF=/path/to/testCA/conf/openssl.cnf</pre>
+
+            <p>次にCA作成スクリプトを探してきます。</p>
+
+            <ul>
+              <li><b>Cent</b>: /etc/pki/tls/misc/CA</li> 
+              <li><b>Debian</b>: /usr/lib/ssl/misc/CA.sh</li>
+            </ul>
+
+            <p>これを任意の場所にコピーしてきて次のような箇所を編集しておきます。</p>
+
+            <pre>SSLEAY_CONFIG="-config /path/to/testCA/conf/openssl.cnf"
+CATOP=/home/foobar/testCA
+CAKEY=cakey.pem
+CAREQ=careq.pem
+CACERT=cacert.pem</pre>
+
+            <p>編集が完了したら、このスクリプトを実行しましょう。</p>
+
+            <pre>./CA -newca</pre>
+
+            <p>このコマンドの結果、次のファイルが生成されます。</p>
+
+            <ul>
+              <li>cacert.pem</li> 
+              <li>private/cakey.pem</li>
+            </ul>
+
+            <p>これでCAの準備が出来ました。</p>
+            <p>署名要求書である<b>csr.pem</b>から、証明書を生成するには次のようにします。</p>
+
+
+            <pre>openssl ca -config /path/to/testCA/conf/openssl.cnf -in path/to/csr.pem -out path/to/cert.pem</pre>
+
+            <p>これで証明書である<b>cert.pem</b>が生成されました。この証明書を適切に設置して、コンフィグファイルの設定を行うとよいでしょう。</p>
+
+            <h3>Diffie-Hellman鍵交換</h3>
+
+            <p>Diffie-Hellmanで鍵交換する場合には次のようにパラメータを生成します。</p>
+
+            <p>512bit版</p>
+            <pre>openssl dhparam -check -text -5 512 -out dh512.pem</pre>
+
+            <p>1024bit版</p>
+            <pre>openssl dhparam -check -text -5 1024 -out dh1024.pem</pre>
+            
           </div>
         </div>
 
