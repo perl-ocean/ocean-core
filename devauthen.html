@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li class="active">
+              <a href="#">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="#">概要</a></li>
+        <li><a href="integration.html">イベント</a></li>
+        <li class="active dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="devnode.html">Node</a></li> 
+            <li class="active"><a href="#">Authen</a></li> 
+            <li><a href="devconnection.html">Connection</a></li> 
+            <li><a href="devpeople.html">People</a></li> 
+            <li><a href="devmessage.html">Message</a></li> 
+            <li><a href="devroom.html">Room</a></li> 
+            <li><a href="devp2p.html">P2P</a></li> 
+          </ul>
+        </li>
+        <li><a href="configuration.html">コンフィギュレーション</a></li>
+        <li><a href="runserver.html">サービスの開始</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="#on_too_many_auth_attempt">on_too_many_auth_attempt</a></li>
+            <li><a href="#on_http_auth_request">on_http_auth_request</a></li>
+            <li><a href="#on_sasl_auth_request">on_sasl_password_request</a></li>
+            <li><a href="#on_sasl_password_request">on_sasl_password_request</a></li>
+            <li><a href="#on_sasl_success_notification">on_sasl_success_notification</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="development">Authenイベントハンドラ</h2>
+
+            <p>認証に関するイベントは<b>Authen</b>イベントカテゴリとなり、Authenイベントハンドラで実装します。</p>
+
+            <p>プロトコルガイドの<a href="protocolscenario.html#sasl">ログインからログアウトまでのケーススタディ [ SASL認証 ] </a> を参照するとよいでしょう。</p>
+
+            <p>このイベントハンドラで実装されるのは認証に関するものだけですが、さらにその中でも大きく分類することができ、三種類のハンドラがあります。</p>
+
+            <ul>
+              <li>SASL認証用</li> 
+              <li>HTTP認証用</li> 
+              <li>不正利用対策</li> 
+            </ul>
+
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_too_many_auth_attempt">on_too_many_auth_attempt</h3>
+            <p></p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_http_auth_request">on_http_auth_request</h3>
+
+            <p>このイベントは<b>HTTP Binding</b>時のみ呼ばれます。サーバーの起動タイプを<b>xmpp</b>にしている場合は呼ばれることはありませんので、その場合は実装する必要はありません。</p>
+
+            <p><a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a> の<b>type</b>設定項目を参照するとよいでしょう。</p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_sasl_auth_request">on_sasl_auth_request</h3>
+            <p>このイベントはSASL認証時に呼ばれます。</p>
+            <p>ただし、一回のリクエストで解決するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>PLAIN</b>、<b>X-OAUTH2</b>です。</p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_sasl_password_request">on_sasl_password_request</h3>
+            <p>このイベントはSASL認証時に呼ばれます。</p>
+            <p>ただし、ダイジェスト認証を利用するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>CRAM-MD5</b>、<b>DIGEST-MD5</b>です。</p>
+            <p>一度で認証が完了する、上記の<a href="#on_sasl_auth_request">on_sasl_auth_request</a>とは違い、ダイジェスト認証では、二度のイベントハンドラの呼び出しが発生します。まずはこの<b>on_sasl_password_request</b>が呼ばれるので、該当するパスワードを渡します。その結果認証が成功した場合のみ、次に説明する<a href="#on_sasl_success_notification">on_sasl_success_notification</a>が呼び出されます。</p>
+
+            <div class="alert alert-block">
+              <p><a href="protocolscenario.html#sasl">ログインからログアウトまでのケーススタディ[ SASL認証 ]</a>で説明した通り、生パスワードの保存が必要になるので、正式なサービスを運用する場合、ダイジェスト認証のメカニズムの採用は推奨しません。</p>
+            </div>
+
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_sasl_success_notification">on_sasl_success_notification</h3>
+            <p>このイベントはSASL認証時に呼ばれます。</p>
+            <p>ただし、ダイジェスト認証を利用するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>CRAM-MD5</b>、<b>DIGEST-MD5</b>です。</p>
+            <p>上記の<a href="#on_sasl_password_request">on_sasl_password_request</a>が呼ばれた後、そこから取得したパスワードを利用してリクエストの検証がうまくいった場合、このイベントハンドラが呼び出されます。</p>
+
+          </div>
+        </div>
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>

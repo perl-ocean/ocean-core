@@ -47,7 +47,19 @@
       <ul class="nav nav-tabs">
         <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
-        <li><a href="#">ハンドラドキュメント</a></li>
+
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="devnode.html">Node</a></li> 
+            <li><a href="devauthen.html">Authen</a></li> 
+            <li><a href="devconnection.html">Connection</a></li> 
+            <li><a href="devpeople.html">People</a></li> 
+            <li><a href="devmessage.html">Message</a></li> 
+            <li><a href="devroom.html">Room</a></li> 
+            <li><a href="devp2p.html">P2P</a></li> 
+          </ul>
+        </li>
         <li><a href="configuration.html">コンフィギュレーション</a></li>
         <li class="active"><a href="#">サービスの開始</a></li>
       </ul>
@@ -89,7 +101,7 @@
 
             <p>デーモン化したい場合は次のようにしてください。<br />
             設定ファイルで<b>pid</b>が適切に設定されていることを事前に確認しておくとよいでしょう。<br/>
-            詳しくは<a href="configuration.html">コンフィギュレーションガイド</a>を参考にしてください。</p>
+            詳しくは<a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a>を参考にしてください。</p>
 
             <pre>./bin/ocean-start --daemonize</pre>
 
@@ -100,7 +112,7 @@
             <div class="alert alert-block">
               <h4 class="alert-heading">ログファイルについて</h4>
               <p>デーモン化してしまった場合、ログを標準出力などに出していたら意味がありません。<br />
-              設定ファイルを編集し、ログタイプを<b>print</b>ではなく、<b>file</b>などにしておくとよいでしょう。こちらについても詳しくは<a href="configuration.html">コンフィギュレーションガイド</a>を参照してください。</p>
+              設定ファイルを編集し、ログタイプを<b>print</b>ではなく、<b>file</b>などにしておくとよいでしょう。こちらについても詳しくは<a href="configuration.html#log">コンフィギュレーションガイド [ ログセクション ]</a>を参照してください。</p>
               <p>ただし<b>daemontools</b>などを利用する場合はこの限りではありません。</p>
             </div>
           </div>

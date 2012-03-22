@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li class="active">
+              <a href="#">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="#">概要</a></li>
+        <li><a href="integration.html">イベント</a></li>
+        <li class="active dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li class="active"><a href="#">Node</a></li> 
+            <li><a href="devauthen.html">Authen</a></li> 
+            <li><a href="devconnection.html">Connection</a></li> 
+            <li><a href="devpeople.html">People</a></li> 
+            <li><a href="devmessage.html">Message</a></li> 
+            <li><a href="devroom.html">Room</a></li> 
+            <li><a href="devp2p.html">P2P</a></li> 
+          </ul>
+        </li>
+        <li><a href="configuration.html">コンフィギュレーション</a></li>
+        <li><a href="runserver.html">サービスの開始</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="#on_node_init">on_node_init</a></li>
+            <li><a href="#on_node_timer_report">on_node_timer_report</a></li>
+            <li><a href="#on_node_exit">on_node_exit</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="development">Nodeイベントハンドラ</h2>
+            <p>サーバーに関するイベントは<b>Node</b>イベントカテゴリとなり、Nodeイベントハンドラで実装します。</p>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_node_init">on_node_init</h3>
+
+            <p>引数として<b>Ocean::HandlerArgs::NodeInitialization</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>host</td><td>-</td></tr>
+                <tr><td>port</td><td>-</td></tr>
+              </tbody>
+            </table>
+
+            <p>このイベントはサーバー起動直後に一回のみ呼ばれます。</p>
+
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_node_timer_report">on_node_timer_report</h3>
+
+            <p>引数として<b>Ocean::HandlerArgs::NodeTimerReport</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>total_connection_counter</td><td>-</td></tr>
+                <tr><td>current_connection_counter</td><td>-</td></tr>
+              </tbody>
+            </table>
+
+            <p>このイベントはサーバーの状態監視のために利用します。</p>
+
+            <p>また、このイベントはコンフィグファイルのサーバーセクション中のreport_timer値で設定された秒数毎に発生します。詳しくは<a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a>を参照してください。</p>
+
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_node_exit">on_node_exit</h3>
+
+            <p>引数として<b>Ocean::HandlerArgs::NodeExit</b>を受け取ります。このオブジェクトは何のアクセサも持ちません。型をあわせるためだけのNullオブジェクトとして扱います。</p>
+
+            <p>このイベントはサーバー終了直前に一回のみ呼ばれます。</p>
+
+          </div>
+        </div>
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>

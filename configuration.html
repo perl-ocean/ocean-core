@@ -47,7 +47,20 @@
       <ul class="nav nav-tabs">
         <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
-        <li><a href="#">ハンドラドキュメント</a></li>
+
+        <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="devnode.html">Node</a></li> 
+            <li><a href="devauthen.html">Authen</a></li> 
+            <li><a href="devconnection.html">Connection</a></li> 
+            <li><a href="devpeople.html">People</a></li> 
+            <li><a href="devmessage.html">Message</a></li> 
+            <li><a href="devroom.html">Room</a></li> 
+            <li><a href="devp2p.html">P2P</a></li> 
+          </ul>
+        </li>
+
         <li class="active"><a href="#">コンフィギュレーション</a></li>
         <li><a href="runserver.html">サービスの開始</a></li>
       </ul>
@@ -104,6 +117,9 @@
   pid_file: __path_to(var/run/ocean.pid)__
   context_class: Hoge::Context
 </pre>
+            <div class="alert alert-block">
+              <p>上の設定例の中で、pid_fileの値に<b>__path_to()__</b>というヘルパー関数を利用しています。これは引数に渡されたパスを、現在のプロジェクトルートディレクトリを基準とした相対パスとして扱い、絶対パスに変換します。このようにファイルパスを指定する設定項目で、<b>__path_to()__</b>関数を利用して相対パスを記述するようにしておけば、プロジェクトディレクトリを移動した場合も設定を書き換える必要はなくなります。</p>
+            </div>
             <table class="table table-striped table-bordered">
               <thead>
                 <tr>
@@ -118,11 +134,11 @@
                 <tr><td>port</td><td>サーバーのlistenポートに使われるポートナンバーです。XMPPのC2Sには5222を利用することが推奨されています。</td></tr>
                 <tr><td>backlog</td><td>サーバーで接続要求を保持するlistenキューの長さです。</td></tr>
                 <tr><td>max_connection</td><td>サーバーで許容する同時接続数の最大値です。<a href="runserver.html#kernel">サービスの開始 [ カーネルチューニング - ソケット数のリミット ]</a>も参照するとよいでしょう。</td></tr>
-                <tr><td>timeout</td><td>ここで指定した秒数分、クライアントから何の反応も無い場合、その接続を切断します。</td></tr>
-                <tr><td>max_read_buffer</td><td></td></tr>
-                <tr><td>report_interval</td><td></td></tr>
-                <tr><td>pid_file</td><td></td></tr>
-                <tr><td>context_class</td><td></td></tr>
+                <tr><td>timeout</td><td>ここで指定した秒数分、クライアントから何の反応も無い場合、その接続を切断します。<a href="protocolscenario.html#timeout">ログインからログアウトまでのケーススタディ [ タイムアウト ]</a>もあわせて参照するとよいでしょう。</td></tr>
+                <tr><td>max_read_buffer</td><td>一つ一つのクライアントからのコネクションのリードバッファのバイトサイズの最大値です。</td></tr>
+                <tr><td>report_interval</td><td>サーバーは、ここで指定された秒数毎にNodeイベントカテゴリのon_timer_reportイベントハンドラを呼び出します。</td></tr>
+                <tr><td>pid_file</td><td>デーモン化した場合に、ここで指定されたファイルパスにPIDファイルを作成します。デーモン化しない場合はここの値は利用されません。<a href="runserver#daemon">サービスの開始 [ デーモン化 ]</a>を合わせて参照するとよいでしょう。</td></tr>
+                <tr><td>context_class</td><td>プロジェクトテンプレートジェネレータ実行時に回答したコンテキストクラスの名前が自動的に指定されています。基本的には自分でこの項目を編集する必要はありません。</td></tr>
               </tbody>
             </table>
 
@@ -341,7 +357,7 @@ SEED-SHA                SSLv3 Kx=RSA      Au=RSA  Enc=SEED(128) Mac=SHA1</pre>
           <div class="span12">
             <h2 id="eventhandler">イベントハンドラセクション</h2>
 
-            <p>イベントハンドラセクションの設定例です。プロジェクトテンプレートジェネレータの応答に従い、回答した名前空間をベースにして自動生成されています。この設定項目は基本的には自分で編集する必要はありません。</p>
+            <p>イベントハンドラセクションの設定例です。プロジェクトテンプレートジェネレータ実行時に、回答した名前空間をベースにして自動生成されています。この設定項目は基本的には自分で編集する必要はありません。</p>
 
             <p>イベントカテゴリやハンドラクラスについて詳しくは前章の<a href="integration.html">イベント</a>を参照してください。</p>
 
