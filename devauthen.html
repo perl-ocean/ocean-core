@@ -106,7 +106,21 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_too_many_auth_attempt">on_too_many_auth_attempt</h3>
-            <p></p>
+
+            <p>引数として<b>Ocean::HandlerArgs::TooManyAuthAttempt</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>host</td><td>-</td></tr>
+                <tr><td>port</td><td>-</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -119,6 +133,21 @@
             <p>このイベントは<b>HTTP Binding</b>時のみ呼ばれます。サーバーの起動タイプを<b>xmpp</b>にしている場合は呼ばれることはありませんので、その場合は実装する必要はありません。</p>
 
             <p><a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a> の<b>type</b>設定項目を参照するとよいでしょう。</p>
+
+            <p>引数として<b>Ocean::HandlerArgs::HTTPAuthRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>-</td></tr>
+                <tr><td>cookie</td><td>-</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -129,6 +158,22 @@
             <h3 id="on_sasl_auth_request">on_sasl_auth_request</h3>
             <p>このイベントはSASL認証時に呼ばれます。</p>
             <p>ただし、一回のリクエストで解決するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>PLAIN</b>、<b>X-OAUTH2</b>です。</p>
+
+            <p>引数として<b>Ocean::HandlerArgs::SASLAuthRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>-</td></tr>
+                <tr><td>mechanism</td><td>-</td></tr>
+                <tr><td>text</td><td>-</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -145,6 +190,21 @@
               <p><a href="protocolscenario.html#sasl">ログインからログアウトまでのケーススタディ[ SASL認証 ]</a>で説明した通り、生パスワードの保存が必要になるので、正式なサービスを運用する場合、ダイジェスト認証のメカニズムの採用は推奨しません。</p>
             </div>
 
+            <p>引数として<b>Ocean::HandlerArgs::SASLPasswordRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>-</td></tr>
+                <tr><td>username</td><td>-</td></tr>
+              </tbody>
+            </table>
+
           </div>
         </div>
 
@@ -156,6 +216,21 @@
             <p>このイベントはSASL認証時に呼ばれます。</p>
             <p>ただし、ダイジェスト認証を利用するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>CRAM-MD5</b>、<b>DIGEST-MD5</b>です。</p>
             <p>上記の<a href="#on_sasl_password_request">on_sasl_password_request</a>が呼ばれた後、そこから取得したパスワードを利用してリクエストの検証がうまくいった場合、このイベントハンドラが呼び出されます。</p>
+
+            <p>引数として<b>Ocean::HandlerArgs::SASLSuccessNotification</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>-</td></tr>
+                <tr><td>username</td><td>-</td></tr>
+              </tbody>
+            </table>
 
           </div>
         </div>

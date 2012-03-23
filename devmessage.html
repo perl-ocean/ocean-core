@@ -6,6 +6,7 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
 </head>
 
 <body>
@@ -50,11 +51,11 @@
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li class="active"><a href="#">Node</a></li> 
+            <li><a href="devnode.html">Node</a></li> 
             <li><a href="devauthen.html">Authen</a></li> 
             <li><a href="devconnection.html">Connection</a></li> 
             <li><a href="devpeople.html">People</a></li> 
-            <li><a href="devmessage.html">Message</a></li> 
+            <li class="active"><a href="#">Message</a></li> 
             <li><a href="devroom.html">Room</a></li> 
             <li><a href="devp2p.html">P2P</a></li> 
           </ul>
@@ -88,6 +89,88 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_message">on_message</h3>
+
+            <p>メッセージの送信リクエストのイベントです。</p>
+
+            <p>引数として<b>Ocean::HandlerArgs::Message</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td>-</td></tr>
+                <tr><td>to</td><td>-</td></tr>
+                <tr><td>body</td><td>-</td></tr>
+                <tr><td>thread</td><td>-</td></tr>
+                <tr><td>state</td><td>-</td></tr>
+                <tr><td>html</td><td>-</td></tr>
+              </tbody>
+            </table>
+
+            <p>一般的には、適切な相手に、そのままメッセージを配信するだけの処理になります。<b>Ocean::Stanza::DeliveryRequestBuilder::ChatMessage</b>を利用するとよいでしょう。このクラスは次のセッターを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td>-</td></tr>
+                <tr><td>to</td><td>-</td></tr>
+                <tr><td>body</td><td>-</td></tr>
+                <tr><td>subject</td><td>-</td></tr>
+                <tr><td>thread</td><td>-</td></tr>
+                <tr><td>state</td><td>-</td></tr>
+                <tr><td>html</td><td>-</td></tr>
+              </tbody>
+            </table>
+
+            <p>実装例は次のようになります。ここではそのまま配送するのみになっていますが、「スパム対策などのため、友人にしかメッセージを送らせないようにする」というような仕様にしたい場合には、検証処理を入れておくとよいでしょう。</p>
+
+            <span class="label label-info">example</span>
+            <pre class="prettyprint">
+sub on_message {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid   = $args-&gt;from;
+    my $receiver_jid = $args-&gt;to;
+
+    my $receiver = 
+        $ctx-&gt;get('db')-&gt;find_user_by_username($receiver_jid-&gt;node);
+    return unless $receiver;
+
+    my @conns = $ctx-&gt;get('db')-&gt;search_available_connection_by_username( 
+        $receiver_jid-&gt;node );
+
+    for my $conn ( @conns ) {
+
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::ChatMessage-&gt;new;
+
+        my $to_jid = Ocean::JID-&gt;build(
+            $conn-&gt;username,
+            $self-&gt;domain,
+            $conn-&gt;resource,
+        );
+
+        $builder-&gt;to($to_jid);
+        $builder-&gt;from($sender_jid);
+        $builder-&gt;body($args-&gt;body);
+        $builder-&gt;html($args-&gt;html);
+        $builder-&gt;thread($args-&gt;thread);
+        $builder-&gt;state($args-&gt;state);
+
+        $ctx-&gt;deliver($builder-&gt;build());
+
+    }
+}</pre>
+
           </div>
         </div>
 
@@ -102,6 +185,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>
