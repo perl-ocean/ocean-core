@@ -3,6 +3,7 @@ package Ocean::Constants::PresenceType;
 use strict;
 use warnings;
 
+use constant AVAILABLE    => q{available};
 use constant UNAVAILABLE  => q{unavailable};
 use constant SUBSCRIBE    => q{subscribe};
 use constant SUBSCRIBED   => q{subscribed};

@@ -5,6 +5,7 @@ use warnings;
 
 use parent 'Ocean::XML::StanzaClassifier';
 use Ocean::Constants::EventType;
+use Ocean::Constants::PresenceType;
 use Ocean::Config;
 use Ocean::JID;
 
@@ -37,13 +38,14 @@ sub classify {
 sub classify_boadcast_presence {
     my ($self, $elem) = @_;
 
-    my $presence_type = $elem->attr('type') || 'available';
+    my $presence_type = $elem->attr('type') 
+        || Ocean::Constants::PresenceType::AVAILABLE;
 
-    if ($presence_type eq 'available') {
+    if ($presence_type eq Ocean::Constants::PresenceType::AVAILABLE) {
 
         return Ocean::Constants::EventType::BROADCAST_PRESENCE;
 
-    } elsif ($presence_type eq 'unavailable') {
+    } elsif ($presence_type eq Ocean::Constants::PresenceType::UNAVAILABLE) {
 
         return Ocean::Constants::EventType::BROADCAST_UNAVAILABLE_PRESENCE;
     } 
@@ -58,13 +60,14 @@ sub classify_direct_presence {
 sub classify_muc_presence {
     my ($self, $elem) = @_;
 
-    my $presence_type = $elem->attr('type') || 'available';
+    my $presence_type = $elem->attr('type') 
+        || Ocean::Constants::PresenceType::AVAILABLE;
 
-    if ($presence_type eq 'available') {
+    if ($presence_type eq Ocean::Constants::PresenceType::AVAILABLE) {
 
         return Ocean::Constants::EventType::ROOM_PRESENCE;
 
-    } elsif ($presence_type eq 'unavailable') {
+    } elsif ($presence_type eq Ocean::Constants::PresenceType::UNAVAILABLE) {
 
         return Ocean::Constants::EventType::LEAVE_ROOM_PRESENCE;
     } 

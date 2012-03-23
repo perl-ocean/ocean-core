@@ -432,7 +432,7 @@ sub deliver_iq_toward_user {
 
     my $builder = Ocean::Stanza::DeliveryRequestBuilder::TowardUserIQ->new;
     $builder->to($to_jid);
-    $builder->from($to_jid);
+    $builder->from($from_jid);
     $builder->request_id($request_id);
     $builder->raw($args->{raw});
     $builder->query_type($args->{type});
