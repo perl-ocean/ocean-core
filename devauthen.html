@@ -6,6 +6,8 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -45,8 +47,9 @@
   <div class="container">
     <div class="subnav">
       <ul class="nav nav-tabs">
-        <li><a href="#">概要</a></li>
+        <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -117,35 +120,8 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>host</td><td>-</td></tr>
-                <tr><td>port</td><td>-</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <hr />
-
-        <div class="row-fluid">
-          <div class="span12">
-            <h3 id="on_http_auth_request">on_http_auth_request</h3>
-
-            <p>このイベントは<b>HTTP Binding</b>時のみ呼ばれます。サーバーの起動タイプを<b>xmpp</b>にしている場合は呼ばれることはありませんので、その場合は実装する必要はありません。</p>
-
-            <p><a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a> の<b>type</b>設定項目を参照するとよいでしょう。</p>
-
-            <p>引数として<b>Ocean::HandlerArgs::HTTPAuthRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
-
-            <table class="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th width="200" class="blue header">アクセサ名</th>
-                  <th class="blue header">概要</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>stream_id</td><td>-</td></tr>
-                <tr><td>cookie</td><td>-</td></tr>
+                <tr><td>host</td><td>指定された数値を超えて、認証を試してきたストリームのIPアドレスです</td></tr>
+                <tr><td>port</td><td>指定された数値を超えて、認証を試してきたストリームのポートナンバーです</td></tr>
               </tbody>
             </table>
           </div>
@@ -159,6 +135,67 @@
             <p>このイベントはSASL認証時に呼ばれます。</p>
             <p>ただし、一回のリクエストで解決するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>PLAIN</b>、<b>X-OAUTH2</b>です。</p>
 
+            <p>スタンドアローンプロジェクトでの実装例は次のようになっています。</p>
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_sasl_auth_request {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args-&gt;stream_id;
+
+    if ($args-&gt;mechanism ne 'PLAIN') {
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+
+    $self-&gt;log_info("PLAIN sasl authentication");
+    $self-&gt;log_info("Received %s", $args-&gt;text||'');
+
+    my ($authcid, $password) = 
+        parse_sasl_plain_b64($args-&gt;text||'');
+
+    $self-&gt;log_info("Username - %s", $authcid);
+
+    unless ($authcid &amp;&amp; $password) {
+        $self-&gt;log_info("both username and password needed");
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+
+    my $user = $ctx-&gt;get('db')-&gt;find_user_by_username($authcid);
+    unless ($user) {
+        $self-&gt;log_info("User %s doesn't exist", $authcid);
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+
+    if ($user-&gt;password eq $password) {
+        $self-&gt;log_info("Password matched");
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthCompletion-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $builder-&gt;user_id($user-&gt;user_id);
+        $builder-&gt;username($user-&gt;username);
+        $builder-&gt;session_id( sha1_hex( gen_random(32) ) );
+        $ctx-&gt;deliver($builder-&gt;build());
+    } else {
+        $self-&gt;log_info("Password not matched");
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+    }
+}</pre>
+
+
             <p>引数として<b>Ocean::HandlerArgs::SASLAuthRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
             <table class="table table-striped table-bordered">
@@ -169,11 +206,43 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>stream_id</td><td>-</td></tr>
-                <tr><td>mechanism</td><td>-</td></tr>
-                <tr><td>text</td><td>-</td></tr>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>mechanism</td><td>選択されたSASLメカニズム</td></tr>
+                <tr><td>text</td><td>選択されたSASLメカニズムに対応するテキスト</td></tr>
               </tbody>
             </table>
+
+            <h4 id="delivery_request_sasl_auth_failure">Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+              </tbody>
+            </table>
+
+            <h4 id="delivery_request_sasl_auth_completion">Ocean::Stanza::DeliveryRequestBuilder::SASLAuthCompletion</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>user_id</td><td>認証を完了したユーザーのID</td></tr>
+                <tr><td>username</td><td>認証を完了したユーザーのusername</td></tr>
+                <tr><td>session_id</td><td>後でJIDのリソースして利用されるセッションID</td></tr>
+              </tbody>
+            </table>
+
           </div>
         </div>
 
@@ -190,6 +259,28 @@
               <p><a href="protocolscenario.html#sasl">ログインからログアウトまでのケーススタディ[ SASL認証 ]</a>で説明した通り、生パスワードの保存が必要になるので、正式なサービスを運用する場合、ダイジェスト認証のメカニズムの採用は推奨しません。</p>
             </div>
 
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_sasl_password_request {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args-&gt;stream_id;
+    my $username  = $args-&gt;username;
+
+    my $user = $ctx-&gt;get('db')-&gt;find_user_by_username($username);
+    unless ($user) {
+        $self-&gt;log_info("User %s doesn't exist", $username);
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::SASLPassword-&gt;new;
+    $builder-&gt;stream_id($stream_id);
+    $builder-&gt;password($user-&gt;password);
+    $ctx-&gt;deliver($builder-&gt;build());
+}</pre>
+
             <p>引数として<b>Ocean::HandlerArgs::SASLPasswordRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
             <table class="table table-striped table-bordered">
@@ -200,8 +291,23 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>stream_id</td><td>-</td></tr>
-                <tr><td>username</td><td>-</td></tr>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>username</td><td>パスワードを要求したいユーザーのusername</td></tr>
+              </tbody>
+            </table>
+
+            <h4 id="delivery_request_sasl_password">Ocean::Stanza::DeliveryRequestBuilder::SASLPassword</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>password</td><td>指定されたusernameに対応するユーザーのパスワード</td></tr>
               </tbody>
             </table>
 
@@ -217,6 +323,35 @@
             <p>ただし、ダイジェスト認証を利用するメカニズムが選択されたときのみ呼ばれることになります。該当するメカニズムは<b>CRAM-MD5</b>、<b>DIGEST-MD5</b>です。</p>
             <p>上記の<a href="#on_sasl_password_request">on_sasl_password_request</a>が呼ばれた後、そこから取得したパスワードを利用してリクエストの検証がうまくいった場合、このイベントハンドラが呼び出されます。</p>
 
+            <p>スタンドアローンプロジェクトの実装例は次の例のようになっています。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_sasl_success_notification {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args-&gt;stream_id;
+    my $username  = $args-&gt;username;
+
+    my $user = $ctx-&gt;get('db')-&gt;find_user_by_username($username);
+    unless ($user) {
+        $self-&gt;log_info("User %s doesn't exist", $username);
+        my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+
+    my $builder = 
+        Ocean::Stanza::DeliveryRequestBuilder::SASLAuthCompletion-&gt;new;
+    $builder-&gt;stream_id($stream_id);
+    $builder-&gt;user_id($user-&gt;user_id);
+    $builder-&gt;username($user-&gt;username);
+    $builder-&gt;session_id( sha1_hex( gen_random(32) ) );
+    $ctx-&gt;deliver($builder-&gt;build());
+}</pre>
+            <p>usernameの確認だけ行い、問題があれば<a href="#delivery_request_sasl_auth_failure">Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure</a>で配送リクエストを生成してコンテキストに渡します。問題がなかったならば適切に<b>session_id</b>を生成し、<a href="#delivery_request_sasl_auth_completion">Ocean::Stanza::DeliveryRequestBuilder::SASLAuthCompletion</a>で配送リクエストを生成してコンテキストに渡します。</p>
+
             <p>引数として<b>Ocean::HandlerArgs::SASLSuccessNotification</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
             <table class="table table-striped table-bordered">
@@ -227,13 +362,115 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>stream_id</td><td>-</td></tr>
-                <tr><td>username</td><td>-</td></tr>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>username</td><td>認証に成功したユーザーのusername</td></tr>
               </tbody>
             </table>
 
           </div>
         </div>
+
+        <hr />
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="on_http_auth_request">on_http_auth_request</h3>
+
+            <p>このイベントは<b>HTTP Binding</b>時のみ呼ばれます。サーバーの起動タイプを<b>xmpp</b>にしている場合は呼ばれることはありませんので、その場合は実装する必要はありません。</p>
+
+            <p><a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a> の<b>type</b>設定項目を参照するとよいでしょう。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_http_auth_request {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args-&gt;stream_id;
+    my $cookie    = $args-&gt;cookie;
+
+    if (!$cookie) {
+        $self-&gt;log_debug("on_http_auth cookie not found");
+        my $builder = Ocean::Stanza::DeliveryRequestBuilder::HTTPAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+    my $cookie_value = $cookie-&gt;{foo} || '';
+    $self-&gt;log_debug("on_http_auth found cookie %s", $cookie_value);
+    my $user = $ctx-&gt;get('db')-&gt;find_user_by_cookie($cookie_value);
+    if (!$user) {
+        $self-&gt;log_debug("on_http_auth user not found");
+        my $builder = Ocean::Stanza::DeliveryRequestBuilder::HTTPAuthFailure-&gt;new;
+        $builder-&gt;stream_id($stream_id);
+        $ctx-&gt;deliver($builder-&gt;build());
+        return;
+    }
+
+    $self-&gt;log_debug("on_http_auth found user %s for cookie", $user-&gt;username);
+
+    # XXX NOT GOOD FOR SECURITY
+    my $session_id = sha1_hex($cookie_value);
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::HTTPAuthCompletion-&gt;new;
+
+    $builder-&gt;stream_id($stream_id);
+    $builder-&gt;session_id($session_id);
+    $builder-&gt;user_id($user-&gt;user_id);
+    $builder-&gt;username($user-&gt;username);
+    $builder-&gt;add_cookie(foo =&gt; $cookie_value);
+    $builder-&gt;add_cookie(bar =&gt; { value =&gt; 'fugafuga', domain =&gt; 'xmpp.example.org', path =&gt; '/foo' });
+    $ctx-&gt;deliver($builder-&gt;build());
+}</pre>
+
+
+            <p>引数として<b>Ocean::HandlerArgs::HTTPAuthRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>-</td></tr>
+                <tr><td>cookie</td><td>-</td></tr>
+              </tbody>
+            </table>
+
+            <h4 id="delivery_request_http_auth_failure">Ocean::Stanza::DeliveryRequestBuilder::HTTPAuthFailure</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+              </tbody>
+            </table>
+
+            <h4 id="delivery_request_http_auth_completion">Ocean::Stanza::DeliveryRequestBuilder::HTTPAuthCompletion</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>session_id</td><td>後でJIDのリソースして利用されるセッションID。HTTP Binding時には、SessionオブジェクトのIDとしても利用される</td></tr>
+                <tr><td>user_id</td><td>認証を完了したユーザーのuser_id</td></tr>
+                <tr><td>username</td><td>認証を完了したユーザーのusername</td></tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
 
       </div><!--/span-->
     </div><!--/row-->
@@ -246,6 +483,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>

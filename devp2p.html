@@ -6,6 +6,8 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -45,8 +47,9 @@
   <div class="container">
     <div class="subnav">
       <ul class="nav nav-tabs">
-        <li><a href="#">概要</a></li>
+        <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -81,13 +84,42 @@
         <div class="row-fluid">
           <div class="span12">
             <h2 id="development">P2Pイベントハンドラ</h2>
-            <p></p>
+
+            <p>クライアント同士のP2Pサービスを補助ためのイベントがこのイベントハンドラに実装されます。</p>
+
+            <p>例えばボイスチャットなどを実装する場合、P2Pデータチャンネルでのボイスチャット実行の前準備のために、XMPPサーバーを仲介して、クライアント同士が情報を交換します。</p>
+
           </div>
         </div>
+
+        <hr />
 
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_toward_user_iq">on_toward_user_iq</h3>
+
+            <p>サーバーではなく、特定のユーザーに向けたIQを受け取ったときに、適切に配信するためのイベントです。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_toward_user_iq {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid   = $args-&gt;from;
+    my $receiver_jid = $args-&gt;to;
+
+    my $receiver = 
+        $ctx-&gt;get('db')-&gt;find_user_by_username($receiver_jid-&gt;node);
+    return unless $receiver;
+
+    my $builder = 
+        Ocean::Stanza::DeliveryRequestBuilder::TowardUserIQ-&gt;new;
+    $builder-&gt;to($receiver_jid);
+    $builder-&gt;from($sender_jid);
+    $builder-&gt;query_type($args-&gt;type);
+    $builder-&gt;request_id($args-&gt;id);
+    $builder-&gt;raw($args-&gt;raw);
+    $ctx-&gt;deliver($builder-&gt;build());
+}</pre>
 
             <p>引数として<b>Ocean::HandlerArgs::TowardUserIQ</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -99,13 +131,34 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>to</td><td>-</td></tr>
-                <tr><td>id</td><td>-</td></tr>
-                <tr><td>type</td><td>-</td></tr>
-                <tr><td>raw</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
+                <tr><td>to</td><td>宛先のFull JID</td></tr>
+                <tr><td>id</td><td>リクエストID</td></tr>
+                <tr><td>type</td><td>IQのtype</td></tr>
+                <tr><td>raw</td><td>IQの中身</td></tr>
               </tbody>
             </table>
+
+            <p>配送には次の配送リクエストビルダーを使います。宛先のチェックだけ行い、後のデータは基本コピーするだけでよいでしょう。</p>
+            <h4>Ocean::Stanza::DeliveryRequestBuilder::TowardUserIQ</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
+                <tr><td>to</td><td>宛先のFull JID</td></tr>
+                <tr><td>query_type</td><td>IQ type</td></tr>
+                <tr><td>request_id</td><td>リクエストID</td></tr>
+                <tr><td>raw</td><td>IQの中身</td></tr>
+              </tbody>
+            </table>
+
+
           </div>
         </div>
 
@@ -120,6 +173,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>

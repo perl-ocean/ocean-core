@@ -6,8 +6,6 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="google-code-prettify/prettify.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -49,8 +47,8 @@
       <ul class="nav nav-tabs">
         <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
-        <li><a href="database.html">データベース</a></li>
-        <li class="active dropdown">
+        <li class="active"><a href="#">データベース</a></li>
+        <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="devnode.html">Node</a></li> 
@@ -58,7 +56,7 @@
             <li><a href="devconnection.html">Connection</a></li> 
             <li><a href="devpeople.html">People</a></li> 
             <li><a href="devmessage.html">Message</a></li> 
-            <li class="active"><a href="#">Room</a></li> 
+            <li><a href="devroom.html">Room</a></li> 
             <li><a href="devp2p.html">P2P</a></li> 
           </ul>
         </li>
@@ -74,15 +72,7 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="#on_room_info_request">on_room_info_request</a></li>
-            <li><a href="#on_room_list_request">on_room_list_request</a></li>
-            <li><a href="#on_room_members_list_request">on_room_members_list_request</a></li>
-            <li><a href="#on_room_invitation">on_room_invitation</a></li>
-            <li><a href="#on_room_invitation_decline">on_room_invitation_decline</a></li>
-            <li><a href="#on_room_message">on_room_message</a></li>
-            <li><a href="#on_room_presence">on_room_presence</a></li>
-            <li><a href="#on_leave_room_presence">on_leave_room_presence</a></li>
-            <li><a href="#on_toward_room_member_iq">on_toward_room_member_iq</a></li>
+            <li><a href="#">foo</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -91,8 +81,9 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="development">Roomイベントハンドラ</h2>
-            <p></p>
+            <h2 id="database">データベース</h2>
+            <p>ここでは、用意しなければいけないデータベースについて解説していきます。</p>
+            <p>まず、インテグレーションする場合には、データの種類を大きく二つにわけることが出来ます。一つは、既にWebサービスなどで利用するために運用されている<b>ユーザーデータ</b>の管理するテーブルや、ユーザー同士の<b>関係性</b>を管理するテーブルです。</p>
           </div>
         </div>
 
@@ -107,14 +98,6 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
-  <script src="google-code-prettify/prettify.js"></script>
-  <script type="text/javascript">
-    try{
-      window.addEventListener("load",prettyPrint,false);
-    }catch(e){
-      window.attachEvent("onload",prettyPrint);
-    }
-  </script>
 
 </body>
 </html>

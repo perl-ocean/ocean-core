@@ -6,6 +6,8 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -45,8 +47,9 @@
   <div class="container">
     <div class="subnav">
       <ul class="nav nav-tabs">
-        <li><a href="#">概要</a></li>
+        <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -71,7 +74,8 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="#">foo</a></li>
+            <li><a href="#on_roster_request">on_roster_request</a></li>
+            <li><a href="#on_vcard_request">on_vcard_request</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -85,9 +89,64 @@
           </div>
         </div>
 
+        <hr />
+
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_roster_request">on_roster_request</h3>
+
+            <p>クライアントからのロスター要求に答えるために、このイベントハンドラを実装します。<br/>
+            <b>ロスター要求</b>について詳しくは、<a href="protocolscenario.html#roster">ログインからログアウトまでのケーススタディ [ ロスター要求 ]</a>を参照するとよいでしょう。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_roster_request {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid = $args-&gt;from;
+
+    my $sender = $ctx-&gt;get('db')-&gt;find_user_by_username( $sender_jid-&gt;node );
+
+    my %relations;
+    my @followers = $ctx-&gt;get('db')-&gt;search_followers_of( $sender );
+    for my $follower_id ( @followers ) {
+        $relations{ $follower_id } = Ocean::Constants::SubscriptionType::FROM;
+    }
+    my @followees = $ctx-&gt;get('db')-&gt;search_followees_of( $sender );
+    for my $followee_id ( @followees ) {
+        if (exists $relations{ $followee_id }) {
+            $relations{ $followee_id } = Ocean::Constants::SubscriptionType::BOTH;
+        } else {
+            $relations{ $followee_id } = Ocean::Constants::SubscriptionType::TO;
+        }
+    }
+
+    my $builder = 
+        Ocean::Stanza::DeliveryRequestBuilder::Roster-&gt;new;
+    $builder-&gt;to($sender_jid);
+    $builder-&gt;request_id($args-&gt;id);
+
+    for my $user_id ( sort keys %relations ) {
+        my $user = $ctx-&gt;get('db')-&gt;find_user_by_id($user_id);
+        next unless $user;
+        my $item_jid = Ocean::JID-&gt;build(
+            $user-&gt;username, 
+            $self-&gt;domain
+        );
+
+        my $item_builder =
+            Ocean::Stanza::DeliveryRequestBuilder::RosterItem-&gt;new;
+        $item_builder-&gt;jid($item_jid);
+        $item_builder-&gt;nickname($user-&gt;nickname);
+        $item_builder-&gt;subscription($relations{ $user_id });
+        $item_builder-&gt;photo_url($user-&gt;profile_img_url || '')
+            if $args-&gt;want_photo_url;
+
+        $builder-&gt;add_item_builder($item_builder);
+    }
+
+    $ctx-&gt;deliver($builder-&gt;build());
+    
+}</pre>
 
             <p>引数として<b>Ocean::HandlerArgs::RosterRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -99,17 +158,89 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>id</td><td>-</td></tr>
-                <tr><td>want_photo_url</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
+                <tr><td>id</td><td>リクエストID</td></tr>
+                <tr><td>want_photo_url</td><td>(拡張仕様)プロフィール画像のURLを要求するかどうか</td></tr>
               </tbody>
             </table>
+
+            <h4>Ocean::Stanza::DeliveryRequestBuilder::Roster</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>to</td><td>送信者のFull JID</td></tr>
+                <tr><td>request_id</td><td>リクエストID</td></tr>
+              </tbody>
+            </table>
+
+            <h4>Ocean::Stanza::DeliveryRequestBuilder::RosterItem</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>jid</td><td>Bare JID</td></tr>
+                <tr><td>nickname</td><td>ニックネーム</td></tr>
+                <tr><td>subscription</td><td>ロスター所有者のこのアイテムで表現されるユーザーの関係性</td></tr>
+                <tr><td>photo_url</td><td>プロフィール画像URL</td></tr>
+              </tbody>
+            </table>
+
+
           </div>
         </div>
+
+        <hr />
 
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_vcard_request">on_vcard_request</h3>
+
+            <p>vCard要求のIQに対して適切にレスポンスを返します。</p>
+
+            <p><b>ロスター要求</b>について詳しくは、<a href="protocolscenario.html#roster">ログインからログアウトまでのケーススタディ [ ロスター要求 ]</a>を参照するとよいでしょう。</p>
+
+            <p>また、vCard拡張については、<a href="xep.html#vcard">プロトコルガイド - 拡張 [ vCard Based Avatar ]</a>を参照して下さい。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_vcard_request {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid = $args-&gt;from;
+
+    my $sender = $ctx-&gt;get('db')-&gt;find_user_by_username( $sender_jid-&gt;node );
+    my $owner_jid = $args-&gt;to;
+
+    my $owner = $ctx-&gt;get('db')-&gt;find_user_by_username( $owner_jid-&gt;node );
+    unless ($owner) {
+        return;
+    }
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::vCard-&gt;new;
+    $builder-&gt;to($sender_jid);
+    $builder-&gt;request_id($args-&gt;id);
+    $builder-&gt;jid($owner_jid);
+    $builder-&gt;nickname($owner-&gt;nickname);
+    if ($args-&gt;want_photo_url) {
+        $builder-&gt;photo_url($owner-&gt;profile_img_url);
+    } else {
+        $builder-&gt;photo_content_type('image/jpeg');
+        $builder-&gt;photo($owner-&gt;profile_img_b64);
+    }
+
+    $ctx-&gt;deliver($builder-&gt;build());
+}</pre>
+
 
             <p>引数として<b>Ocean::HandlerArgs::vCardRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -121,10 +252,31 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>to</td><td>-</td></tr>
-                <tr><td>id</td><td>-</td></tr>
-                <tr><td>want_photo_url</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
+                <tr><td>to</td><td>vCardのオーナーのBare JID</td></tr>
+                <tr><td>id</td><td>リクエストID</td></tr>
+                <tr><td>want_photo_url</td><td>拡張仕様によって、プロフィール画像をバイナリ値のBase64エンコード文字列ではなく、URLで取得したいかどうか</td></tr>
+              </tbody>
+            </table>
+
+
+            <h4>Ocean::Stanza::DeliveryRequestBuilder::vCard</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>to</td><td>送信者のFull JID</td></tr>
+                <tr><td>request_id</td><td>リクエストID</td></tr>
+                <tr><td>jid</td><td>Bare JID</td></tr>
+                <tr><td>nickname</td><td>ニックネーム</td></tr>
+                <tr><td>photo_url</td><td>プロフィール画像のURL</td></tr>
+                <tr><td>photo_content_type</td><td>プロフィール画像のMIME Type</td></tr>
+                <tr><td>photo</td><td>プロフィール画像のバイナリをBase64エンコードした文字列</td></tr>
               </tbody>
             </table>
           </div>
@@ -141,6 +293,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>

@@ -45,8 +45,9 @@
   <div class="container">
     <div class="subnav">
       <ul class="nav nav-tabs">
-        <li><a href="#">概要</a></li>
+        <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -83,7 +84,7 @@
         <div class="row-fluid">
           <div class="span12">
             <h2 id="development">Nodeイベントハンドラ</h2>
-            <p>サーバーに関するイベントは<b>Node</b>イベントカテゴリとなり、Nodeイベントハンドラで実装します。</p>
+            <p>サーバーのライフサイクルに関するイベントは<b>Node</b>イベントカテゴリとなり、Nodeイベントハンドラで実装します。</p>
           </div>
         </div>
 
@@ -92,6 +93,11 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_node_init">on_node_init</h3>
+
+            <p>サーバー開始時に一度だけ呼ばれます。</p>
+
+            <p>何らかの初期化処理が必要であればここで実行してもいいでしょう。
+            ただし、サーバー実行期間中ずっと保持するようなデータを用意する場合は、<b>Context</b>の利用の検討を勧めます。</p>
 
             <p>引数として<b>Ocean::HandlerArgs::NodeInitialization</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -103,12 +109,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>host</td><td>-</td></tr>
-                <tr><td>port</td><td>-</td></tr>
+                <tr><td>host</td><td>Listenを開始したIPアドレス</td></tr>
+                <tr><td>port</td><td>Listenを開始したポートナンバー</td></tr>
               </tbody>
             </table>
-
-            <p>このイベントはサーバー起動直後に一回のみ呼ばれます。</p>
 
           </div>
         </div>
@@ -118,6 +122,10 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_node_timer_report">on_node_timer_report</h3>
+
+            <p>このイベントはサーバーの状態監視のために利用します。プロセス情報のレポートが必要な場合は、このタイミングで行うのがよいでしょう。</p>
+
+            <p>また、このイベントはコンフィグファイルのサーバーセクション中のreport_timer値で設定された秒数毎に発生します。詳しくは<a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a>を参照してください。</p>
 
             <p>引数として<b>Ocean::HandlerArgs::NodeTimerReport</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -129,14 +137,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>total_connection_counter</td><td>-</td></tr>
-                <tr><td>current_connection_counter</td><td>-</td></tr>
+                <tr><td>total_connection_counter</td><td>現在までの延接続数</td></tr>
+                <tr><td>current_connection_counter</td><td>現在の接続数</td></tr>
               </tbody>
             </table>
-
-            <p>このイベントはサーバーの状態監視のために利用します。</p>
-
-            <p>また、このイベントはコンフィグファイルのサーバーセクション中のreport_timer値で設定された秒数毎に発生します。詳しくは<a href="configuration.html#core">コンフィギュレーションガイド [ サーバーセクション ]</a>を参照してください。</p>
 
           </div>
         </div>
@@ -147,9 +151,8 @@
           <div class="span12">
             <h3 id="on_node_exit">on_node_exit</h3>
 
-            <p>引数として<b>Ocean::HandlerArgs::NodeExit</b>を受け取ります。このオブジェクトは何のアクセサも持ちません。型をあわせるためだけのNullオブジェクトとして扱います。</p>
-
             <p>このイベントはサーバー終了直前に一回のみ呼ばれます。</p>
+            <p>引数として<b>Ocean::HandlerArgs::NodeExit</b>を受け取ります。このオブジェクトは何のアクセサも持ちません。型をあわせるためだけのNullオブジェクトとして扱います。</p>
 
           </div>
         </div>

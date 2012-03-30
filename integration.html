@@ -47,6 +47,7 @@
       <ul class="nav nav-tabs">
         <li><a href="development.html">概要</a></li>
         <li class="active"><a href="#">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -132,8 +133,8 @@
         <div class="row-fluid">
           <div class="span12">
             <h2 id="eventhandler">イベントハンドラ</h2>
-            <p>全てのイベントハンドラは<b>on_</b>を接頭語にします。</p>
-            <p>引数は二つあり、一つ目はContextオブジェクトで、二つ目はHandleArgsオブジェクトになります。</p>
+            <p>それぞれのイベントカテゴリに対応したモジュール内で実装される、全てのイベントハンドラは<b>on_</b>を接頭語にします。</p>
+            <p>引数は二つあり、一つ目は<b>Context</b>オブジェクトで、二つ目は<b>HandleArgs</b>オブジェクトになります。</p>
             <p>この二つについては後ほど解説しますので、まずは雰囲気をつかむために実際のコードを見てみます。</p>
 
             <img src="img/integration/event_handler_example.png">
@@ -146,8 +147,8 @@
           <div class="span12">
             <h3>Context</h3>
 
-            <p>Oceanサーバーでは、起動時にコンフィグファイルで指定されたContextクラスのオブジェクトを生成し、そのオブジェクトのinitializeメソッドを呼び出します。</p>
-            <p>また、サーバー終了時にはfinalizeメソッドを呼び出します。</p>
+            <p>Oceanサーバーでは、起動時にコンフィグファイルで指定されたContextクラスのオブジェクトを生成し、そのオブジェクトのinitializeメソッドを呼び出します。
+            また、サーバー終了時にはfinalizeメソッドを呼び出します。</p>
             <p>各イベントハンドラが呼び出されるときには必ず、このContextオブジェクトが渡されます。</p>
             <p>Contextクラスは、プロジェクトテンプレート作成時に、Ocean::Contextを継承しただけの状態で生成されますので、そこに拡張を加えていくとよいでしょう。</p>
 
@@ -160,11 +161,16 @@
 
             <img src="img/integration/context2.png">
 
-            <p>呼び出し側の例</p>
+
+            <p>呼び出し側の例。<b>$ctx</b>の<b>get_user_info</b>メソッドを呼んでいます。</p>
 
             <img src="img/integration/context3.png">
 
             <p>また、Contextにはget/setメソッドがあり、単純なstashとしても利用できます。</p>
+
+            <div class="alert alert-block">
+              <p>実際は、この例のようにDBへのアクセスを保持すると、DBサーバー側でコネクション保持用のスレッドが解放されないまま増えすぎて問題になる場合があります。</p>
+            </div>
 
           </div><!--/span-->
         </div><!--/row-->
@@ -172,6 +178,7 @@
         <div class="row-fluid">
           <div class="span12">
             <h3>HandlerArgs</h3>
+            <p>Contextと共に渡されるオブジェクトが<b>HandlerArgs</b>です。<b>HandlerArgs</b>はイベントの種類毎に用意されており、それぞれそのイベントのデータを保持しています。例えばSASL認証イベントでは、<b>Ocean::HandlerArgs::SASLAuthRequest</b>が渡されますし、ロスター要求イベントでは<b>Ocean::HandlerArgs::RosterRequest</b>が渡されます。HandlerArgsオブジェクトは、それらのデータを取得するためのアクセサを持つだけのシンプルなオブジェクトです。</p>
           </div><!--/span-->
         </div><!--/row-->
 
@@ -180,18 +187,29 @@
             <h3>DeliveryRequest</h3>
 
             <p>ほとんどのイベントでは、配送処理が必要になります。</p>
-            <p>Request/Responseタイプのイベントでは、要求を行ったユーザー本人に結果を返します。</p>
-            <p>メッセージは、宛先となるユーザーにメッセージを配送します。</p>
-            <p>プレゼンス変更は、そのユーザーの友人全員にブロードキャストします。</p>
 
-            <p>これらのイベントは移送には、DeliveryRequestを利用します。</p>
-            <p>DeliveryRequestを生成するためには、それぞれのイベント専用のDeliveryRequestBuilderが用意されています。</p>
+            <p>Request/Responseタイプのイベントでは、要求を行ったユーザー本人に結果を返します。</p>
+            <p>[画像が入る]</p>
+
+            <p>メッセージは、宛先となるユーザーにメッセージを配送します。</p>
+            <p>[画像が入る]</p>
+
+            <p>プレゼンス変更は、そのユーザーの友人全員にブロードキャストします。</p>
+            <p>[画像が入る]</p>
+
+            <p>これらのイベントは移送には、<b>DeliveryRequest</b>を利用します。</p>
+            <p><b>DeliveryRequest</b>を生成するためには、それぞれのイベント専用の<b>DeliveryRequestBuilder</b>が用意されています。</p>
 
             <p>DeliveryRequestBuilderを利用してビルドしたものを、Contextのdeliverメソッドに渡します</p>
 
             <p>次のコードは、SASL認証失敗レスポンスを配送するときの例になります。</p>
 
             <img src="img/integration/deliverrequest.png">
+
+            <hr />
+            <div class="alert alert-block alert-info">
+              <p>まとめると、イベントハンドラでは、サーバーとほぼ同じライフサイクルで保持されている<b>Contextオブジェクト</b>と、該当イベントに対応した<b>HandlerArgsオブジェクト</b>の二つを受け取り、そのイベントの処理を実装していきます。ユーザーへの配送が必要な場合には、該当イベントに対応した<b>DeliveryRequestBuilder</b>を利用します。</p>
+            </div>
           </div><!--/span-->
         </div><!--/row-->
 

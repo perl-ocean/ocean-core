@@ -7,6 +7,7 @@
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -46,8 +47,9 @@
   <div class="container">
     <div class="subnav">
       <ul class="nav nav-tabs">
-        <li><a href="#">概要</a></li>
+        <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -86,54 +88,17 @@
           </div>
         </div>
 
+        <hr />
+
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_message">on_message</h3>
 
             <p>メッセージの送信リクエストのイベントです。</p>
 
-            <p>引数として<b>Ocean::HandlerArgs::Message</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
-
-            <table class="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th width="200" class="blue header">アクセサ名</th>
-                  <th class="blue header">概要</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>to</td><td>-</td></tr>
-                <tr><td>body</td><td>-</td></tr>
-                <tr><td>thread</td><td>-</td></tr>
-                <tr><td>state</td><td>-</td></tr>
-                <tr><td>html</td><td>-</td></tr>
-              </tbody>
-            </table>
-
-            <p>一般的には、適切な相手に、そのままメッセージを配信するだけの処理になります。<b>Ocean::Stanza::DeliveryRequestBuilder::ChatMessage</b>を利用するとよいでしょう。このクラスは次のセッターを持ちます。</p>
-
-            <table class="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  <th width="200" class="blue header">セッター名</th>
-                  <th class="blue header">概要</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>to</td><td>-</td></tr>
-                <tr><td>body</td><td>-</td></tr>
-                <tr><td>subject</td><td>-</td></tr>
-                <tr><td>thread</td><td>-</td></tr>
-                <tr><td>state</td><td>-</td></tr>
-                <tr><td>html</td><td>-</td></tr>
-              </tbody>
-            </table>
-
             <p>実装例は次のようになります。ここではそのまま配送するのみになっていますが、「スパム対策などのため、友人にしかメッセージを送らせないようにする」というような仕様にしたい場合には、検証処理を入れておくとよいでしょう。</p>
 
-            <span class="label label-info">example</span>
+            <span class="label label-info">SYNOPSIS</span>
             <pre class="prettyprint">
 sub on_message {
     my ($self, $ctx, $args) = @_;
@@ -170,6 +135,48 @@ sub on_message {
 
     }
 }</pre>
+
+
+            <p>引数として<b>Ocean::HandlerArgs::Message</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">アクセサ名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
+                <tr><td>to</td><td>宛先のJID。Bare JIDの場合とFull JIDの場合があります。</td></tr>
+                <tr><td>body</td><td>メッセージ本文</td></tr>
+                <tr><td>thread</td><td>スレッドコード</td></tr>
+                <tr><td>state</td><td>ステートタイプ。<a href="xep.html#chatstate">プロトコルガイド - 拡張 [ Chat State ]</a>を参照して下さい。</td></tr>
+                <tr><td>html</td><td>HTMLバージョンの本文。<a href="xep.html#xhtml">プロトコルガイド - 拡張 [ XHTML IM ]</a>を参照して下さい。</td></tr>
+              </tbody>
+            </table>
+
+            <p>一般的には、適切な相手に、そのままメッセージを配信するだけの処理になります。<b>Ocean::Stanza::DeliveryRequestBuilder::ChatMessage</b>を利用するとよいでしょう。</p>
+
+            <h4>Ocean::Stanza::DeliveryRequestBuilder::ChatMessage</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td>送信者のJID</td></tr>
+                <tr><td>to</td><td>宛先のFull JID</td></tr>
+                <tr><td>body</td><td>メッセージ本文</td></tr>
+                <tr><td>subject</td><td>メッセージタイトル</td></tr>
+                <tr><td>thread</td><td>スレッドコード</td></tr>
+                <tr><td>state</td><td>ステートタイプ。<a href="xep.html#chatstate">プロトコルガイド - 拡張 [ Chat State ]</a>を参照して下さい。</td></tr>
+                <tr><td>html</td><td>HTMLバージョンの本文。<a href="xep.html#xhtml">プロトコルガイド - 拡張 [ XHTML IM ]</a>を参照して下さい。</td></tr>
+              </tbody>
+            </table>
 
           </div>
         </div>

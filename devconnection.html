@@ -6,6 +6,8 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -45,8 +47,9 @@
   <div class="container">
     <div class="subnav">
       <ul class="nav nav-tabs">
-        <li><a href="#">概要</a></li>
+        <li><a href="development.html">概要</a></li>
         <li><a href="integration.html">イベント</a></li>
+        <li><a href="database.html">データベース</a></li>
         <li class="active dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">ハンドラ<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -71,7 +74,11 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="#">foo</a></li>
+            <li><a href="#on_bind_request">on_bind_request</a></li>
+            <li><a href="#on_presence">on_presence</a></li>
+            <li><a href="#on_initial_presence">on_initial_presence</a></li>
+            <li><a href="#on_unavailable_presence">on_unavailable_presence</a></li>
+            <li><a href="#on_silent_disconnection">on_silent_disconnection</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -87,9 +94,61 @@
           </div>
         </div>
 
+        <hr />
+
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_bind_request">on_bind_request</h3>
+
+            <p><b>リソースバインディング</b>要求に対する処理を、このイベントハンドラで実装します。<br />
+            <b>リソースバインディング</b>について詳しくは、<a href="protocolscenario.html#resource">ログインからログアウトまでのケーススタディ [ リソースバインディング ]</a>を参照するとよいでしょう。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_bind_request {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args-&gt;stream_id;
+    my $user_id   = $args-&gt;user_id;
+
+    $self-&gt;log_debug("on_bind_request");
+
+    my $user = $ctx-&gt;get('db')-&gt;find_user_by_id($user_id);
+    unless ($user) {
+        $self-&gt;log_debug("user not found");
+        return;
+    }
+
+    my $resource = $args-&gt;resource;
+    unless ($resource) {
+        Ocean::Error::ProtocolError-&gt;throw(
+            message =&gt; q{resource not found}, 
+        );
+    }
+
+    my $jid = Ocean::JID-&gt;build(
+        $user-&gt;username, 
+        $self-&gt;domain, 
+        $resource
+    );
+
+    $ctx-&gt;get('db')-&gt;insert_connection(
+        user_id  =&gt; $user-&gt;user_id,
+        username =&gt; $user-&gt;username,
+        resource =&gt; $resource,
+        #presence =&gt; undef,
+    );
+
+    my $builder = 
+        Ocean::Stanza::DeliveryRequestBuilder::BoundJID-&gt;new;
+    $builder-&gt;stream_id($stream_id);
+    $builder-&gt;jid($jid);
+    if ($args-&gt;want_extval) {
+        $builder-&gt;nickname($user-&gt;nickname);
+        $builder-&gt;photo_url($user-&gt;profile_img_url || '');
+    }
+    $ctx-&gt;deliver($builder-&gt;build());
+}</pre>
+
 
             <p>引数として<b>Ocean::HandlerArgs::BindRequest</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -101,19 +160,88 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>stream_id</td><td>-</td></tr>
-                <tr><td>user_id</td><td>-</td></tr>
-                <tr><td>resource</td><td>-</td></tr>
-                <tr><td>want_extval</td><td>-</td></tr>
+                <tr><td>stream_id</td><td>要求を送信してきたストリームのIDです</td></tr>
+                <tr><td>user_id</td><td>認証成功時に返したユーザーIDです</td></tr>
+                <tr><td>resource</td><td>認証成功時に発行したsession_idです</td></tr>
+                <tr><td>want_extval</td><td>拡張仕様を要求するかどうか。要求された場合、リソースバインディング成功時に、JIDだけでなく、ニックネームと画像URLも含めて返します。</td></tr>
               </tbody>
             </table>
+
+            <h4 id="delivery_request_bound_jid">Ocean::Stanza::DeliveryRequestBuilder::BoundJID</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>stream_id</td><td>認証を要求してきたストリームのID</td></tr>
+                <tr><td>jid</td><td>割り当てられたJID</td></tr>
+                <tr><td>nickname</td><td></td></tr>
+                <tr><td>photo_url</td><td></td></tr>
+              </tbody>
+            </table>
+
           </div>
         </div>
+
+        <hr />
 
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_presence">on_presence</h3>
 
+            <p>ログイン後のプレゼンス配信はこのハンドラで行われます。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_presence {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid = $args-&gt;from;
+
+    my $sender = $ctx-&gt;get('db')-&gt;find_user_by_username( $sender_jid-&gt;node );
+
+    my $sender_conn = $ctx-&gt;get('db')-&gt;find_connection_by_jid( $sender_jid );
+
+    $sender_conn-&gt;update({ 
+        presence_show   =&gt; $args-&gt;show,
+        presence_status =&gt; $args-&gt;status,
+    });
+
+    my @followers = $ctx-&gt;get('db')-&gt;search_followers_of($sender);
+
+    for my $follower_id ( @followers ) {
+
+        my @follower_conns = 
+            $ctx-&gt;get('db')-&gt;search_available_connection_by_user_id($follower_id);
+
+        for my $follower_conn ( @follower_conns ) {
+
+            my $receiver_jid = Ocean::JID-&gt;build(
+                $follower_conn-&gt;username,
+                $self-&gt;domain,
+                $follower_conn-&gt;resource,
+            );
+
+            my $builder =
+                Ocean::Stanza::DeliveryRequestBuilder::Presence-&gt;new;
+            $builder-&gt;from($sender_jid);
+            $builder-&gt;to($receiver_jid);
+            $builder-&gt;show($args-&gt;show);
+            $builder-&gt;status($args-&gt;status);
+            $builder-&gt;image_hash($sender-&gt;profile_img_hash)
+                if $sender-&gt;profile_img_hash;
+
+            $ctx-&gt;deliver($builder-&gt;build());
+
+        }
+
+    }
+}</pre>
+
+
             <p>引数として<b>Ocean::HandlerArgs::Presence</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
             <table class="table table-striped table-bordered">
@@ -124,18 +252,139 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>show</td><td>-</td></tr>
-                <tr><td>status</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JIDです</td></tr>
+                <tr><td>show</td><td>要求されたshowタイプです</td></tr>
+                <tr><td>status</td><td>要求されたステータステキストです</td></tr>
               </tbody>
             </table>
+
+            <h4 id="delivery_request_presence">Ocean::Stanza::DeliveryRequestBuilder::Presence</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td></td></tr>
+                <tr><td>to</td><td></td></tr>
+                <tr><td>show</td><td></td></tr>
+                <tr><td>status</td><td></td></tr>
+                <tr><td>image_hash</td><td></td></tr>
+              </tbody>
+            </table>
+
           </div>
         </div>
+
+        <hr />
 
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_initial_presence">on_initial_presence</h3>
 
+            <p>ログイン処理の最後、イニシャルプレゼンスに対する処理がこの中で実装されます。</p>
+            <b>イニシャルプレゼンス</b>について詳しくは、<a href="protocolscenario.html#initialpresence">ログインからログアウトまでのケーススタディ [ イニシャルプレゼンス ]</a>を参照するとよいでしょう。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_initial_presence {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid = $args-&gt;from;
+    my $no_probe   = $args-&gt;no_probe;
+
+    $self-&gt;log_debug("on_initial_presence");
+
+    my $sender = $ctx-&gt;get('db')-&gt;find_user_by_username( $sender_jid-&gt;node );
+
+    # UPDATE CONNECTION STATE
+    my $sender_conn = $ctx-&gt;get('db')-&gt;find_connection_by_jid( $sender_jid );
+    unless ($sender_conn) {
+        $self-&gt;log_warn("connection for sender_jid %s not found", $sender_jid-&gt;as_string);
+        return;
+    }
+    $sender_conn-&gt;update({ 
+        presence_show   =&gt; $args-&gt;show,
+        presence_status =&gt; $args-&gt;status,
+    });
+
+    $self-&gt;log_debug("broadcast presence");
+
+    # send presence to follower
+    my @followers = $ctx-&gt;get('db')-&gt;search_followers_of($sender);
+
+    for my $follower_id ( @followers ) {
+
+        my @follower_conns = 
+            $ctx-&gt;get('db')-&gt;search_available_connection_by_user_id($follower_id);
+
+        for my $follower_conn ( @follower_conns ) {
+
+            my $receiver_jid = Ocean::JID-&gt;build(
+                $follower_conn-&gt;username,
+                $self-&gt;domain, 
+                $follower_conn-&gt;resource,
+            );
+
+            $self-&gt;log_debug("deliver presence to %s", 
+                $receiver_jid-&gt;as_string);
+
+            my $builder =
+                Ocean::Stanza::DeliveryRequestBuilder::Presence-&gt;new;
+            $builder-&gt;from($sender_jid);
+            $builder-&gt;to($receiver_jid);
+            $builder-&gt;show($args-&gt;show);
+            $builder-&gt;status($args-&gt;status);
+            $builder-&gt;image_hash($sender-&gt;profile_img_hash)
+                if $sender-&gt;profile_img_hash;
+
+            $ctx-&gt;deliver($builder-&gt;build());
+
+        }
+
+    }
+
+    return if $no_probe;
+
+    $self-&gt;log_debug("probe presence");
+
+    my @followees = $ctx-&gt;get('db')-&gt;search_followees_of($sender);
+
+    for my $followee_id ( @followees ) {
+
+        my @followee_conns = 
+            $ctx-&gt;get('db')-&gt;search_available_connection_by_user_id($followee_id);
+
+        for my $followee_conn ( @followee_conns ) {
+
+            my $followee_presence = $followee_conn-&gt;presence;
+
+            my $followee_jid = Ocean::JID-&gt;build(
+                  $followee_conn-&gt;username,
+                  $self-&gt;domain, 
+                  $followee_conn-&gt;resource,
+            );
+
+            my $followee = $ctx-&gt;get('db')-&gt;find_user_by_username( $followee_jid-&gt;node );
+
+            my $builder = 
+                Ocean::Stanza::DeliveryRequestBuilder::Presence-&gt;new;
+            $builder-&gt;from($followee_jid);
+            $builder-&gt;to($sender_jid);
+            $builder-&gt;show($followee_presence-&gt;show);
+            $builder-&gt;status($followee_presence-&gt;status);
+            $builder-&gt;image_hash($followee-&gt;profile_img_hash)
+                if $followee-&gt;profile_img_hash;
+
+            $ctx-&gt;deliver($builder-&gt;build());
+
+        }
+
+    }
+}</pre>
+
             <p>引数として<b>Ocean::HandlerArgs::Presence</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
             <table class="table table-striped table-bordered">
@@ -146,18 +395,68 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
-                <tr><td>show</td><td>-</td></tr>
-                <tr><td>status</td><td>-</td></tr>
-                <tr><td>no_probe</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JIDです</td></tr>
+                <tr><td>show</td><td>要求されたshowタイプです</td></tr>
+                <tr><td>status</td><td>要求されたステータステキストです</td></tr>
+                <tr><td>no_probe</td><td>probeを実行するかどうかのフラグです。</td></tr>
               </tbody>
             </table>
+
           </div>
         </div>
+
+        <hr />
 
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_unavailable_presence">on_unavailable_presence</h3>
+
+            <p>ストリーム切断時に呼ばれます。すでに有効状態になっているストリームだった場合、このイベントハンドラが呼ばれます。そうでなかった場合は、下の<a href="#on_silent_disconnection">on_silent_disconnection</a>が呼ばれます。このイベントハンドラでは、ストリームの切断に伴う後処理を適切に行うと同時に、このユーザーのストリームがオフラインになったことを、ユーザーのフォロワーのうちオンラインのストリーム全てに対して通知しなければなりません。</p>
+
+            <p><b>ログアウト</b>について詳しくは、<a href="protocolscenario.html#unavailable">ログインからログアウトまでのケーススタディ [ ログアウト ]</a>を参照するとよいでしょう。</p>
+
+            <p>次の実装例を確認すると、まずコネクション情報の削除、それからフォロワーへの通知を行っていることがわかると思います。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_unavailable_presence {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid = $args-&gt;from;
+
+    my $sender = $ctx-&gt;get('db')-&gt;find_user_by_username( $sender_jid-&gt;node );
+
+    my $sender_conn = $ctx-&gt;get('db')-&gt;find_connection_by_jid( $sender_jid );
+    $sender_conn-&gt;delete() if $sender_conn;
+
+    # send presence to follower
+    my @followers = $ctx-&gt;get('db')-&gt;search_followers_of($sender);
+
+    for my $follower_id ( @followers ) {
+
+        my @follower_conns = 
+            $ctx-&gt;get('db')-&gt;search_available_connection_by_user_id($follower_id);
+
+        for my $follower_conn ( @follower_conns ) {
+
+            my $receiver_jid = Ocean::JID-&gt;build(
+                $follower_conn-&gt;username,
+                $self-&gt;domain,
+                $follower_conn-&gt;resource,
+            );
+
+            my $builder =
+                Ocean::Stanza::DeliveryRequestBuilder::UnavailablePresence-&gt;new;
+            $builder-&gt;from($sender_jid);
+            $builder-&gt;to($receiver_jid);
+
+            $ctx-&gt;deliver($builder-&gt;build());
+        }
+    }
+}</pre>
+
+            <div class="alert alert-block">
+              <p>ここでは一般的な処理の例のみにとどまっていますが、たとえばグループチャットをサポートしていた場合は、<b>部屋からの退出処理</b>などをここに追加しなければなりません。</p>
+            </div>
 
             <p>引数として<b>Ocean::HandlerArgs::UnavailablePresence</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -169,15 +468,50 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
               </tbody>
             </table>
+
+            <h4 id="delivery_request_unavailable_presence">Ocean::Stanza::DeliveryRequestBuilder::UnavailablePresence</h4>
+
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="200" class="blue header">セッター名</th>
+                  <th class="blue header">概要</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>from</td><td>送信者のFull JID</td></tr>
+                <tr><td>to</td><td>宛先のFull JID</td></tr>
+              </tbody>
+            </table>
+
           </div>
         </div>
+
+        <hr />
 
         <div class="row-fluid">
           <div class="span12">
             <h3 id="on_silent_disconnection">on_silent_disconnection</h3>
+
+            <p>ストリーム切断時に呼ばれます。まだ有効状態になっていないストリームが切断された場合に、このイベントハンドラが呼ばれます。ストリームが有効状態になっていたら、このイベントハンドラでなく、上の<a href="#on_unavailable_presence">on_unavailable_presence</a>が呼ばれます。このイベントハンドラでは、ストリームの切断に伴う後処理のみを行い、フォロワーに対する通知などは行いません。</p>
+
+            <p>次の実装例を見ると、<a href="#on_unavailable_presence">on_unavailable_presence</a>のコードから、フォロワーへの通知をしているパートを抜いただけになっているのが分かると思います。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">sub on_silent_disconnection {
+    my ($self, $ctx, $args) = @_;
+
+    my $sender_jid = $args-&gt;from;
+
+    my $sender = $ctx-&gt;get('db')-&gt;find_user_by_username( $sender_jid-&gt;node );
+
+    my $sender_conn = $ctx-&gt;get('db')-&gt;find_connection_by_jid( $sender_jid );
+    $sender_conn-&gt;delete() if $sender_conn;
+}</pre>
+
 
             <p>引数として<b>Ocean::HandlerArgs::SilentDisconnection</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
@@ -189,12 +523,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr><td>from</td><td>-</td></tr>
+                <tr><td>from</td><td>送信者のFull JIDです</td></tr>
               </tbody>
             </table>
+
+            <p>配送処理は必要ないので、対応する配送リクエストビルダーもありません。</p>
           </div>
         </div>
-
 
       </div><!--/span-->
     </div><!--/row-->
@@ -207,6 +542,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>
