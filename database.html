@@ -81,10 +81,85 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="database">データベース</h2>
-            <p>ここでは、用意しなければいけないデータベースについて解説していきます。</p>
-            <p>まず、インテグレーションする場合には、データの種類を大きく二つにわけることが出来ます。一つは、既にWebサービスなどで利用するために運用されている<b>ユーザーデータ</b>の管理するテーブルや、ユーザー同士の<b>関係性</b>を管理するテーブルです。</p>
+            <h2 id="database">データ設計</h2>
+            <p>ここでは、XMPPサービスを開始する際に用意しなければいけないデータの設計について解説していきます。</p>
+            <p>まず、データベースの種類を大きく二つにわけることが出来ます。一つは、既にWebサービスなどで利用するために運用されている<b>ユーザーデータ</b>の管理するテーブルや、ユーザー同士の<b>関係性</b>を管理するテーブルです。</p>
+            <p>次に、XMPPサービスを開始するにあたり、新たに用意しなければならないテーブルがあります。コネクション管理のテーブルや、プレゼンス管理のテーブルなどがそれにあたります。</p>
           </div>
+        </div>
+
+        <h2 id="prepareddata">事前に準備されるデータ</h2>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="database">user</h3>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="database">user_relationship</h3>
+          </div>
+        </div>
+
+        <div class="alert alert-block">
+          <p>類似したデータベースを既に持っているようなWebサービスと連携させることを前提としています。</p>
+        </div>
+
+        <h2 id="xpppdata">XMPP専用に新たに用意するデータ</h2>
+
+        <p>次に、XMPPサービスをこれから始めるにあたって、新たに用意しなければならないデータベースについて説明します。</p>
+
+        <p>データベースを用意する前に決めておかなければならない事があります。</p>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="jid">JIDの設計</h3>
+
+            <p>まずユーザーのJIDをどのように扱うかをあらかじめ決めておきます。例を見てみましょう</p>
+
+            <pre>taro@xmpp.example.com/12df8e3c90deaab9f87b</pre>
+
+            <p>まず、上の例で<b>xmpp.example.com</b>になっている<b>ドメインパート</b>はコンフィグで指定した<b>domain</b>の値を使うことになります。詳しくは<a href="configuration.html#core">コンフィギュレーション [ サーバーセクション ]</a>を参照して下さい。</p>
+
+            <p>上の例で<b>12df8e3c90deaab9f87b</b>になっているのは<b>リソース</b>です。リソースについては<a href="protocolbackground.html#jid">プロトコルガイド - クライアント/サーバー間のやりとり [ JID ]</a>や、<a href="protocolscenario.html#resource">プロトコルガイド - ログインからログアウトまでのケーススタディ [ リソースバインディング ]</a>を参照するとよいでしょう。</p>
+
+            <p>Oceanでは、<b>セッションIDとしてランダムな文字列をリソースとして利用する</b>という方針になっています。ハンドラドキュメントの実装例なども参照するとよいでしょう。</p>
+
+            <ul>
+              <li><a href="devauthen.html#on_sasl_auth_request">Authen - on_sasl_auth_request</a></li>
+              <li><a href="devconnection.html#on_bind_request">Connection - on_bind_request</a></li>
+            </ul>
+
+            <p>あとは、上のJIDの例で<b>taro</b>になっている部分。JIDの<b>ローカルパート</b>です。この値をどうするかを決定しなければなりません。</p>
+
+            <p>Webサービス側のユーザー管理テーブルで、上の例に挙げた<b>taro</b>のような、サービス内でユニークな文字列を利用している場合は、それを利用できます。しかしアルファベット文字列でユーザーを管理していない場合も考えられます。一例として、ユニークな数値IDと、重複可能なニックネームを利用しているケースが考えられます。ユーザー名が重複可能なニックネームで表現されているサービスでは、特定のユーザーを識別することができなくなってしまうので、ローカルパートにその名前を使うことが出来ません。なので次のように数値IDをローカルパートに利用することになるでしょう。</p>
+
+            <pre>123456789@xmpp.example.com/12df8e3c90deaab9f87b</pre>
+
+            <p>人間の目から見ると、わかりにくいIDになってしまったように見えます。しかし、<a href="protocolbackground.html#jid">クライアント/サーバー間のやりとり [ JID ]</a> で説明した通り、クライアントアプリケーションはロスター内で指定された名前や、vCardを利用して取得したニックネーム(とプロフィール画像)を利用して、ユーザーのプレゼンス表示を行うのが一般的であり、JIDがセマンティックである必要はありません。</p>
+            
+          <div class="alert alert-block">
+            <p>vCard拡張について詳しくは、<a href="xep.html#vcard">拡張ガイド [ vCard ]</a> を参照して下さい。</p>
+          </div>
+
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="database">connection</h3>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h3 id="database">presence</h3>
+          </div>
+        </div>
+
+        <div class="alert alert-block">
+          <p>これらのデータベースは、XMPPサービス起動中のみ、永続性が保証される必要があります。つまり、XMPPサービスを再起動するときなどは、一度データベース自体作り直してしまってもよいわけです。ただし、XMPPサービス起動中は揮発してはならないので、キャッシュサーバーのような揮発性のあるストレージを、この目的のために利用してはいけません。</p>
         </div>
 
       </div><!--/span-->

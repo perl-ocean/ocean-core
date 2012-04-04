@@ -347,7 +347,7 @@ SEED-SHA                SSLv3 Kx=RSA      Au=RSA  Enc=SEED(128) Mac=SHA1</pre>
                 </tr>
               </thead>
               <tbody>
-                <tr><td>max_attempt</td><td>一つの接続からの認証試行回数の最大値です。この数をオーバーして認証失敗すると、サーバーは接続を切断し、<b>Authen</b>カテゴリの <b>on_too_many_auth_attempt</b> イベントを呼びます。</td></tr>
+                <tr><td>max_attempt</td><td>一つの接続からの認証試行回数の最大値です。この数をオーバーして認証失敗すると、サーバーは接続を切断し、<b>Authen</b>カテゴリの <a href="devauthen.html#on_too_many_auth_attempt">on_too_many_auth_attempt</a> イベントを呼びます。</td></tr>
                 <tr><td>mechanisms</td><td>サーバーが許可するSASL認証のメカニズムのリストです。<b>PLAIN</b>、<b>CRAM-MD5</b>、<b>DIGEST-MD5</b>、<b>X-OAUTH2</b>の四つから複数選択できます。</td></tr>
               </tbody>
             </table>

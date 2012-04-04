@@ -110,6 +110,10 @@
           <div class="span12">
             <h3 id="on_too_many_auth_attempt">on_too_many_auth_attempt</h3>
 
+            <p>コンフィグで指定された数値以上の回数、ストリームが認証を連続して失敗した場合にこのイベントが呼ばれます。不正アクセスの検知などに利用するとよいでしょう。</p>
+
+            <p>コンフィグ値の設定については<a href="configuration.html#sasl">コンフィギュレーションガイド [ SASL認証セクション ]</a>を参照するとよいでしょう。</p>
+
             <p>引数として<b>Ocean::HandlerArgs::TooManyAuthAttempt</b>を受け取ります。このオブジェクトは次のアクセサを持ちます。</p>
 
             <table class="table table-striped table-bordered">
