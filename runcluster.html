@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li>
+              <a href="protocol.html">Protocol</a>
+            </li>
+            <li>
+              <a href="development.html">Development</a>
+            </li>
+            <li class="active">
+              <a href="#">Cluster</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="cluster.html">概要</a></li>
+        <li><a href="#">チュートリアル</a></li>
+        <li><a href="#">データベース</a></li>
+        <li><a href="#">実装</a></li>
+        <li><a href="clusterconfiguration.html">コンフィギュレーション</a></li>
+        <li class="active"><a href="#">サービスの開始</a></li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="">Hoge</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>サービスの開始</h2>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>Gearmanの準備</h2>
+            <p>gearmandを起動しておきます。<a href="cluster.html">概要</a>で説明した通り、二つのタイプのgearmandを準備しておかなければなりません。</p>
+            <h3>Background Dispatcher</h3>
+            <p>フロントエンドノードから受け取ったイベントを、デリバリーサービスに配送するために利用されるのが、このタイプのキューです。</p>
+
+            <h3>Inbox</h3>
+            <p>フロントエンドノード一台に対して、一つのgearmandが割り当てられます。</p>
+            <div class="alert alert-block">
+              <p>フロントエンドノードと一蓮托生なので、同じマシンで起動しておくのがよいでしょう。</p>
+            </div>
+
+            <p>各サーバーで次のように、gearmandを起動しておきます</p>
+            <pre>gearmand --port 7001</pre>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>デリバリーサービスの準備</h2>
+            <p>事前に起動してある<b>Background Dispatcher</b>や、各フロントエンドノードのための<b>Inbox</b>キューのアドレスなどをコンフィグで指定しておきます。詳しくは<a href="clusterconfiguration.html">クラスターコンフィギュレーション [ デリバリーサービス ]</a>を参照して下さい。</p>
+
+            <p>起動と同時に<b>Background Dispatcher</b>につなぎにいくので、デリバリーサービスを起動するのは、<b>Background Dispatcher</b>が起動した後でなければなりません。</p>
+            <pre>./bin/ocean-cluster-start</pre>
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+
+            <h2>フロントエンドノードの準備</h2>
+
+            <p>最後に、フロントエンドノードを起動します。フロントエンドノードを起動するときは、<b>Background Dispatcher</b>、<b>デリバリーサービス</b>や、このノードに対応する<b>Inbox</b>は、既に起動していなければなりません。</p>
+            <p>次の三つを除けば、<a href="runserver.html">開発ガイド - サービスの開始</a>で説明した手順と同じです。</p>
+
+            <ul>
+              <li>プロジェクトテンプレート生成時に<b>ocean-cluster-frontend</b>コマンドを利用</li> 
+              <li>コンフィグの設定</li> 
+              <li>ルーティングの設定</li> 
+            </ul>
+            <pre>./bin/ocean-start</pre>
+
+          </div><!--/span-->
+        </div><!--/row-->
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2>注意</h2>
+            <p>以上のように、手順としては次のようになります。</p>
+            <ol>
+              <li>Background Dispatcherとなるgearmandの起動</li> 
+              <li>デリバリーサービスの起動</li> 
+              <li>各Inboxとなるgearmandとフロントエンドノードのセットの起動</li> 
+            </ol>
+
+            <p>ただし、3のコンフィグをあらかじめ設定しておかなければ、2のデリバリーサービスの設定が完了出来ません。
+            デリバリーサービスのコンフィグでは、必要なフロントエンドノードのノードIDと、それに対応するInboxのサーバーアドレスなどが必要になるためです。複数のフロントエンドノードでノードIDなど重複しないように気をつけて下さい。</p>
+
+            <div class="alert alert-block">
+              <p>将来はノードマネージャサーバーを追加し、ノードIDなどは、DHCPのように自動設定できるようにするかもしれません。</p>
+            </div>
+          </div><!--/span-->
+        </div><!--/row-->
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>
