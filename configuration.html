@@ -154,6 +154,7 @@
   type: print
   formatter: color
   level:  info
+  show_packets: yes
   filepath: __path_to(var/log/ocean.log)__</pre>
             <p>ログセクションでは、<b>type</b>の値次第で、他に要求される設定項目が変わります。例えば、<b>type</b>を<b>file</b>にした場合は、ログをファイルに保存するモードになり、保存先を指定する<b>filepath</b>項目の記述が必要になります。</p>
 
@@ -170,6 +171,7 @@
                 <tr><td>type</td><td><b>print</b>、<b>warn</b>、<b>file</b>、<b>syslog</b>の四つから選択します。</td></tr>
                 <tr><td>formatter</td><td><b>default</b>、<b>color</b>、<b>simple</b>の三つから選択します。</td></tr>
                 <tr><td>level</td><td><b>crit</b>、<b>warn</b>、<b>info</b>、<b>debug</b>の四つから選択します。</td></tr>
+                <tr><td>show_packets</td><td><b>yes</b>、<b>no</b>から選択します。</td></tr>
               </tbody>
             </table>
 

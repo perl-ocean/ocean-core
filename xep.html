@@ -138,6 +138,36 @@
           <div class="span12">
             <h2 id="chatstate">Chat State Notification</h2>
             <p><a href="http://xmpp.org/extensions/xep-0085.html">XEP-0085 Chat State Notification</a></p>
+            <p>[画像が入る]</p>
+            <p>メッセンジャーを利用しているとき、上の画像のように、<b>「書き込み中です」</b>というような表示を見たことがないでしょうか。</p>
+            <p>これは、この<b>Chat State Notification</b>を利用して実現されます。実際は、messageスタンザにエレメントを一つ追加するだけです。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit/elsinore' type='chat'&gt;
+  &lt;composing xmlns='http://jabber.org/protocol/chatstates'/&gt;
+&lt;/message&gt;</pre>
+
+            <p>次のように<b>body</b>と一緒に送信することもあります。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit/elsinore' type='chat'&gt;
+  &lt;active xmlns='http://jabber.org/protocol/chatstates'/&gt;
+  &lt;body&gt;Hi!&lt;/body&gt;
+&lt;/message&gt;</pre>
+
+            <p>この例では、<b>composing</b>を使いましたが、全部で次のようなステートが定義されています。</p>
+            <ul>
+              <li>active</li> 
+              <li>composing</li> 
+              <li>paused</li> 
+              <li>inactive</li> 
+              <li>gone</li> 
+            </ul>
+
+            <div class="alert alert-block">
+              <p>ユーザーに対してどのように表示して見せるかは、クライアントの実装次第です。</p>
+            </div>
+
           </div>
         </div>
 
@@ -147,6 +177,26 @@
           <div class="span12">
             <h2 id="xhtml">XHTML-IM</h2>
             <p><a href="http://xmpp.org/extensions/xep-0071.html">XEP-0071 XHTML-IM</a></p>
+
+            <p>次のようにHTMLバージョンのメッセージを足すことが出来ます。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;message from='bernardo@shakespeare.lit/pda' to='francisco@shakespeare.lit/elsinore' type='chat'&gt;
+  &lt;body&gt;Hi!&lt;/body&gt;
+  &lt;html xmlns='http://jabber.org/protocol/xhtml-im'&gt;
+    &lt;body xmlns='http://www.w3.org/1999/xhtml'&gt;
+      &lt;p style='font-weight:bold'&gt;hi!&lt;/p&gt;
+    &lt;/body&gt;
+  &lt;/html&gt;
+&lt;/message&gt;</pre>
+
+            <p>絵文字を送信したいという要望では、この拡張を利用して<b>img</b>タグを含められるようにするとよいかもしれません。</p>
+            <p>小さいバイナリをクライアントtoクライアントで送信する<a href="http://xmpp.org/extensions/xep-0231.html">XEP-0231 Bits of Binary</a>や、<a href="http://xmpp.org/extensions/xep-0047.html">XEP-0047 In-Band Byte Streams</a>のような拡張仕様もあるのですが、Webサービスとの連動であれば<b>XHTML-IM</b>で<b>img</b>にURLを埋めるのが楽かもしれません。</p>
+
+            <div class="alert alert-block">
+              <p>当然ですが、クライアントは受信したHTMLを、検証、フィルタリングすることが推奨されます。</p>
+            </div>
+
           </div>
         </div>
 
