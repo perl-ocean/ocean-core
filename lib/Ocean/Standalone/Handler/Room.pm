@@ -72,7 +72,6 @@ sub on_room_list_request {
         $item->room_nickname($room->nickname);
         $builder->add_item_builder($item);
     }
-
     $ctx->deliver($builder->build());
 }
 

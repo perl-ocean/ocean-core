@@ -5,6 +5,8 @@ use warnings;
 
 use parent 'Ocean::StreamComponent::IO::Socket';
 
+use Ocean::Config;
+use Ocean::Util::Config qw(value_is_true);
 use Ocean::Util::AnyEvent qw(refresh_write_buffer_memory);
 use Socket ();
 use Log::Minimal;
@@ -62,7 +64,8 @@ sub _initialize_handle {
     $handle->on_read(sub {
         my $data = $handle->rbuf;
         $handle->rbuf = '';
-        debugf('<Stream> <Socket> @packet_in ' . $data);
+        infof('<Stream> <Socket> @packet_in ' . $data)
+            if value_is_true( Ocean::Config->instance->get(log => q{show_packets}) );
         #$data = Encode::decode_utf8($data);
         $self->{_delegate}->on_socket_read_data(\$data);     
     });
@@ -114,7 +117,8 @@ sub accept_tls {
 
 sub push_write {
     my ($self, $data) = @_;
-    debugf('<Stream> <Socket> @packet_out ' . $data);
+    infof('<Stream> <Socket> @packet_out ' . $data)
+            if value_is_true( Ocean::Config->instance->get(log => q{show_packets}) );
     $self->{_handle}->push_write($data);
 }
 

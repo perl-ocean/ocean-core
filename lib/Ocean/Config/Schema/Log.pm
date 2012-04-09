@@ -10,6 +10,7 @@ sub config {
         mapping  => {
             type         => { type => 'str', required => 1 }, 
             level        => { type => 'str', required => 1 }, 
+            show_packets => { type => 'bool' },
             date_pattern => { type => 'str' }, 
             filepath     => { type => 'str' }, 
             tz           => { type => 'str' }, 

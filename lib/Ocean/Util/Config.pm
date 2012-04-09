@@ -10,9 +10,18 @@ use File::Spec ();
 
 our %EXPORT_TAGS = (all => [qw(
     project_home
+    value_is_true
 )]);
 
 our @EXPORT_OK = map { @$_ } values %EXPORT_TAGS;
+
+sub value_is_true {
+    my $value = shift;
+    return (  $value eq '1' 
+           || $value eq 'yes' 
+           || $value eq 'true' 
+       ) ? 1 : 0;
+}
 
 sub project_home {
     my $self = shift;

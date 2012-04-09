@@ -28,6 +28,7 @@ log:
   type: print
   formatter: color
   level: info
+  show_packets: yes
   filepath: __path_to(<: $layout.relative_path_for('log_dir') :>/ocean.log)__
 
 sasl:
