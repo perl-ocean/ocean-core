@@ -17,10 +17,11 @@ our @EXPORT_OK = map { @$_ } values %EXPORT_TAGS;
 
 sub value_is_true {
     my $value = shift;
-    return (  $value eq '1' 
+    return (  $value && ( 
+              $value eq '1' 
            || $value eq 'yes' 
            || $value eq 'true' 
-       ) ? 1 : 0;
+       ) ) ? 1 : 0;
 }
 
 sub project_home {
