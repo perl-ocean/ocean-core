@@ -1,0 +1,60 @@
+#!/usr/bin/env perl
+
+eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}' if 0;
+
+use strict;
+use warnings;
+
+use Cwd ();
+use Ocean::ProjectTemplate::Shell::Default;
+use Ocean::ProjectTemplate::Dumper;
+use Ocean::ProjectTemplate::DiskIO::Default;
+use Ocean::ProjectTemplate::Display::Default;
+use Ocean::ProjectTemplate::Renderer::Xslate;
+
+use Ocean::Jingle::STUN::ProjectTemplate::LayoutDesigner;
+
+my $disk_io  = Ocean::ProjectTemplate::DiskIO::Default->new;
+my $display  = Ocean::ProjectTemplate::Display::Default->new;
+my $renderer = Ocean::ProjectTemplate::Renderer::Xslate->new;
+
+my $designer = Ocean::Jingle::STUN::ProjectTemplate::LayoutDesigner->new;
+
+my $dumper = Ocean::ProjectTemplate::Dumper->new(
+    disk_io  => $disk_io,
+    display  => $display,
+    renderer => $renderer,
+);
+
+my $shell = Ocean::ProjectTemplate::Shell::Default->new(
+    dumper          => $dumper,
+    renderer        => $renderer,
+    display         => $display,
+    layout_designer => $designer,
+);
+
+$shell->run_at( Cwd::getcwd() );
+
+=head1 NAME
+
+ocean-stun - Ocean STUN Server Project Template Generator with Default Setting
+
+=head1 SYNOPSIS
+
+run this script and and answer for some questions
+
+    ./ocean-stun
+
+=head1 AUTHOR
+
+Lyo Kato, E<lt>lyo.kato@gmail.comE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2012 by Lyo Kato
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut

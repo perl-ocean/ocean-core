@@ -13,6 +13,10 @@ use Ocean::Stanza::DeliveryRequest::DiscoItems;
 use Ocean::Stanza::DeliveryRequest::DiscoItem;
 use Ocean::XML::Namespaces qw(MUC VCARD JINGLE_INFO);
 
+sub _initialize {
+    my $self = shift;
+}
+
 sub on_client_received_message {
     my ($self, $message) = @_;
     $self->{_delegate}->on_protocol_handle_message($message);
