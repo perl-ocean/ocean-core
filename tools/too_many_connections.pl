@@ -6,11 +6,9 @@ use AnyEvent::XMPP::IM::Connection;
 use AnyEvent;
 use feature 'say';
 
-sub connect_and_disconnect {
+sub connect {
 
     my ($jid, $password, $host, $port) = @_;
-
-    my $j = AnyEvent->condvar;
 
     my $conn = AnyEvent::XMPP::IM::Connection->new(
         jid      => $jid,
@@ -22,24 +20,28 @@ sub connect_and_disconnect {
     $conn->reg_cb(
         session_ready => sub {
             say 'SESSION READY'; 
-            $conn->disconnect();
+            #$conn->disconnect();
         }, 
-        disconnect => sub {
-            say 'DISCONNECTED'; 
-            $j->send();
-        },
     );
     $conn->connect();
 
-    $j->wait();
+    return $conn;
 }
 
 
 sub main {
     my ($host, $port, $jid, $password, $count) = @ARGV;
+
+    my $j = AnyEvent->condvar;
+
+    my @conns;
+
     for (; $count > 0; $count--) {
-        &connect_and_disconnect($jid, $password, $host, $port);
+        push(@conns, 
+            &connect($jid, $password, $host, $port));
     }
+
+    $j->wait();
 }
 
 &main();
@@ -48,15 +50,15 @@ __END__
 
 =head1 NAME
 
-connect_and_disconnect - performance test
+too_many_connection - performance test
 
 =head1 SYNOPSIS
 
-    perl ./connect_and_disconnect.pl <HOST> <PORT> <JID> <PORT> <COUNT>
+    perl ./too_many_connections.pl <HOST> <PORT> <JID> <PASSWORD> <COUNT>
 
 Example
 
-    perl ./connect_and_disconnect.pl 127.0.0.1 5222 username@xmpp.example.org password 10
+    perl ./too_many_connections.pl 127.0.0.1 5222 username@xmpp.example.org password 10
 
 =head1 AUTHOR
 
