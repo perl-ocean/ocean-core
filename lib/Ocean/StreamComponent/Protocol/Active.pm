@@ -15,26 +15,31 @@ use Ocean::XML::Namespaces qw(MUC VCARD JINGLE_INFO);
 
 sub on_client_received_presence {
     my ($self, $presence) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_initial_presence($presence);
 }
 
 sub on_client_received_roster_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_roster_request($req);
 }
 
 sub on_client_received_vcard_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_vcard_request($req)
 }
 
 sub on_client_received_ping {
     my ($self, $ping) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_ping($ping);
 }
 
 sub on_client_received_disco_info_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     my $domain = Ocean::Config->instance->get(server => q{domain});
     my $info = Ocean::Stanza::DeliveryRequest::DiscoInfo->new({
         id   => $req->id,
@@ -57,6 +62,7 @@ sub on_client_received_disco_info_request {
 
 sub on_client_received_disco_items_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     my $domain = Ocean::Config->instance->get(server => q{domain});
     my $items = Ocean::Stanza::DeliveryRequest::DiscoItems->new({
         id   => $req->id,
@@ -75,6 +81,7 @@ sub on_client_received_disco_items_request {
 
 sub on_client_received_room_service_info_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     my $domain = Ocean::Config->instance->get(muc => q{domain});
     my $info = Ocean::Stanza::DeliveryRequest::DiscoInfo->new({
         id   => $req->id,
@@ -93,51 +100,61 @@ sub on_client_received_room_service_info_request {
 
 sub on_client_received_room_info_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_info_request($req);
 }
 
 sub on_client_received_room_list_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_list_request($req);
 }
 
 sub on_client_received_room_members_list_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_members_list_request($req);
 }
 
 sub on_client_received_room_message {
     my ($self, $message) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_message($message);
 }
 
 sub on_client_received_room_invitation {
     my ($self, $invitation) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_invitation($invitation);
 }
 
 sub on_client_received_room_invitation_decline {
     my ($self, $decline) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_invitation_decline($decline);
 }
 
 sub on_client_received_room_presence {
     my ($self, $presence) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_room_presence($presence);
 }
 
 sub on_client_received_leave_room_presence {
     my ($self, $presence) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_leave_room_presence($presence);
 }
 
 sub on_client_received_jingle_info_request {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_jingle_info_request($req);
 }
 
 sub on_client_received_iq_toward_user {
     my ($self, $req) = @_;
+    $self->stanza_countup();
     $self->{_delegate}->on_protocol_handle_iq_toward_user($req);
 }
 

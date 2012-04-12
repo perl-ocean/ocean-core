@@ -4,13 +4,20 @@ use strict;
 use warnings;
 
 use Ocean::Error;
+use Ocean::Config;
 use Ocean::Constants::StreamErrorType;
+use Log::Minimal;
+
+use constant DEFAULT_STANZA_COUNTER_EXPIRATION =>  60;
+use constant DEFAULT_MAX_STANZA_COUNT          => 500;
 
 sub new {
     my ($class, %args) = @_;
     my $self = bless {
         %args,
-        _delegate => undef,
+        _delegate                  => undef,
+        _stanza_counter            => 0,
+        _stanza_counter_expiration => 0,
     }, $class;
     $self->_initialize();
     return $self;
@@ -18,6 +25,38 @@ sub new {
 
 sub _initialize {
     my $self = shift;
+}
+
+sub stanza_countup {
+    my $self = shift;
+
+    return unless Ocean::Config->instance->get(server => q{use_stanza_counter});
+
+    my $t = time();
+
+    if ($t > $self->{_stanza_counter_expiration}) {
+        # refresh
+        my $exp = Ocean::Config->instance->get(server => q{stanza_counter_expiration})
+            || DEFAULT_STANZA_COUNTER_EXPIRATION;
+        $self->{_stanza_counter} = 0;
+        $self->{_stanza_counter_expiration} = $t + $exp;
+    }
+
+    $self->{_stanza_counter}++;
+
+    my $max = Ocean::Config->instance->get(server => q{max_stanza_count})
+        || DEFAULT_MAX_STANZA_COUNT;
+
+    if ($self->{_stanza_counter} >= $max) {
+        # refresh
+        $self->{_stanza_counter}            = 0;
+        $self->{_stanza_counter_expiration} = 0;
+
+        $self->{_delegate}->on_protocol_handle_too_many_stanza();
+        return 0;
+    }
+
+    return 1;
 }
 
 sub set_delegate {

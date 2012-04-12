@@ -354,6 +354,20 @@ sub on_protocol_handle_too_manay_auth_attempt {
         $self->host, $self->port);
 }
 
+sub on_protocol_handle_too_many_stanza {
+    my $self = shift;
+
+    if ($self->is_bound) {
+        warnf('<Stream:JID:%s> @too_many_stanza', $self->bound_jid->node);
+    } else {
+        warnf('<Stream:FD:%s> @too_many_stanza', $self->id);
+    }
+
+    Ocean::Error::ProtocolError->throw(
+        type => Ocean::Constants::StreamErrorType::POLICY_VIOLATION, 
+    );
+}
+
 sub on_protocol_handle_sasl_auth {
     my ($self, $auth) = @_;
     $self->[SERVER]->on_stream_handle_sasl_auth($self->id, $auth);

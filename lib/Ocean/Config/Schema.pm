@@ -25,6 +25,9 @@ sub config {
                     report_interval => { type => 'int', required => 1 }, 
                     pid_file        => { type => 'str' }, 
                     context_class   => { type => 'str' }, 
+                    use_stanza_counter        => { type => 'bool' }, 
+                    stanza_counter_expiration => { type => 'int'  },
+                    max_stanza_count          => { type => 'int'  }, 
                 },
             },
             event_handler => {

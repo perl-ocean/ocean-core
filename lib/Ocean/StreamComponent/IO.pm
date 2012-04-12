@@ -268,7 +268,7 @@ sub on_socket_read_data {
     }
     try {
         $self->[DECODER]->feed(substr($$data, 0, length($$data), ''))
-            if $self->[DECODER];
+            if $self->[DECODER] && !$self->[IS_CLOSING];
     } catch {
         $self->_handle_client_event_error($_);
     };

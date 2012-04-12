@@ -21,6 +21,9 @@ server:
   timeout: 300
   max_read_buffer: 10000
   report_interval: 60
+  use_stanza_counter: yes
+  stanza_counter_expiration: 60
+  max_stanza_count: 1000
   pid_file: __path_to(<: $layout.relative_path_for('run_dir') :>/ocean.pid)__
   context_class: <: $context.get('context_class') :>
 

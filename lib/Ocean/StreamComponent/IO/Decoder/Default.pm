@@ -123,7 +123,8 @@ sub feed {
             $self->_do_initialize();
         }
     } catch {
-        warnf("<Stream> <Decoder> Received invalid XML: %s", "$_");
+        #warnf("<Stream> <Decoder> Received invalid XML: %s", "$_");
+        $self->_release_parser();
         Ocean::Error::ProtocolError->throw(
             type => Ocean::Constants::StreamErrorType::INVALID_XML,
         );
