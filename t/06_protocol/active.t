@@ -12,7 +12,7 @@ use Try::Tiny;
 
 use Ocean::Test::Spy::Stream;
 
-my $config_file = q{t/data/config/example.ini};
+my $config_file = q{t/data/config/example.yml};
 Ocean::Config->initialize(
     path   => $config_file,
     schema => Ocean::Config::Schema->config,
