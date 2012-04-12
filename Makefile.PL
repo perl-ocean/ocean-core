@@ -57,9 +57,9 @@ requires(
     #'Net::RabbitFoot'           => '',
 
     # Jingle::STUN
-    #'AnyEvent::Handle::UDP'     => 0.032,
-    #'Tie::Hash::Indexed'        => 0.05,
-    #'Authen::SASL::SASLprep'    => 1.01,
+    'AnyEvent::Handle::UDP'     => 0.032,
+    'Tie::Hash::Indexed'        => 0.05,
+    'Authen::SASL::SASLprep'    => 1.01,
 
     # XMPP XHTML-IM
     'HTML::Scrubber'             => 0.09,
@@ -70,13 +70,13 @@ requires(
     'Teng'                      => '',
 
     # TOOLS
-    'Contextual::Return'    => 0,
-    'Devel::Mallinfo'       => 0,
-    'Module::Depends'       => 0,
-    'Number::Bytes::Human'  => 0,
-    'Devel::Leak::Object'   => 0,
-    'Test::TCP'             => 0,
-    'GTop'                  => 0,
+    #'Contextual::Return'    => 0,
+    #'Devel::Mallinfo'       => 0,
+    #'Module::Depends'       => 0,
+    #'Number::Bytes::Human'  => 0,
+    #'Devel::Leak::Object'   => 0,
+    #'Test::TCP'             => 0,
+    #'GTop'                  => 0,
 );
 
 tests('t/*.t t/*/*.t t/*/*/*.t');
@@ -95,6 +95,7 @@ test_requires(
 
 install_script 'bin/ocean';
 install_script 'bin/ocean-standalone';
+install_script 'bin/ocean-stun';
 install_script 'bin/ocean-cluster-frontend';
 install_script 'bin/ocean-cluster-backend';
 install_script 'bin/ocean-cluster-backend-standalone';
