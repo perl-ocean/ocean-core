@@ -36,6 +36,9 @@
             <li>
               <a href="cluster.html">Cluster</a>
             </li>
+            <li>
+              <a href="media.html">Media Support</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -138,6 +141,9 @@
                 <tr><td>timeout</td><td>ここで指定した秒数分、クライアントから何の反応も無い場合、その接続を切断します。<a href="protocolscenario.html#timeout">ログインからログアウトまでのケーススタディ [ タイムアウト ]</a>もあわせて参照するとよいでしょう。</td></tr>
                 <tr><td>max_read_buffer</td><td>一つ一つのクライアントからのコネクションのリードバッファのバイトサイズの最大値です。</td></tr>
                 <tr><td>report_interval</td><td>サーバーは、ここで指定された秒数毎にNodeイベントカテゴリのon_timer_reportイベントハンドラを呼び出します。</td></tr>
+                <tr><td>use_stanza_counter</td><td>スタンザのカウンタ制御を行うかどうかを<b>yes</b>, <b>no</b>で指定します。</td></tr>
+                <tr><td>stanza_counter_expiration</td><td><b>use_stanza_counter</b>が<b>yes</b>の場合、秒数を指定します。指定された秒数を越えるとカウンタがリフレッシュされます。</td></tr>
+                <tr><td>max_stanza_count</td><td><b>use_stanza_counter</b>が<b>yes</b>の場合、最大スタンザ数を指定します。<b>stanza_counter_expiration</b>で指定された秒数内に、ここで指定した数を越えるスタンザを受け取った場合、サーバーは警告ログを吐いて、そのコネクションを切断します。</td></tr>
                 <tr><td>pid_file</td><td>デーモン化した場合に、ここで指定されたファイルパスにPIDファイルを作成します。デーモン化しない場合はここの値は利用されません。<a href="runserver#daemon">サービスの開始 [ デーモン化 ]</a>を合わせて参照するとよいでしょう。</td></tr>
                 <tr><td>context_class</td><td>プロジェクトテンプレートジェネレータ実行時に回答したコンテキストクラスの名前が自動的に指定されています。基本的には自分でこの項目を編集する必要はありません。</td></tr>
               </tbody>
@@ -171,7 +177,7 @@
                 <tr><td>type</td><td><b>print</b>、<b>warn</b>、<b>file</b>、<b>syslog</b>の四つから選択します。</td></tr>
                 <tr><td>formatter</td><td><b>default</b>、<b>color</b>、<b>simple</b>の三つから選択します。</td></tr>
                 <tr><td>level</td><td><b>crit</b>、<b>warn</b>、<b>info</b>、<b>debug</b>の四つから選択します。</td></tr>
-                <tr><td>show_packets</td><td><b>yes</b>、<b>no</b>から選択します。</td></tr>
+                <tr><td>show_packets</td><td>実際にクライアントとやりとりしてるXMLを、ログに表示するかどうか。<b>yes</b>、<b>no</b>から選択します。</td></tr>
               </tbody>
             </table>
 
