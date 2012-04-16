@@ -68,7 +68,108 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="overview">メディアサポートガイド</h2>
+            <h2 id="title">メディアサポートガイド</h2>
+            <p>ここでは、XMPPを利用して、どのようにボイスチャットやビデオチャットを実現するのかを解説していきます。</p>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="jingle">Jingle</h2>
+            <p>XMPPには<b>Jingle</b>という拡張があり、これがボイスチャットやビデオチャットを実現するためのものになります。</p>
+            <p>関連する拡張とまとめて参照先を挙げておきます。</p>
+            <ul>
+              <ul><a href="http://xmpp.org/extensions/xep-0166.html">XEP-166: Jingle</a></ul> 
+              <ul><a href="http://xmpp.org/extensions/xep-0167.html">XEP-167: Jingle RTP Sessions</a></ul> 
+              <ul><a href="http://xmpp.org/extensions/xep-0176.html">XEP-176: Jingle ICE-UDP Transport Method</a></ul> 
+              <ul><a href="http://xmpp.org/extensions/xep-0177.html">XEP-177: Jingle RAW UDP Transport Method</a></ul> 
+            </ul>
+            <p>ボイスチャットやビデオチャットでは、音声や映像などのメディアデータを通信相手とやりとりすることになります。このようなデータをXMPPサーバーを介してやり取りするとサーバーに大きな負荷がかかるので、クライアントは、こういったデータを、通信相手と<b>P2P</b>で直接やりとりするのが基本です。</p>
+            <p>ただし、P2Pでのメディアデータのやりとりを行うセッションの管理は、XMPPサーバーとの接続を利用します。XMPPサーバーを仲介するかたちで、ボイスチャットの開始リクエストや、終了リクエスト、そこで利用されるコーデックの候補など、セッションに関連する情報を通信相手とやりとりします。</p>
+
+            <p>[図が入る]</p>
+
+            <p>VoIPのコンテキストにおいて、上のXMPPとクライアントとの接続のように、セッションに関する情報をやり取りするチャンネルのことを<b>シグナリングチャンネル</b>、メディアのデータをやりとりするクライアント同士のP2Pの接続のチャンネルを<b>データチャンネル</b>と呼びます。</p>
+
+            <p>このように、二つのチャンネルを利用するということをまずは理解して下さい。</p>
+
+            <p><b>Jingle</b>では、<b>シグナリングチャンネル</b>を利用した、クライアント同士のセッション確立のためには<b>ICE</b>という仕様を利用します。データチャンネルでのデータ転送には<b>RTP/RTCP</b>を利用します。これらについては後で解説します。</p>
+
+            <div class="alert alert-block">
+              <p>ICEやRTP/RTCP以外を使うことも出来ないわけではないですが、Jingleにおいては、これらがデファクトスタンダードになっています。</p>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="nattraversal">NAT Traversal</h2>
+            <p>さて、データチャンネルのP2Pコネクションが簡単に確立できればよいのですが、大抵の場合は簡単にはいきません。NATによるfirewallやIPマスカレード(NAPT)などの問題があるからです。</p>
+
+            <p>[図が入る]</p>
+
+            <p>NATを越えてP2P通信を実現するための議論というのが、昔から継続されていて、様々な方法が公安、実践されています。</p>
+
+            <p>その<b>NAT越え(NAT Traversal)</b>の手段の中で、現在よく使われているものが<b>ICE</b>です。他にもUPnPとか、Simultaneous TCP Openだとか、色々な方法があるのですが、ここでは省略します。</p>
+
+            <p>ICEでは、基本的には、NAT越えにおいてもっともベーシックな<b>UDP Hole Punching</b>を行い、そのために<b>STUN</b>というプロトコルを利用します。</p>
+
+            <p>ここで、NATの種類とUDP Hole Punchingについて少し言及しておきます。以前は、NATは大きくわけて4種類になると考えられていました。なので、まずクライアントに対応するNATが4種類のうちのどれに該当するのかをチェックし、それぞれの攻略法に従って穴を空けようという戦略です。ところが、現在では様々なNATが存在し、このような固定された分類はあまりあてにならないとされるようになりました。しかし、それぞれの性質自体は一度見ておくとよいと思います。</p>
+
+            <p>NATの種類は次に挙げられるものになります。</p>
+
+            <ul>
+              <li><b>Full Cone NAT</b></li>
+              <li><b>Restricted Cone NAT</b></li>
+              <li><b>Port-Restricted Cone NAT</b></li>
+              <li><b>Symmetric NAT</b></li>
+            </ul>
+            
+            <p>詳しくはこちらを参照するとよいでしょう。<a href="http://ja.wikipedia.org/wiki/ネットワークアドレス変換">Wikipedia - ネットワークアドレス変換</a></p>
+            
+            <div class="alert alert-block">
+              <p>この分類は古いSTUNである<a href="http://tools.ietf.org/html/rfc3489">RFC3489</a>で定義されています。現在ではSTUNは新しく定義しなおされて<a href="http://tools.ietf.org/html/rfc5389">RFC5389</a>になっています。</p>
+            </div>
+
+            <p>現在では、NATのそれぞれの振舞いについて<a href="http://www.ietf.org/rfc/rfc4787.txt">RFC4787</a>で、別々に分類がなされています。</p>
+
+            <p>振舞いの種類は次に挙げられるものになります。</p>
+
+            <ul>
+              <li><b>Mapping Behavior</b></li>
+              <li><b>Port Assignment Behavior</b></li>
+              <li><b>Filtering Behavior</b></li>
+              <li><b>Hairpinning Behavior</b></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="offeranswer">Offer/Answerモデル</h2>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="sip">SIP</h2>
+            <p>ここでSIPというプロトコルについて少し紹介しておきます。</p>
+
+            <p><a href="http://www.ietf.org/rfc/rfc3261.txt">RFC3261 Session Initiation Protocol (SIP)</a></p>
+            <p>いわゆる<b>IP電話</b>に利用されているプロトコルで、上で説明したシグナリングチャンネルとして利用されています。</p>
+
+            <p>[図が入る]</p>
+
+            <p>SIPにおいても、当然データチャンネルでNAT越えが必要になる場合があります。XMPP上のJingleで利用されるNAT越えのための各種プロトコルは、もともとSIPのコンテキストで議論されていたものがほとんどです。関連のドキュメントもSIPと組み合わせて解説されているものも多いです。</p>
+
+            <p>例: <a href="http://tools.ietf.org/html/rfc6314">Practices for Client-Server SIP</a></p>
+
+            <p>なので、これらの関連プロトコルで頻出する用語も、もともとSIP絡みのVoIPで利用されていたものが多くなります。Jingleを学習しだすと、これまでのXMPPの用語ではなく、SIP/VoIPの用語が頻出するので戸惑うことになるかもしれません。そういうわけで、直接SIPを利用しなかったとしても、この分野(jingle)を学習する場合は、事前にSIP関連の文献に一度目を通しておくことを奨めます。</p>
+
+            <p>余談ですが、SIPにも<b>SIMPLE(SIP for Instance Messaging and Presence Leveraging Extensions)</b>という、メッセージングとプレゼンスを扱うための拡張があります。
+
+            SIPは電話から始まって、テキストベースのメッセージとプレゼンスのサポートを後から拡張し、XMPPは逆にテキストベースのメッセージとプレゼンスから始まり、jingle拡張によってAudio/Videoチャットをサポートしたわけです。</p>
           </div>
         </div>
 
