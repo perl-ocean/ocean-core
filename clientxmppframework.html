@@ -6,6 +6,8 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -74,7 +76,34 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="xmppframework">XMPPFramework開発ガイド</h2>
+            <h2 id="xmppframework">XMPPFramework: Getting Started</h2>
+
+            <p>まず、中心となるのが<b>XMPPStream</b>クラスのオブジェクトになります。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+xmppStream = [[XMPPStream alloc] init];</pre>
+
+            <p>次のような形で、<b>XMPPStreamDelegate</b>のオブジェクトと、そのイベントを処理するキューを指定します。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+[xmppStream addDelegate:self delegateQueue:dispatch_get_main_queue()];</pre>
+
+            <p>スタンザを送信するときは、次のように、<b>XMPPIQ/XMPPMessage/XMPPPresence</b>などのオブジェクトを<b>sendElement:</b>に渡します。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+[xmppStream sendElement:elem];</pre>
+
+            <p>様々なヘルパーオブジェクトがあり、それらを次のように<b>XMPPStream</b>オブジェクトを<b>activate</b>しておきます。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+[xmppRoster activate:xmppStream];
+[xmppPing activate:xmppStream];
+[xmppReconnect activate:xmppStream];</pre>
+
           </div>
         </div>
 
@@ -89,6 +118,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>

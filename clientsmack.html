@@ -6,6 +6,8 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
+
 </head>
 
 <body>
@@ -74,7 +76,67 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2 id="smack">Smack開発ガイド</h2>
+            <h2 id="smack">Smack: Getting Started</h2>
+
+            <p>詳しくは以下の公式ドキュメントを参照するとよいでしょう。</p>
+            <ul>
+              <li><a href="http://www.igniterealtime.org/builds/smack/docs/latest/documentation/">http://www.igniterealtime.org/builds/smack/docs/latest/documentation/</a></li> 
+            </ul>
+
+            <p>まず中心となるのは<b>XMPPConnection</b>クラスになる。</p>
+
+            <p>namespaceの<b>org.jivesoftware.smack</b>は省略してあります。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+ConnectionConfiguration config = new ConnectionConfiguration(host, port, domain);
+XMPPConnection conn = new XMPPConnection(conf);
+conn.connect();
+conn.login(user, pass);
+if (conn.isAuthenticated()) {
+
+}
+conn.disconnect();</pre>
+
+
+            <p>スタンザの送信は次のように<b>sendPacket</b>を利用して行うことが出来る。</p>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+conn.sendPacket(new Presence(Presence.Type.available, "status", priority, Presence.Mode.available));</pre>
+
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="smack">Smack: MUC</h2>
+            
+            <p>詳しくは以下の公式ドキュメントを参照するとよいでしょう。</p>
+            
+            <ul>
+              <li><a href="http://www.igniterealtime.org/builds/smack/docs/latest/documentation/extensions/muc.html">http://www.igniterealtime.org/builds/smack/docs/latest/documentation/extensions/muc.html</a></li>
+              <li><a href="http://www.igniterealtime.org/builds/smack/docs/latest/javadoc/org/jivesoftware/smackx/muc/package-summary.html">http://www.igniterealtime.org/builds/smack/docs/latest/javadoc/org/jivesoftware/smackx/muc/package-summary.html</a></li>
+            </ul>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+MutiUserChat muc = new MultiUserChat(connection, "roomname@muc.example.org");
+muc.create("roomnick");
+muc.sendConfigurationForm(new Form(Form.TYPE_SUBMIT));</pre>
+
+            <span class="label label-info">SYNOPSIS</span>
+            <pre class="prettyprint">
+muc.join('nick');
+muc.addInvitationRejectionListener(new InvitationRejectionListener(){
+  public void invitationDeclined(String invitee, String reason) {}
+});
+MultiUserChat.addInvitationListener(conn, new InvitationListener(){
+  public void invitationReceived(Connection conn, String room, String inviter, String reason, String password) {
+        MultiUserChat.decline(conn, room, inviter, "busy");
+  }
+});</pre>
+
           </div>
         </div>
 
@@ -89,6 +151,14 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    try{
+      window.addEventListener("load",prettyPrint,false);
+    }catch(e){
+      window.attachEvent("onload",prettyPrint);
+    }
+  </script>
 
 </body>
 </html>

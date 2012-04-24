@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>Perl Ocean</title>
+
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        <a class="brand" href="#">Perl Ocean</a>
+        <div class="nav-collapse">
+          <ul class="nav">
+            <li>
+              <a href="index.html">Home</a>
+            </li>
+            <li>
+              <a href="installation.html">Getting Started</a>
+            </li>
+            <li class="active">
+              <a href="#">Protocol</a>
+            </li>
+            <li>
+              <a href="development.html">Development</a>
+            </li>
+            <li>
+              <a href="cluster.html">Cluster</a>
+            </li>
+            <li>
+              <a href="media.html">Media Support</a>
+            </li>
+            <li>
+              <a href="client.html">Client Libraries</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="subnav">
+      <ul class="nav nav-tabs">
+        <li><a href="protocol.html">概要</a></li>
+        <li><a href="protocoldatamodel.html">サービス</a></li>
+        <li><a href="protocolbackground.html">バックグラウンド</a></li>
+        <li><a href="protocolscenario.html">ケーススタディ</a></li>
+        <li><a href="xep.html">拡張(Misc)</a></li>
+        <li class="active"><a href="#">拡張(Groupchat)</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3">
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">目次</li>
+            <li><a href="#">Room JID</a></li>
+            <li><a href="#">Roomへの参加と離脱</a></li>
+            <li><a href="#">Roomでの発言</a></li>
+          </ul>
+        </div><!--/.well -->
+      </div><!--/span-->
+
+      <div class="span9">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="muc">MUC拡張について</h2>
+            <p>ここでは、グループチャットを実現するために用いられる拡張である<a href="http://xmpp.org/extensions/xep-0045.html">XEP-0045 MUC</a>について紹介していきます。<b>MUC</b>というのは<b>Multi User Chat</b>の略です。<b>Multi User Conference</b>と言われることもあります。</p>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="sd">Service Discovery</h2>
+            <p>Groupchatのサービスは、<a href="http://xmpp.org/extensions/xep-0030.html">XEP-0030 Service Discovery</a>の仕様に従い、ルートドメインにぶらさがった、サービスの一つとして提供されます。</p>
+
+            <p>[ここにService Discoveryの解説が入る]</p>
+
+            <p>上記のように、メインのIMサービスを提供しているドメインが<b>xmpp.example.org</b>だった場合、そこにぶら下がるサービスは、そのサブドメインで提供され、MUCの場合だと、<b>muc.xmpp.example.org</b>や<b>room.xmpp.example.org</b>などのように<b>muc</b>や<b>room</b>、<b>groupchat</b>などがサブドメインにされることが多いです。</p>
+
+            <p class="well">このように、MUCサービスを提供する場合、まずはそのドメインを決定しなければなりません。</p>
+
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="room_jid">Room JID</h2>
+            <p>グループチャットを行う場合、まずはチャットルームが必要になります。チャットルームも、ユーザーと同様にJIDで表現されます。</p>
+            <p>上のサービスディスカバリーで利用したMUCサービス用のドメインを利用することになります。ここでは仮に、MUC用のドメインを<b>muc.xmpp.example.org</b>として、話を進めることにします。</p>
+
+
+            <p>次のようにJIDのローカルパートにチャットルームの名前を利用します。</p>
+
+            <span class="label label-info">room JID</span>
+            <pre>room_name@muc.xmpp.example.org</pre>
+
+          </div>
+        </div>
+        
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="room_jid">Roomへの参加と離脱</h2>
+
+            <p><b>taro@xmpp.example.org/foobar</b>というJIDでサービスを利用中のユーザーが、<b>room1</b>という名前のチャットルームに参加したいときは、次のような<b>presence</b>を送信します。</p>
+
+            <span class="label label-info">client to server</span>
+            <pre>&lt;presence from="taro@xmpp.example.org" to="room1@muc.xmpp.example.org/Taro"/&gt;</pre>
+
+            <p>ここで、<b>to</b>に指定されているJIDに注目して下さい。</p>
+            <pre>room1@muc.xmpp.example.org/Taro</pre>
+
+            <p>上で紹介した<b>Room JID</b>に<b>Taro</b>という<b>リソース</b>がついたものになっています。</p>
+
+            <p>これは、room1というチャットルームの中で利用したい<b>ニックネーム</b>になります。</p>
+
+            <p>このように、チャットルームに参加しているメンバーのJIDは、次のように表現されます。</p>
+
+            <span class="label label-info">room member JID</span>
+            <pre>room_name@muc.xmpp.example.org/nickname</pre>
+
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12">
+            <h2 id="room_message">Roomでの発言</h2>
+          </div>
+        </div>
+
+      </div><!--/span-->
+    </div><!--/row-->
+
+    <hr />
+    <footer>
+      <p>&copy; Lyo Kato 2012</p>
+    </footer>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+
+</body>
+</html>
