@@ -5,6 +5,7 @@ use warnings;
 
 use base 'Exporter';
 use Ocean::JID;
+use Scalar::Util qw(blessed);
 
 our %EXPORT_TAGS = (all => [qw(
     to_jid
@@ -16,7 +17,7 @@ sub to_jid {
     my ($address) = @_;
     return (!$address)
         ? ""
-        : $address->isa("Ocean::JID") 
+        : blessed($address) && $address->isa("Ocean::JID")
             ? $address
             : Ocean::JID->new($address);
 }
