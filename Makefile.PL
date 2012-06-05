@@ -21,6 +21,7 @@ requires(
     'MIME::Base64'              => 3.13,
     'Digest'                    => 0,
     'Digest::SHA1'              => 2.13,
+    'Digest::HMAC_MD5'          => 0,
     'List::MoreUtils'           => 0.33,
     'Scalar::Util'              => 1.23,
     'Try::Tiny'                 => 0.11,
@@ -28,6 +29,7 @@ requires(
     'Data::Visitor::Lite'       => 0.03,
     'Data::Section::Simple'     => 0.0,
     'JSON'                      => 2.53,
+    'Data::MessagePack'         => 0,
     'URI'                       => 1.59,
     'File::Slurp'               => 9999.19,
     'Log::Minimal'              => 0.09,
@@ -56,6 +58,12 @@ requires(
     # Cluster::RabbitMQ
     #'AnyEvent::RabbitMQ'        => '',
     #'Net::RabbitFoot'           => '',
+
+    # Cluster::ProcessManager::Parallel
+    'Parallel::Prefork'         => 0,
+
+    # ProjectTemplate::Renderer
+    'Text::Xslate'              => 0,
 
     # Jingle::STUN
     # 'AnyEvent::Handle::UDP'     => 0.032,
