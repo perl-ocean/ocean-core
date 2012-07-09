@@ -19,6 +19,7 @@ sub initialize {
         $option{DatePattern} = $self->config('date_pattern') || 'yyyy-MM-dd';
         $option{TZ} = $self->config('tz') if $self->config('tz');
     }
+    $option{max} = $self->config('max') || 1;
     $self->{_dispatcher} = Log::Dispatch::FileRotate->new(%option);
 }
 
