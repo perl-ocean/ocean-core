@@ -13,13 +13,14 @@ sub new {
     my $self = bless {}, $class;
     $self->{_gearman} = Gearman::Client->new;
     $self->{_gearman}->job_servers($args{job_servers}||[]);
+    $self->{_queue_name} = $args{queue_name}||Ocean::Constants::Cluster::QUEUE_NAME;
     return $self;
 }
 
 sub dispatch {
     my ($self, $data) = @_;
     $self->{_gearman}->dispatch_background(
-        Ocean::Constants::Cluster::QUEUE_NAME,
+        $self->{_queue_name},
         $data,
     );
 }
