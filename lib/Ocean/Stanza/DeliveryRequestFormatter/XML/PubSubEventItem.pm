@@ -24,6 +24,9 @@ sub format {
             escape_xml_char($key)
         );
     }
+
+    $xml .= sprintf(q{</%s>},
+        escape_xml_char($item->name));
     $xml .= '</item>';
 }
 
