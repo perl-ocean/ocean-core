@@ -21,7 +21,8 @@ sub format {
         $xml .= sprintf(q{ to="%s"}, 
             $event->to);
     }
-    $xml .= '<event xmlns="http://jabber.org/protocol/pubsub#event">';
+    $xml .= '>';
+
     $xml .= sprintf(q{<event xmlns="%s">}, PUBSUB_EV);
     $xml .= sprintf(q{<items node="%s">}, 
         escape_xml_char($event->node));
