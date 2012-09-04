@@ -133,11 +133,11 @@ sub classify_iq_towerd_server_disco_items {
 
 sub classify_iq_toward_room_member {
     my ($class, $elem)  = @_;
-    #if ($elem->get_first_element_ns(DISCO_INFO, q{query})) {
-    #    return Ocean::Constants::EventType::ROOM_INFO_REQUEST;
-    #} else {
+    if ($elem->get_first_element_ns(DISCO_INFO, q{query})) {
+        return Ocean::Constants::EventType::ROOM_INFO_REQUEST;
+    } else {
         return Ocean::Constants::EventType::SEND_IQ_TOWARD_ROOM_MEMBER;
-    #}
+    }
 }
 
 sub classify_iq_toward_user {

@@ -224,7 +224,7 @@ sub on_room_invitation_decline {
     my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomInvitationDecline->new;
     $builder->room($room->name);
     $builder->from($sender_jid);
-    $builder->from($receiver_jid);
+    $builder->to($receiver_jid);
     $builder->reason($reason);
     $builder->thread($thread);
     $ctx->deliver($builder->build());
@@ -619,7 +619,6 @@ sub on_toward_room_member_iq {
     return unless $receiver;
 
     unless ($receiver->is_echo) {
-
         my $builder = 
             Ocean::Stanza::DeliveryRequestBuilder::TowardRoomMemberIQ->new;
         $builder->to($receiver_jid);

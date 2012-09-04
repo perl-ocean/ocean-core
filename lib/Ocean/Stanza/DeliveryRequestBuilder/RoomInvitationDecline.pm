@@ -19,7 +19,7 @@ sub room {
 
 sub from {
     my ($self, $from) = @_;
-    $self->{_decliner} = $from;
+    $self->{_decliner} = "$from";
     return $self;
 }
 

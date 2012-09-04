@@ -19,7 +19,7 @@ sub format {
         escape_xml_char($decline->reason) if $decline->reason;
     $xml .= sprintf '<continue thread="%s"/>', 
         escape_xml_char($decline->thread) if $decline->thread;
-    $xml .= '</invite>';
+    $xml .= '</decline>';
     $xml .= '</x>';
     $xml .= '</message>';
 

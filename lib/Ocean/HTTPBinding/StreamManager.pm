@@ -445,6 +445,16 @@ sub on_server_delivered_iq_toward_user {
     }
 }
 
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $receiver_jid, $iq_id, $query) = @_;
+    if ($receiver_jid->resource) {
+        my $stream = $self->find_stream_by_full_jid($receiver_jid);
+        $stream->on_server_delivered_iq_toward_room_member($iq_id, $query) if $stream;
+    } else {
+        warnf("<Server> JID-resource not found");
+    }
+}
+
 sub on_server_delivered_jingle_info {
     my ($self, $receiver_jid, $iq_id, $info) = @_;
     if ($receiver_jid->resource) {

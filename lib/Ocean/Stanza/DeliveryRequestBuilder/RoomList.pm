@@ -8,7 +8,7 @@ use Ocean::Config;
 use Ocean::Constants::EventType;
 use Ocean::Error;
 
-sub type  { Ocean::Constants::EventType::DELIVER_DISCO_ITEMS }
+sub type  { Ocean::Constants::EventType::DELIVER_ROOM_LIST }
 
 sub request_id {
     my ($self, $id) = @_;
@@ -25,7 +25,7 @@ sub to {
 sub _item_builders {
     my $self = shift;
     if (exists $self->{_item_builders}) {
-        $self->{_item_builders} = [];    
+        $self->{_item_builders} = [];
     }
     return $self->{_item_builders};
 }
@@ -44,13 +44,13 @@ sub build_args {
     $args->{from} = Ocean::Config->instance->get(muc => q{domain});
 
     Ocean::Error::ParamNotFound->throw(
-        message => q{'id' not found}, 
+        message => q{'id' not found},
     ) unless exists $self->{_id};
 
     $args->{id} = $self->{_id};
 
     Ocean::Error::ParamNotFound->throw(
-        message => q{'to' not found}, 
+        message => q{'to' not found},
     ) unless exists $self->{_to};
 
     $args->{to} = $self->{_to};

@@ -699,6 +699,20 @@ sub on_protocol_delivered_iq_toward_user {
         $query);
 }
 
+sub on_protocol_delivered_iq_toward_room_member {
+    my ($self, $iq_id, $query) = @_;
+    $self->[CLIENT_IO]->on_protocol_delivered_iq_toward_room_member(
+        $iq_id,
+        $self->bound_jid,
+        $query);
+}
+
+sub on_protocol_delivered_room_message {
+    my ($self, $message) = @_;
+    $self->[CLIENT_IO]->on_protocol_delivered_room_message($message);
+}
+
+
 sub on_protocol_delivered_jingle_info {
     my ($self, $iq_id, $info) = @_;
     $self->[CLIENT_IO]->on_protocol_delivered_jingle_info(
@@ -980,6 +994,35 @@ sub on_server_delivered_iq_toward_user {
     try {
         $self->[PROTOCOL]->on_server_delivered_iq_toward_user(
             $iq_id, $query);
+    } catch {
+        if ($_->isa(q{Ocean::Error::ConditionMismatchedServerEvent})) {
+            $self->_critf($_->message);
+        } else {
+            # rethrow
+            die $_;
+        }
+    };
+}
+
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $iq_id, $query) = @_;
+    try {
+        $self->[PROTOCOL]->on_server_delivered_iq_toward_room_member(
+            $iq_id, $query);
+    } catch {
+        if ($_->isa(q{Ocean::Error::ConditionMismatchedServerEvent})) {
+            $self->_critf($_->message);
+        } else {
+            # rethrow
+            die $_;
+        }
+    };
+}
+
+sub on_server_delivered_room_message {
+    my ($self, $message) = @_;
+    try {
+        $self->[PROTOCOL]->on_server_delivered_room_message($message);
     } catch {
         if ($_->isa(q{Ocean::Error::ConditionMismatchedServerEvent})) {
             $self->_critf($_->message);

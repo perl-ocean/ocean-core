@@ -158,6 +158,12 @@ sub on_client_received_iq_toward_user {
     $self->{_delegate}->on_protocol_handle_iq_toward_user($req);
 }
 
+sub on_client_received_iq_toward_room_member {
+    my ($self, $req) = @_;
+    $self->stanza_countup();
+    $self->{_delegate}->on_protocol_handle_iq_toward_room_member($req);
+}
+
 sub on_server_delivered_roster {
     my ($self, $iq_id, $roster) = @_;
     $self->{_delegate}->on_protocol_delivered_roster($iq_id, $roster);
@@ -202,6 +208,12 @@ sub on_server_delivered_room_invitation_decline {
 sub on_server_delivered_iq_toward_user {
     my ($self, $iq_id, $query) = @_;
     $self->{_delegate}->on_protocol_delivered_iq_toward_user(
+        $iq_id, $query);
+}
+
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $iq_id, $query) = @_;
+    $self->{_delegate}->on_protocol_delivered_iq_toward_room_member(
         $iq_id, $query);
 }
 

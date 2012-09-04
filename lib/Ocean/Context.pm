@@ -26,6 +26,8 @@ use Ocean::Stanza::DeliveryRequest::vCard;
 use Ocean::Stanza::DeliveryRequest::RoomInvitation;
 use Ocean::Stanza::DeliveryRequest::RoomInvitationDecline;
 use Ocean::Stanza::DeliveryRequest::TowardUserIQ;
+use Ocean::Stanza::DeliveryRequest::TowardRoomMemberIQ;
+use Ocean::Stanza::DeliveryRequest::RoomMessage;
 use Ocean::Stanza::DeliveryRequest::JingleInfo;
 use Ocean::Stanza::DeliveryRequest::MessageError;
 use Ocean::Stanza::DeliveryRequest::PresenceError;

@@ -9,7 +9,7 @@ use Ocean::Config;
 use Ocean::JID;
 use Ocean::Error;
 
-sub type  { Ocean::Constants::EventType::DELIVER_DISCO_INFO }
+sub type  { Ocean::Constants::EventType::DELIVER_ROOM_INFO }
 
 sub room_name {
     my ($self, $room) = @_;
@@ -25,7 +25,7 @@ sub room_nickname {
 
 sub to {
     my ($self, $to) = @_;
-    $self->{_to} = $to;
+    $self->{_to} = "$to";
     return $self;
 }
 
@@ -41,34 +41,34 @@ sub build_args {
     my $args = {};
 
     Ocean::Error::ParamNotFound->throw(
-        message => q{'room' not found}, 
+        message => q{'room' not found},
     ) unless exists $self->{_room};
 
     $args->{_from} = Ocean::JID->build(
-        $self->{_room}, 
+        $self->{_room},
         Ocean::Config->instance->get(muc => q{domain})
     )->as_bare_string;
 
     Ocean::Error::ParamNotFound->throw(
-        message => q{'to' not found}, 
+        message => q{'to' not found},
     ) unless exists $self->{_to};
 
     $args->{to} = $self->{_to};
 
     Ocean::Error::ParamNotFound->throw(
-        message => q{'request_id' not found}, 
+        message => q{'request_id' not found},
     ) unless exists $self->{_request_id};
 
     $args->{id} = $self->{_request_id};
 
     $args->{identities} = [{
-        category => 'conference',     
+        category => 'conference',
         type     => 'text',
         name     => $self->{_name} || $self->{_room},
     }];
 
     # $args->{features} = [
-    #    
+    #
     # ];
 
     return $args;

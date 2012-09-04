@@ -28,6 +28,15 @@ use Ocean::Stanza::DeliveryRequestBuilder::vCard;
 use Ocean::Stanza::DeliveryRequestBuilder::PubSubEvent;
 use Ocean::Stanza::DeliveryRequestBuilder::PubSubEventItem;
 use Ocean::Stanza::DeliveryRequestBuilder::TowardUserIQ;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomInvitation;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomInvitationDecline;
+use Ocean::Stanza::DeliveryRequestBuilder::TowardRoomMemberIQ;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomMessage;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomInfo;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomList;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomListItem;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomMembersList;
+use Ocean::Stanza::DeliveryRequestBuilder::RoomMembersListItem;
 
 use Log::Minimal;
 use Module::Load;
@@ -147,20 +156,34 @@ my %DELIVERY_METHOD_MAP = (
         'deliver_http_auth_failure',
     Ocean::Constants::EventType::BOUND_JID,
         'deliver_bound_jid',
-    Ocean::Constants::EventType::DELIVER_MESSAGE, 
+    Ocean::Constants::EventType::DELIVER_MESSAGE,
         'deliver_message',
-    Ocean::Constants::EventType::DELIVER_PRESENCE, 
+    Ocean::Constants::EventType::DELIVER_PRESENCE,
         'deliver_presence',
-    Ocean::Constants::EventType::DELIVER_UNAVAILABLE_PRESENCE, 
+    Ocean::Constants::EventType::DELIVER_UNAVAILABLE_PRESENCE,
         'deliver_unavailable_presence',
-    Ocean::Constants::EventType::DELIVER_ROSTER, 
+    Ocean::Constants::EventType::DELIVER_ROSTER,
         'deliver_roster',
-    Ocean::Constants::EventType::DELIVER_VCARD, 
+    Ocean::Constants::EventType::DELIVER_VCARD,
         'deliver_vcard',
-    Ocean::Constants::EventType::DELIVER_PUBSUB_EVENT, 
+    Ocean::Constants::EventType::DELIVER_PUBSUB_EVENT,
         'deliver_pubsub_event',
-    Ocean::Constants::EventType::DELIVER_IQ_TOWARD_USER, 
+    Ocean::Constants::EventType::DELIVER_IQ_TOWARD_USER,
         'deliver_iq_toward_user',
+    Ocean::Constants::EventType::DELIVER_ROOM_INVITATION,
+        'deliver_room_invitation',
+    Ocean::Constants::EventType::DELIVER_ROOM_INVITATION_DECLINE,
+        'deliver_room_invitation_decline',
+    Ocean::Constants::EventType::DELIVER_IQ_TOWARD_ROOM_MEMBER,
+        'deliver_iq_toward_room_member',
+    Ocean::Constants::EventType::DELIVER_ROOM_MESSAGE,
+        'deliver_room_message',
+    Ocean::Constants::EventType::DELIVER_ROOM_INFO,
+        'deliver_room_info',
+    Ocean::Constants::EventType::DELIVER_ROOM_LIST,
+        'deliver_room_list',
+    Ocean::Constants::EventType::DELIVER_ROOM_MEMBERS_LIST,
+        'deliver_room_members_list',
 );
 
 sub _delivery_method_map {
@@ -440,4 +463,128 @@ sub deliver_iq_toward_user {
     $self->deliver($builder->build());
 }
 
+sub deliver_room_invitation {
+    my ($self, $args) = @_;
+
+    my $to_jid = Ocean::JID->new($args->{to});
+    my $from_jid = Ocean::JID->new($args->{invitor});
+    my $room = Ocean::JID->new($args->{from})->node;
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomInvitation->new;
+    $builder->room($room);
+    $builder->from($from_jid);
+    $builder->to($to_jid);
+    $builder->reason($args->{reason});
+    $builder->thread($args->{thread});
+
+    $self->deliver($builder->build());
+}
+
+sub deliver_room_invitation_decline {
+    my ($self, $args) = @_;
+
+    my $to_jid = Ocean::JID->new($args->{to});
+    my $from_jid = Ocean::JID->new($args->{decliner});
+    my $room = Ocean::JID->new($args->{from})->node;
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomInvitationDecline->new;
+    $builder->room($room);
+    $builder->from($from_jid);
+    $builder->to($to_jid);
+    $builder->reason($args->{reason});
+    $builder->thread($args->{thread});
+
+    $self->deliver($builder->build());
+}
+
+sub deliver_iq_toward_room_member {
+    my ($self, $args) = @_;
+
+    my $to_jid = Ocean::JID->new($args->{to});
+    my $from_jid = Ocean::JID->new($args->{from});
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::TowardRoomMemberIQ->new;
+    $builder->to($to_jid);
+    $builder->from($from_jid);
+    $builder->query_type($args->{type});
+    $builder->request_id($args->{request_id});
+    $builder->raw($args->{raw});
+
+    $self->deliver($builder->build());
+}
+
+sub deliver_room_message {
+    my ($self, $args) = @_;
+
+    my $to_jid   = Ocean::JID->new($args->{to});
+    my $from_jid = Ocean::JID->new($args->{from});
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomMessage->new;
+    $builder->to($to_jid);
+    $builder->from($from_jid);
+    $builder->body($args->{body});
+    $builder->thread($args->{thread} || '');
+    $builder->state($args->{state} || '');
+
+    $self->deliver($builder->build());
+}
+
+sub deliver_room_info {
+    my ($self, $args) = @_;
+
+    my $to_jid = Ocean::JID->new($args->{to});
+    my $room   = $args->{identities}[0];
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomInfo->new;
+    $builder->request_id($args->{id});
+    $builder->to($to_jid);
+    $builder->room_name($room->{name});
+    $builder->room_nickname($room->{name});
+
+    $self->deliver($builder->build());
+}
+
+sub deliver_room_list {
+    my ($self, $args) = @_;
+
+    my $to_jid = Ocean::JID->new($args->{to});
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomList->new;
+    $builder->request_id($args->{id});
+    $builder->to($to_jid);
+
+    my @rooms = @{$args->{items}};
+    for my $room ( @rooms ) {
+        my $name_jid = Ocean::JID->new($room->{name});
+        my $item = Ocean::Stanza::DeliveryRequestBuilder::RoomListItem->new;
+        $item->room_name($name_jid->node);
+        $item->room_nickname($name_jid->as_string);
+        $builder->add_item_builder($item);
+    }
+
+    $self->deliver($builder->build());
+}
+
+sub deliver_room_members_list {
+    my ($self, $args) = @_;
+
+    my $to_jid   = Ocean::JID->new($args->{to});
+    my $room_jid = Ocean::JID->new($args->{from});
+
+    my $builder = Ocean::Stanza::DeliveryRequestBuilder::RoomMembersList->new;
+    $builder->request_id($args->{id});
+    $builder->to($to_jid);
+    $builder->room($room_jid->node);
+
+    my @members = @{$args->{items}};
+    for my $member ( @members ) {
+        my $member_jid = Ocean::JID->new($member->{jid});
+        my $item = Ocean::Stanza::DeliveryRequestBuilder::RoomMembersListItem->new;
+        $item->jid($member_jid);
+        $item->name($member->{name});
+        $builder->add_item_builder($item);
+    }
+
+    $self->deliver($builder->build());
+}
 1;

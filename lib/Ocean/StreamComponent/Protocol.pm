@@ -320,6 +320,12 @@ sub on_server_delivered_iq_toward_user {
         PubSubEventDelivery => 'on_server_delivered_iq_toward_user');
 }
 
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $id, $query) = @_;
+    $self->throw_condition_mismatched_error(
+        PubSubEventDelivery => 'on_server_delivered_iq_toward_room_member');
+}
+
 sub on_server_delivered_jingle_info {
     my ($self, $id, $info) = @_;
     $self->throw_condition_mismatched_error(

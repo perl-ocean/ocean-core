@@ -7,7 +7,7 @@ use parent 'Ocean::Stanza::DeliveryRequestBuilder';
 use Ocean::Constants::EventType;
 use Ocean::Error;
 
-sub type  { Ocean::Constants::EventType::DELIVER_MESSAGE }
+sub type  { Ocean::Constants::EventType::DELIVER_ROOM_MESSAGE }
 
 sub to {
     my ($self, $to_jid) = @_;

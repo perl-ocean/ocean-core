@@ -241,6 +241,17 @@ sub on_server_delivered_iq_toward_user {
         $iq_id, $query);
 }
 
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $iq_id, $query) = @_;
+    $self->{_delegate}->on_protocol_delivered_iq_toward_room_member(
+        $iq_id, $query);
+}
+
+sub on_server_delivered_room_message {
+    my ($self, $message) = @_;
+    $self->{_delegate}->on_protocol_delivered_room_message($message);
+}
+
 sub on_server_delivered_jingle_info {
     my ($self, $iq_id, $info) = @_;
     $self->{_delegate}->on_protocol_delivered_jingle_info(

@@ -109,16 +109,23 @@ __PACKAGE__->register(
         },
 );
 __PACKAGE__->register(
-    Ocean::Constants::EventType::DELIVER_DISCO_INFO,
+    Ocean::Constants::EventType::DELIVER_ROOM_INFO,
         { 
             method => 'deliver_disco_info', 
             class  => 'Ocean::Stanza::DeliveryRequest::DiscoInfo',
         },
 );
 __PACKAGE__->register(
-    Ocean::Constants::EventType::DELIVER_DISCO_ITEMS,
+    Ocean::Constants::EventType::DELIVER_ROOM_LIST,
         { 
             method => 'deliver_disco_items', 
+            class  => 'Ocean::Stanza::DeliveryRequest::DiscoItems',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::DELIVER_ROOM_MEMBERS_LIST,
+        {
+            method => 'deliver_disco_items',
             class  => 'Ocean::Stanza::DeliveryRequest::DiscoItems',
         },
 );
@@ -141,6 +148,20 @@ __PACKAGE__->register(
         { 
             method => 'deliver_iq_toward_user', 
             class  => 'Ocean::Stanza::DeliveryRequest::TowardUserIQ',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::DELIVER_IQ_TOWARD_ROOM_MEMBER,
+        {
+            method => 'deliver_iq_toward_room_member',
+            class  => 'Ocean::Stanza::DeliveryRequest::TowardRoomMemberIQ',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::DELIVER_ROOM_MESSAGE,
+        {
+            method => 'deliver_room_message',
+            class  => 'Ocean::Stanza::DeliveryRequest::RoomMessage',
         },
 );
 __PACKAGE__->register(

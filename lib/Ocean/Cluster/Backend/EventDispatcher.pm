@@ -31,6 +31,15 @@ use Ocean::HandlerArgs::RosterRequest;
 use Ocean::HandlerArgs::vCardRequest;
 use Ocean::HandlerArgs::PubSubEvent;
 use Ocean::HandlerArgs::TowardUserIQ;
+use Ocean::HandlerArgs::RoomListRequest;
+use Ocean::HandlerArgs::RoomInfoRequest;
+use Ocean::HandlerArgs::RoomMembersListRequest;
+use Ocean::HandlerArgs::RoomInvitation;
+use Ocean::HandlerArgs::RoomInvitationDecline;
+use Ocean::HandlerArgs::RoomMessage;
+use Ocean::HandlerArgs::RoomPresence;
+use Ocean::HandlerArgs::LeaveRoomPresence;
+use Ocean::HandlerArgs::TowardRoomMemberIQ;
 
 use Log::Minimal;
 use Try::Tiny;

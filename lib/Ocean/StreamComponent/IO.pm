@@ -429,6 +429,22 @@ sub on_protocol_delivered_iq_toward_user {
     );
 }
 
+sub on_protocol_delivered_iq_toward_room_member {
+    my ($self, $iq_id, $receiver_jid, $query) = @_;
+    return if $self->[IS_CLOSING];
+    $self->[ENCODER]->send_iq_toward_room_member(
+        $iq_id,
+        $receiver_jid->as_string,
+        $query,
+    );
+}
+
+sub on_protocol_delivered_room_message {
+    my ($self, $message) = @_;
+    return if $self->[IS_CLOSING];
+    $self->[ENCODER]->send_message($message);
+}
+
 sub on_protocol_delivered_jingle_info {
     my ($self, $iq_id, $receiver_jid, $info) = @_;
     return if $self->[IS_CLOSING];

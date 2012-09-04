@@ -423,6 +423,20 @@ sub on_server_delivered_iq_toward_user {
     );
 }
 
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $receiver_jid, $iq_id, $result) = @_;
+    Ocean::Error::AbstractMethod->throw(
+        message => q{Ocean::StreamManager::on_server_delivered_iq_toward_room_member},
+    );
+}
+
+sub on_server_delivered_room_message {
+    my ($self, $message) = @_;
+    Ocean::Error::AbstractMethod->throw(
+        message => q{Ocean::StreamManager::on_server_delivered_room_message}, 
+    );
+}
+
 sub on_server_delivered_jingle_info {
     my ($self, $receiver_jid, $iq_id, $result) = @_;
     Ocean::Error::AbstractMethod->throw(

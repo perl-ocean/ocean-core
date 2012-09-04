@@ -18,7 +18,7 @@ worker:
       address: 192.168.84.70:7002
     - node_id: websocket00
       address: 192.168.84.70:7003
-  broker_servers: 
+  broker_servers:
     - 192.168.84.70:7001
   queue_name: ocean_default
   context_class: <: $context.get('context_class') :>
@@ -39,6 +39,9 @@ log:
   level: info
   formatter: color
   filepath: __path_to(<: $layout.relative_path_for('log_dir') :>/ocean.log)__
+
+muc:
+  domain: muc.xmpp.example.org
 
 handler:
   db_file_path: __path_to(<: $layout.relative_path_for('db_dir') :>/database.db)__

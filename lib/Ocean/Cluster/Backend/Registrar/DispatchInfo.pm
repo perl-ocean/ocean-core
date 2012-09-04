@@ -122,4 +122,58 @@ __PACKAGE__->register(
             args_class => 'Ocean::HandlerArgs::TowardUserIQ',
         },
 );
+__PACKAGE__->register(
+    Ocean::Constants::EventType::ROOM_INFO_REQUEST, 
+        { 
+            args_class => 'Ocean::HandlerArgs::RoomInfoRequest',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::ROOM_LIST_REQUEST, 
+        { 
+            args_class => 'Ocean::HandlerArgs::RoomListRequest',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::ROOM_MEMBERS_LIST_REQUEST, 
+        { 
+            args_class => 'Ocean::HandlerArgs::RoomMembersListRequest',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::ROOM_INVITATION, 
+        { 
+            args_class => 'Ocean::HandlerArgs::RoomInvitation',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::ROOM_INVITATION_DECLINE, 
+        { 
+            args_class => 'Ocean::HandlerArgs::RoomInvitationDecline',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::SEND_ROOM_MESSAGE, 
+        { 
+            args_class => 'Ocean::HandlerArgs::RoomMessage',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::ROOM_PRESENCE,
+        {
+            args_class => 'Ocean::HandlerArgs::RoomPresence',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::LEAVE_ROOM_PRESENCE,
+        {
+            args_class => 'Ocean::HandlerArgs::LeaveRoomPresence',
+        },
+);
+__PACKAGE__->register(
+    Ocean::Constants::EventType::SEND_IQ_TOWARD_ROOM_MEMBER,
+        {
+            args_class => 'Ocean::HandlerArgs::TowardRoomMemberIQ',
+        },
+);
 1;

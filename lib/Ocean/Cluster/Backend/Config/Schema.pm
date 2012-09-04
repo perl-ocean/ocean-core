@@ -53,6 +53,13 @@ sub config {
                 },
             },
             log => Ocean::Config::Schema::Log->config,
+            muc => {
+                type     => 'map',
+                required => 0,
+                mapping  => {
+                    domain => { type => 'str', required => 1 },
+                },
+            },
             handler => {
                 type => 'any', 
             },

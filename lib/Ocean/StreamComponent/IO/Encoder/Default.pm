@@ -367,6 +367,15 @@ sub send_iq_toward_user {
     }, $to);
 }
 
+sub send_iq_toward_room_member {
+    my ($self, $id, $to, $query) = @_;
+    $self->send_iq($query->type,
+        $id, $query->from->as_string, sub {
+        my $w = shift;
+        $w->raw($query->raw);
+    }, $to);
+}
+
 sub send_jingle_info {
     my ($self, $id, $to, $info) = @_;
     $self->send_iq(Ocean::Constants::IQType::RESULT, 

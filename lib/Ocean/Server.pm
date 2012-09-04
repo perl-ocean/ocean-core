@@ -833,6 +833,17 @@ sub deliver_iq_toward_user {
         $result->to, $result->request_id, $result);
 }
 
+sub deliver_iq_toward_room_member {
+    my ($self, $result) = @_;
+    $self->{_stream_manager}->on_server_delivered_iq_toward_room_member(
+        $result->to, $result->request_id, $result);
+}
+
+sub deliver_room_message {
+    my ($self, $result) = @_;
+    $self->{_stream_manager}->on_server_delivered_room_message($result);
+}
+
 sub deliver_jingle_info {
     my ($self, $result) = @_;
     $self->{_stream_manager}->on_server_delivered_jingle_info(

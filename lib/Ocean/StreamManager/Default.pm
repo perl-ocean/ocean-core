@@ -410,6 +410,30 @@ sub on_server_delivered_iq_toward_user {
     }
 }
 
+sub on_server_delivered_iq_toward_room_member {
+    my ($self, $receiver_jid, $iq_id, $query) = @_;
+
+    if ($receiver_jid->resource) {
+        my $stream = $self->find_stream_by_full_jid($receiver_jid);
+        $stream->on_server_delivered_iq_toward_room_member($iq_id, $query) if $stream;
+    } else {
+        warnf("<Server> JID-resource not found");
+    }
+}
+
+sub on_server_delivered_room_message {
+    my ($self, $message) = @_;
+    if ($message->to->resource) {
+        my $stream = $self->find_stream_by_full_jid($message->to);
+        $stream->on_server_delivered_room_message($message)
+            if $stream;
+    } else {
+        my $streams = $self->find_all_streams_by_bare_jid($message->to);
+        $_->on_server_delivered_room_message($message) 
+            for @$streams;
+    }
+}
+
 sub on_server_delivered_jingle_info {
     my ($self, $receiver_jid, $iq_id, $info) = @_;
     if ($receiver_jid->resource) {
