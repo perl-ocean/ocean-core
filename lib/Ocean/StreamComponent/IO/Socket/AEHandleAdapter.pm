@@ -43,7 +43,7 @@ sub release {
 sub shutdown {
     my $self = shift;
     if ($self->{_handle}) {
-        CORE::shutdown($self->{_handle}->fh, 1);
+        $self->{_handle}->push_shutdown();
         $self->{_handle}->destroy();
         delete $self->{_handle};
     }
@@ -102,11 +102,9 @@ sub _initialize_handle {
 
 sub close {
     my $self = shift;
-    #$self->{_handle}->on_drain(sub {
-        debugf('<Stream> <Socket> @shutdown');
-        $self->shutdown();
-        $self->{_delegate}->on_socket_closed();
-    #});
+    debugf('<Stream> <Socket> @shutdown');
+    $self->shutdown();
+    $self->{_delegate}->on_socket_closed();
 }
 
 sub accept_tls {
