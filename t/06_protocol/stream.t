@@ -49,7 +49,7 @@ sub stream_not_ok {
     Ocean::Constants::ProtocolPhase::SASL,
     [ [ mechanisms => SASL, [
         [mechanism => 'PLAIN'],     
-        [mechanism => 'X-OAUTH'],     
+        [mechanism => 'X-OAUTH2'],
     ] ] ]
 );
 
@@ -59,7 +59,7 @@ sub stream_not_ok {
     Ocean::Constants::ProtocolPhase::SASL,
     [ [ mechanisms => SASL, [
         [mechanism => 'PLAIN'],     
-        [mechanism => 'X-OAUTH'],     
+        [mechanism => 'X-OAUTH2'],
     ] ] ]
 );
 

@@ -122,6 +122,23 @@ TEST_INVALID_MECH: {
     ok(!$delegate->get_protocol_state(q{next_phase}));
 }
 
+TEST_X_OAUTH_MECH: {
+    my $protocol = Ocean::StreamComponent::Protocol::SASL->new;
+    my $delegate = Ocean::Test::Spy::Stream->new;
+    $protocol->set_delegate($delegate);
+
+    my $auth = Ocean::Stanza::Incoming::SASLAuth->new('X-OAUTH2', 'encoded_token_text');
+    $protocol->on_client_received_sasl_auth($auth);
+    $protocol->on_server_completed_sasl_auth(q{dummy_user_id});
+
+    is($delegate->get_protocol_state(q{handle_auth})->mechanism, 'X-OAUTH2');
+    is($delegate->get_protocol_state(q{handle_auth})->text, 'encoded_token_text');
+    is($delegate->get_protocol_state(q{user_id}), 'dummy_user_id');
+    is($delegate->get_protocol_state(q{next_phase}), Ocean::Constants::ProtocolPhase::BIND_AND_SESSION_STREAM);
+
+    ok(!$delegate->get_protocol_state(q{failed_auth}));
+}
+
 TEST_UNIMPLEMENTED_CLIENT_EVENT_METHODS: {
 
     my $protocol = Ocean::StreamComponent::Protocol::SASL->new;

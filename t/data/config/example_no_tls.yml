@@ -25,7 +25,7 @@ log:
 sasl:
   mechanisms:
     - PLAIN
-    - X-OAUTH
+    - X-OAUTH2
 
 handler:
   my_handler_param1: 100

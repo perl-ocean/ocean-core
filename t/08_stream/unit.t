@@ -107,7 +107,7 @@ TEST_FAILED_SASL_SCENARIO_UNSUPPORTED_MECH: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
     like($client_read_data[3], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH</mechanism></mechanisms></stream:features>});
+    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
 
     $socket->emulate_client_write(q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>});
 
@@ -129,7 +129,7 @@ TEST_FAILED_SASL_SCENARIO_INVALID_PASSWORD_AND_REAUTH: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
     like($client_read_data[3], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH</mechanism></mechanisms></stream:features>});
+    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
 
     # invalid pass
     $socket->emulate_client_write(q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>INVALID_PASS</auth>});
@@ -183,7 +183,7 @@ TEST_CORRECT_SCENARIO: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
     like($client_read_data[3], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH</mechanism></mechanisms></stream:features>});
+    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
 
 
     # =====================#
@@ -591,7 +591,7 @@ TEST_WITHOUT_TLS: {
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
     like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], '<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH</mechanism></mechanisms></stream:features>', "First features should not include TLS but SASL");
+    is($client_read_data[1], '<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>', "First features should not include TLS but SASL");
 }
 
 done_testing;

@@ -24,7 +24,7 @@ log:
 sasl:
   mechanisms:
     - PLAIN
-    - X-OAUTH
+    - X-OAUTH2
 http:
   pending_timeout: 3
 handler:
