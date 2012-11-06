@@ -22,7 +22,7 @@ sub new {
     $self->[ NS        ] = $ns;
     $self->[ LOCALNAME ] = $localname;
     $self->[ ATTRS     ] = $attrs    || {};
-    $self->[ TEXT      ] = $text     || '';
+    $self->[ TEXT      ] = $text     // '';
     $self->[ CHILDREN  ] = $children || {};
     return  $self;
 }

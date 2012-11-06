@@ -31,7 +31,7 @@ sub format {
         $xml .= sprintf(q{<%s xmlns="%s"/>},
             $message->state, CHAT_STATES);
     }
-    if ($message->body) {
+    if (defined $message->body) {
         $xml .= sprintf(q{<body>%s</body>},
             escape_xml_char($message->body));
     }

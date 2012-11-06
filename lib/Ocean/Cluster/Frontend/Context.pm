@@ -325,7 +325,7 @@ sub deliver_message {
         Ocean::Stanza::DeliveryRequestBuilder::ChatMessage->new;
     $builder->to($to_jid);
     $builder->from($from_jid);
-    $builder->body($args->{body});
+    $builder->body($args->{body} // '');
     $builder->thread($args->{thread} || '');
     $builder->state($args->{state} || '');
 

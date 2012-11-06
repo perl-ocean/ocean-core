@@ -49,7 +49,7 @@ sub parse {
     #}
 
     my $body_elem = $element->get_first_element('body');
-    my $body = ($body_elem && $body_elem->text)
+    my $body = ($body_elem && defined $body_elem->text)
         ? unescape_xml_char($body_elem->text) : '';
 
     my $thr_elem = $element->get_first_element('thread');

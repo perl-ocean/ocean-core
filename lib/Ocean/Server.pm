@@ -385,7 +385,7 @@ sub on_stream_handle_message {
     my $args = Ocean::HandlerArgs::Message->new({
         from   => $sender_jid,     
         to     => $to_jid,
-        body   => $message->body   || '',
+        body   => $message->body   // '',
         thread => $message->thread || '',
         state  => $message->state  || '',
         html   => $message->html   || '',

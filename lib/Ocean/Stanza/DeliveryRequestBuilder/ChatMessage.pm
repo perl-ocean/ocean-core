@@ -68,7 +68,7 @@ sub build_args {
 
     $args->{from}   = $self->{_from};
     $args->{type}   = 'chat';
-    $args->{body}   = $self->{_body}   || '';
+    $args->{body}   = $self->{_body}   // '';
     $args->{html}   = $self->{_html}   || '';
     $args->{subject} = $self->{_subject} || '';
     $args->{thread} = $self->{_thread} || '';
