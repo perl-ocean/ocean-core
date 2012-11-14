@@ -12,6 +12,7 @@ use Ocean::Stanza::DeliveryRequestBuilder::SASLAuthCompletion;
 use Ocean::Stanza::DeliveryRequestBuilder::SASLPassword;
 
 use Ocean::Util::SASL::PLAIN qw(parse_sasl_plain_b64);
+use Ocean::Util::SASL::X_OAUTH2 qw(parse_sasl_x_oauth2_b64);
 use Ocean::Util::String qw(gen_random);
 
 use Digest::SHA1 qw(sha1_hex);
@@ -62,15 +63,26 @@ sub on_http_auth_request {
 sub on_sasl_auth_request {
     my ($self, $ctx, $args) = @_;
 
-    my $stream_id = $args->stream_id;
-
-    if ($args->mechanism ne 'PLAIN') {
+    if ($args->mechanism eq 'PLAIN') {
+        _on_sasl_auth_request_plain(@_);
+        return;
+    } elsif ($args->mechanism eq 'X-OAUTH2') {
+        _on_sasl_auth_request_oauth2(@_);
+        return;
+    } else {
+        my $stream_id = $args->stream_id;
         my $builder = 
             Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure->new;
         $builder->stream_id($stream_id);
         $ctx->deliver($builder->build());
         return;
     }
+}
+
+sub _on_sasl_auth_request_plain {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args->stream_id;
 
     $self->log_info("PLAIN sasl authentication");
     $self->log_info("Received %s", $args->text||'');
@@ -112,6 +124,60 @@ sub on_sasl_auth_request {
     } else {
         $self->log_info("Password not matched");
         my $builder = 
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure->new;
+        $builder->stream_id($stream_id);
+        $ctx->deliver($builder->build());
+    }
+}
+
+sub _on_sasl_auth_request_oauth2 {
+    my ($self, $ctx, $args) = @_;
+
+    my $stream_id = $args->stream_id;
+
+    $self->log_info("X-OAUTH2 sasl authentication");
+    $self->log_info("Received %s", $args->text||'');
+
+    my $authcid = undef;
+    my $token = undef;
+
+    ($authcid, $token) =
+        parse_sasl_x_oauth2_b64($args->text||'');
+
+    $self->log_info("Username - %s", $authcid);
+    $self->log_info("Token    - %s", $token);
+
+    unless ($authcid && $token) {
+        $self->log_info("both username and token needed");
+        my $builder =
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure->new;
+        $builder->stream_id($stream_id);
+        $ctx->deliver($builder->build());
+        return;
+    }
+
+    my $user = $ctx->get('db')->find_user_by_username($authcid);
+    unless ($user) {
+        $self->log_info("User %s doesn't exist", $authcid);
+        my $builder =
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure->new;
+        $builder->stream_id($stream_id);
+        $ctx->deliver($builder->build());
+        return;
+    }
+
+    if ($user->oauth_token eq $token) {
+        $self->log_info("Token auth success");
+        my $builder =
+            Ocean::Stanza::DeliveryRequestBuilder::SASLAuthCompletion->new;
+        $builder->stream_id($stream_id);
+        $builder->user_id($user->user_id);
+        $builder->username($user->username);
+        $builder->session_id( sha1_hex( gen_random(32) ) );
+        $ctx->deliver($builder->build());
+    } else {
+        $self->log_info("Token auth fail");
+        my $builder =
             Ocean::Stanza::DeliveryRequestBuilder::SASLAuthFailure->new;
         $builder->stream_id($stream_id);
         $ctx->deliver($builder->build());

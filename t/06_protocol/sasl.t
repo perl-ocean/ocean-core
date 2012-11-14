@@ -11,7 +11,6 @@ use Try::Tiny;
 
 use Ocean::Test::Spy::Stream;
 
-my $config_file = q{t/data/config/example.ini};
 Ocean::Config->initialize(
     path   => q{t/data/config/example.yml},
     schema => Ocean::Config::Schema->config,

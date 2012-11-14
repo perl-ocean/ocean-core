@@ -5,6 +5,7 @@ return {
             username         => q{taro}, 
             nickname         => q{Taro},
             password         => q{tarotaro},
+            oauth_token      => q{tarotarotaro},
             cookie           => q{tarotaro},
             profile_img_b64  => q{/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcg
 SlBFRyB2NjIpLCBxdWFsaXR5ID0gOTUK/9sAQwACAQEBAQECAQEBAgICAgIEAwICAgIFBAQDBAYF
@@ -53,6 +54,7 @@ BO3HP1ooorN7mh//2Q==},
             username         => q{jiro}, 
             nickname         => q{Jiro},
             password         => q{jirojiro},
+            oauth_token      => q{jirojirojiro},
             cookie           => q{jirojiro},
             profile_img_b64  => q{/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcg
 SlBFRyB2NjIpLCBxdWFsaXR5ID0gODUK/9sAQwAFAwQEBAMFBAQEBQUFBgcMCAcHBwcPCwsJDBEP
@@ -123,6 +125,7 @@ SC4kU+b5LKeNvseeeOa+X/2gPh3pnhy/bxFp91KYb66YPaOvEbnLEqc9M9qKK9DAScaiS6nLiVeJ
             username         => q{saburo}, 
             nickname         => q{Saburo},
             password         => q{saburosaburo},
+            oauth_token      => q{saburosaburosaburo},
             cookie           => q{saburosaburo},
             profile_img_b64  => q{/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcg
 SlBFRyB2NjIpLCBxdWFsaXR5ID0gODUK/9sAQwAFAwQEBAMFBAQEBQUFBgcMCAcHBwcPCwsJDBEP
@@ -197,6 +200,7 @@ EcFvMPPv92iiikXdn//Z},
             username         => q{shiro}, 
             nickname         => q{Shiro},
             password         => q{shiroshiro},
+            oauth_token      => q{shiroshiroshiro},
             cookie           => q{shiroshiro},
             profile_img_b64  => q{/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcg
 SlBFRyB2NjIpLCBxdWFsaXR5ID0gODUK/9sAQwAFAwQEBAMFBAQEBQUFBgcMCAcHBwcPCwsJDBEP

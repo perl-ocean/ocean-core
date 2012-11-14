@@ -13,6 +13,7 @@ table {
         password
         username
         nickname
+        oauth_token
         profile_img_b64
         profile_img_hash
         profile_img_url

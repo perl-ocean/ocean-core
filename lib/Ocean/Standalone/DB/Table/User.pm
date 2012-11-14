@@ -19,6 +19,7 @@ __DATA__
 CREATE TABLE `user` (
       `id`               INTEGER PRIMARY KEY
     , `password`         TEXT
+    , `oauth_token`      TEXT
     , `username`         TEXT
     , `nickname`         TEXT
     , `profile_img_b64`  TEXT

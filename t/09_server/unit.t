@@ -16,7 +16,8 @@ use Ocean::ServerComponent::Daemonizer::Null;
 use Ocean::CommonComponent::SignalHandler::Stub;
 use Ocean::StreamFactory::Default;
 use Ocean::StreamManager::Default;
-use Ocean::Util::SASL::PLAIN qw(build_sasl_plain);
+use Ocean::Util::SASL::PLAIN qw(build_sasl_plain_b64);
+use Ocean::Util::SASL::X_OAUTH2 qw(build_sasl_x_oauth2_b64);
 
 use Ocean::EventDispatcher;
 use Ocean::Standalone::Handler::Node;
@@ -97,7 +98,19 @@ sub connection_authenticate {
     $socket->emulate_client_write(
         sprintf(
             q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>%s</auth>}, 
-            encode_base64( build_sasl_plain($username, $password) ),
+            build_sasl_plain_b64($username, $password),
+        )
+    );
+}
+
+sub connection_authenticate_oauth2 {
+    my ($socket, $username, $token) = @_;
+    $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
+    $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
+    $socket->emulate_client_write(
+        sprintf(
+            q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='X-OAUTH2'>%s</auth>},
+            build_sasl_x_oauth2_b64($username, $token),
         )
     );
 }
@@ -115,6 +128,12 @@ sub establish_authenticated_connection {
     &connection_authenticate($socket, $username, $password);
 }
 
+sub establish_authenticated_connection_oauth2 {
+    my ($socket, $username, $token) = @_;
+    &connection_starttls($socket);
+    &connection_authenticate_oauth2($socket, $username, $token);
+}
+
 sub establish_bound_connection {
     my ($socket, $username, $password) = @_;
     &establish_authenticated_connection($socket, $username, $password);
@@ -126,6 +145,20 @@ sub establish_available_connection {
     &establish_bound_connection($socket, $username, $password);
     $socket->emulate_client_write(q{<presence />});
 }
+
+my $client_oauth_1 = $listener->emulate_accept(q{dummy_id_oauth_1});
+my @client_oauth_1_events;
+$client_oauth_1->client_on_read(sub { push(@client_oauth_1_events, $_[0]) });
+&establish_authenticated_connection_oauth2($client_oauth_1, 'taro', 'tarotarotaro');
+is($client_oauth_1_events[$#client_oauth_1_events], '<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />');
+$client_oauth_1->close();
+
+my $client_oauth_2 = $listener->emulate_accept(q{dummy_id_oauth_2});
+my @client_oauth_2_events;
+$client_oauth_2->client_on_read(sub { push(@client_oauth_2_events, $_[0]) });
+&establish_authenticated_connection_oauth2($client_oauth_2, 'taro', 'invalid_token');
+is($client_oauth_2_events[$#client_oauth_2_events], '<failure xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><not-authorized /></failure>');
+$client_oauth_2->close();
 
 my $client1 = $listener->emulate_accept(q{dummy_id_1});
 my @client1_events;

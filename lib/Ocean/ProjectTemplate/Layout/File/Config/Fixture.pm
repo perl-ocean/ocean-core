@@ -15,41 +15,49 @@ users:
       username:         kusanagi
       nickname:         Kusanagi
       password:         foobar
+      oauth_token:      111111
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example01') :>)__
     - id:               user_02 
       username:         aramaki
       nickname:         Aramaki
       password:         foobar
+      oauth_token:      222222
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example02') :>)__
     - id:               user_03 
       username:         batou
       nickname:         Batou
       password:         foobar
+      oauth_token:      333333
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example03') :>)__
     - id:               user_04 
       username:         togusa
       nickname:         Togusa
       password:         foobar
+      oauth_token:      444444
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example04') :>)__
     - id:               user_05 
       username:         ishikawa
       nickname:         Ishikawa
       password:         foobar
+      oauth_token:      555555
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example05') :>)__
     - id:               user_06 
       username:         saito
       nickname:         Saito
       password:         foobar
+      oauth_token:      666666
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example06') :>)__
     - id:               user_07 
       username:         paz
       nickname:         Paz
       password:         foobar
+      oauth_token:      777777
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example07') :>)__
     - id:               user_08 
       username:         borma
       nickname:         Borma
       password:         foobar
+      oauth_token:      888888
       profile_img_file: __path_to(<: $layout.relative_path_for('img_example08') :>)__
 relations:
     - follower: user_01
