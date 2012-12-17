@@ -5,6 +5,8 @@ use warnings;
 
 use parent 'Ocean::Cluster::Frontend::Fetcher';
 
+use constant DEFAULT_NO_OF_WORKER_CONNECTIONS => 30;
+
 use AnyEvent::Gearman::Worker;
 
 sub new {
@@ -13,6 +15,7 @@ sub new {
         _on_fetch_event => sub {},
         _worker         => undef,
         _node_id        => $args{node_id},
+        _no_workers     => $args{no_workers},
         _inbox_host     => $args{inbox_host},
         _inbox_port     => $args{inbox_port},
     }, $class;
@@ -25,9 +28,17 @@ sub inbox_port { $_[0]->{_inbox_port} }
 
 sub _initialize {
     my $self = shift;
-    $self->{_worker} = 
-        $self->_create_worker( 
-            [join ":", $self->{_inbox_host}, $self->{_inbox_port} ] );
+    my @servers;
+
+    $self->{_no_workers} = DEFAULT_NO_OF_WORKER_CONNECTIONS
+        unless $self->{_no_workers};
+
+    for ( 1 .. $self->{_no_workers} ) {
+        push(@servers, join(":", $self->{_inbox_host}, $self->{_inbox_port}));
+    }
+
+    $self->{_worker} =
+        $self->_create_worker( \@servers );
 }
 
 sub _create_worker {
