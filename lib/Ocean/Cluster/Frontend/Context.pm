@@ -273,9 +273,9 @@ sub deliver_http_auth_completion {
     $builder->session_id($session_id);
     $builder->user_id($user_id);
     $builder->username($username);
-    # TODO
-    # $builder->add_cookie(foo => $cookie_value);
-    # $builder->add_cookie(bar => { value => 'fugafuga', domain => 'xmpp.example.org', path => '/foo' });
+    for my $key (%$cookies) {
+        $builder->add_cookie($key => $cookies->{$key});
+    }
     $self->deliver($builder->build());
 }
 
