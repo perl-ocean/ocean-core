@@ -79,6 +79,8 @@ sub _remove_pid_file {
 sub _daemonize {
     my $self = shift;
 
+    infof("<Server> Daemonizing (PID file '%s')...", $self->{_pid_file});
+
     fork() && exit(0);
 
     (POSIX::setsid)

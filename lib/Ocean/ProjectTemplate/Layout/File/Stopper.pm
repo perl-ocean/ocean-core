@@ -21,8 +21,20 @@ use warnings;
 use File::Slurp;
 use File::Spec;
 use FindBin;
+use Getopt::Long;
+use Pod::Usage;
 
-my $pid_file = File::Spec->catfile($FindBin::RealBin, '..', 'var', 'run', 'ocean.pid');
+my $help     = 0;
+my $pid_file = '';
+
+GetOptions(
+    'help|?' => \$help,
+    'pid=s'  => \$pid_file,
+) or pod2usage(2);
+
+pod2usage(1) if $help;
+pod2usage(2) unless $pid_file;
+
 if (-e $pid_file && -f _) {
     my $pid = File::Slurp::slurp($pid_file);
     chomp $pid;
@@ -30,4 +42,16 @@ if (-e $pid_file && -f _) {
         kill(15, $pid);
     }
 }
+
+=head1 NAME
+
+oceand - Ocean server stopper
+
+=head1 SYNOPSIS
+
+Call this command to stop a daemonized Ocean server
+
+    ./bin/ocean-stop --pid var/run/xmpp.pid
+
+=cut
 

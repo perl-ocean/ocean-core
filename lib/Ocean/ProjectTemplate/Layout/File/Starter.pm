@@ -28,25 +28,25 @@ use Ocean::Bootstrap::Node;
 use AnyEvent;
 use Event;
 
-my $help      = 0;
-my $daemonize = 0;
+my $help        = 0;
+my $daemonize   = 0;
+my $config_file = '';
 
 GetOptions(
     'help|?'      => \$help,
     'daemonize|d' => \$daemonize,
-);
+    'config=s'    => \$config_file,
+) or pod2usage(2);
 
 pod2usage(1) if $help;
-
-my $config_file = 
-    File::Spec->catfile($FindBin::RealBin, '..', 'config', 'ocean.yml');
+pod2usage(2) unless $config_file;
 
 Ocean::Bootstrap::Node->run( 
     config_file => $config_file ,
     daemonize   => $daemonize,
 );
 
-=head1 NAME 
+=head1 NAME
 
 oceand - Ocean server starter
 
@@ -54,15 +54,15 @@ oceand - Ocean server starter
 
 Call this command simply
 
-    ./bin/ocean-start
+    ./bin/ocean-start --config config/xmpp.yml
 
 or
 
-    ./bin/ocean-start --daemonize
+    ./bin/ocean-start --config config/xmpp.yml --daemonize
 
 If you run with daemonize, do like as follow to stop the program.
     
-    ./bin/ocean-stop
+    ./bin/ocean-stop --pid var/run/xmpp.pid
 
 =cut
 
