@@ -6,7 +6,7 @@ use warnings;
 use parent 'Ocean::ProjectTemplate::Layout::File';
 
 sub template     { do { local $/; <DATA> } }
-sub default_name { 'ocean.yml'             }
+sub default_name { 'xmpp.yml'              }
 
 1;
 __DATA__
@@ -24,7 +24,7 @@ server:
   use_stanza_counter: yes
   stanza_counter_expiration: 60
   max_stanza_count: 1000
-  pid_file: __path_to(<: $layout.relative_path_for('run_dir') :>/ocean.pid)__
+  pid_file: __path_to(<: $layout.relative_path_for('run_dir') :>/xmpp.pid)__
   context_class: <: $context.get('context_class') :>
 
 log:
@@ -32,14 +32,14 @@ log:
   formatter: color
   level: info
   show_packets: yes
-  filepath: __path_to(<: $layout.relative_path_for('log_dir') :>/ocean.log)__
+  filepath: __path_to(<: $layout.relative_path_for('log_dir') :>/xmpp.log)__
 
 sasl:
   mechanisms:
     - PLAIN
+    - X-OAUTH2
 #   - CRAM-MD5
 #   - DIGEST-MD5
-#   - X-OAUTH2
 
 #tls:
 #  cert_file: __path_to(<: $layout.relative_path_for('cert_pem') :>)__
