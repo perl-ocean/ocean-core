@@ -176,6 +176,11 @@ sub _parse {
                 $header_params{cookie} = $cookie;
             }
 
+            if ( exists $env->{HTTP_HOST} ) {
+                debugf("<Stream> <Decoder> found host - %s", $env->{HTTP_HOST});
+                $header_params{host} = $env->{HTTP_HOST};
+            }
+
             $self->{_on_handshake}->(\%header_params);
 
             debugf("<Stream> <Decoder> shakehand completed");

@@ -22,6 +22,7 @@ use constant {
     BOUND_JID    => 4,
     USER_ID      => 5,
     STATUS       => 6,
+    DOMAIN       => 7,
 };
 
 use constant {
@@ -41,6 +42,7 @@ sub new {
         undef,       # BOUND_JID
         undef,       # USER_ID
         STATUS_INIT, # STATUS
+        undef,       # DOMAIN
     ], $class;
 
     $self->[CLIENT_IO]->set_delegate($self);
@@ -102,6 +104,11 @@ sub is_authenticated {
 sub is_available {
     my $self = shift;
     return $self->[STATUS] == STATUS_AVAILABLE;
+}
+
+sub domain {
+    my $self = shift;
+    return $self->[DOMAIN];
 }
 
 sub is_closing {
@@ -388,7 +395,8 @@ sub on_protocol_handle_sasl_success_notification {
 }
 
 sub on_protocol_handle_http_auth {
-    my ($self, $cookie) = @_;
+    my ($self, $cookie, $domain) = @_;
+    $self->[DOMAIN] = $domain;
     $self->[SERVER]->on_stream_handle_http_auth($self->id, $cookie);
 }
 
@@ -568,12 +576,13 @@ sub on_protocol_completed_http_session_auth {
 =cut
 
 sub on_protocol_open_stream {
-    my ($self, $features) = @_;
+    my ($self, $features, $domain) = @_;
     my $stream_id = Ocean::Util::String::gen_random(10);
     # XXX should be keeped?
     # $self->{_current_stream_id} = $stream_id;
+    $self->[DOMAIN] = $domain;
     $self->[CLIENT_IO]->on_protocol_open_stream(
-        $stream_id, Ocean::Config->instance->get(server => q{domain}), $features);
+        $stream_id, $domain, $features);
 }
 
 sub on_protocol_starttls {
@@ -624,7 +633,7 @@ sub on_protocol_failed_sasl_auth {
 }
 
 sub on_protocol_failed_http_auth {
-    my ($self, $error_type) = @_;
+    my ($self, $error_type, $domain) = @_;
     $self->[CLIENT_IO]->on_protocol_failed_http_auth($error_type);
 }
 

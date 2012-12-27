@@ -34,7 +34,8 @@ sub on_client_received_http_handshake {
         if (!$self->{_authenticated}) {
             $self->{_handshake_params} = $params;
             my $cookie = delete $params->{cookie} || '';
-            $self->{_delegate}->on_protocol_handle_http_auth($cookie);
+            my $domain = delete $params->{host} || '';
+            $self->{_delegate}->on_protocol_handle_http_auth($cookie, $domain);
         } else {
             $self->{_delegate}->on_protocol_failed_http_auth();
         }

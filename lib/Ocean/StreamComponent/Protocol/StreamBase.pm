@@ -18,15 +18,18 @@ sub on_client_received_stream {
         Ocean::Error::ProtocolError->throw(
             type => Ocean::Constants::StreamErrorType::UNSUPPORTED_VERSION);
     }
-    my $to = $attrs->{to} || Ocean::Config->instance->get(server => q{domain});
-    unless ($to eq Ocean::Config->instance->get(server => q{domain}) ) {
+    my $to = $attrs->{to} || '';
+
+    $domains = Ocean::Config->instance->get(server => q{domain});
+
+    if (none { $to eq $_ } @$domains ) {
         Ocean::Error::ProtocolError->throw(
             type => Ocean::Constants::StreamErrorType::HOST_UNKNOWN, 
         );
     }
 
     $self->{_delegate}->on_protocol_open_stream(
-        $self->get_features());
+        $self->get_features(), $domain);
 
     $self->{_delegate}->on_protocol_step(
          $self->get_next_phase());
