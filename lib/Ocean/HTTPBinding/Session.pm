@@ -131,7 +131,7 @@ sub _send_bind_request {
     # TODO edit id and resource
     my $req = Ocean::Stanza::Incoming::BindResource->new('id', $self->id);
     $self->[SERVER]->on_stream_handle_bind_request(
-        $self->id, $self->user_id, $req);
+        $self->id, $self->user_id, $self->domain, $req);
 }
 
 sub _send_initial_presence {
@@ -216,7 +216,7 @@ sub on_stream_handle_too_many_auth_attempt {
 }
 
 sub on_stream_handle_sasl_auth {
-    my ($self, $stream_id, $auth) = @_;
+    my ($self, $stream_id, $domain, $auth) = @_;
     # not supported
     Ocean::Error::ProtocolError->throw;
 }

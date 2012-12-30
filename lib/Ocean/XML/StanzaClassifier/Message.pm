@@ -10,6 +10,7 @@ use Ocean::JID;
 use Ocean::XML::Namespaces qw(MUC_USER);
 
 use Log::Minimal;
+use List::MoreUtils qw(any);
 
 sub classify {
     my ($self, $elem) = @_;
@@ -21,11 +22,11 @@ sub classify {
 
     my $config = Ocean::Config->instance;
 
-    my $domain = $config->get(server => q{domain});
+    my $domains = $config->get(server => q{domain});
 
     my $type = $elem->attr('type') || 'chat';
 
-    if ($to_jid->domain eq $domain) {
+    if (any { $to_jid->domain eq $_ } @$domains) {
 
         if ($type eq 'normal' || $type eq 'chat') {
             return Ocean::Constants::EventType::SEND_MESSAGE;

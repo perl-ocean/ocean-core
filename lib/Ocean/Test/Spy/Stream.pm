@@ -8,6 +8,7 @@ sub new {
     my $self = bless {
         _io_records     => [],
         _protocol_state => {},
+        _domain         => undef,
     }, $class;
     return $self;
 }
@@ -27,14 +28,26 @@ sub get_protocol_state {
     return $self->{_protocol_state}{$key};
 }
 
+sub domain {
+    my $self = shift;
+    return $self->{_domain};
+}
+
+sub set_domain {
+    my ($self, $domain) = @_;
+    $self->{_domain} = $domain;
+}
+
 sub clear {
     my $self = shift;
     $self->{_io_records}     = [];
     $self->{_protocol_state} = {};
+    $self->{_domain}         = undef;
 };
 
 sub on_io_received_stream {
     my ($self, $attrs) = @_;
+    $self->{_domain} = $attrs->{to};
     $self->_record_io_event(q{stream}, { attrs => $attrs });
 }
 
@@ -109,7 +122,7 @@ sub on_io_closed {
 }
 
 sub on_protocol_open_stream {
-    my ($self, $features) = @_;
+    my ($self, $features, $domain) = @_;
     $self->{_protocol_state}{features} = $features;
 }
 

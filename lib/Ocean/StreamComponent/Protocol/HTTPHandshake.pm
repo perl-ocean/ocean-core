@@ -23,6 +23,8 @@ sub on_client_negotiated_tls {
 sub on_client_received_http_handshake {
     my ($self, $params) = @_;
 
+    $self->{_delegate}->set_domain($params->{host} || '');
+
     if (Ocean::Config->instance->has_section('sasl')) {
 
         $self->{_delegate}->on_protocol_completed_http_handshake($params);

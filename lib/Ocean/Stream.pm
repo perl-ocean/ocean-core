@@ -111,6 +111,11 @@ sub domain {
     return $self->[DOMAIN];
 }
 
+sub set_domain {
+    my ($self, $domain) = @_;
+    $self->[DOMAIN] = $domain;
+}
+
 sub is_closing {
     my $self = shift;
     return 1 unless $self->[CLIENT_IO];
@@ -350,7 +355,7 @@ sub on_protocol_handle_bind_request {
     # XXX bad interface
     $req->resource( $self->bound_jid->resource );
     $self->[SERVER]->on_stream_handle_bind_request(
-        $self->id, $self->user_id, $req);
+        $self->id, $self->user_id, $self->domain, $req);
 }
 
 sub on_protocol_handle_vcard_request {
@@ -381,7 +386,7 @@ sub on_protocol_handle_too_many_stanza {
 
 sub on_protocol_handle_sasl_auth {
     my ($self, $auth) = @_;
-    $self->[SERVER]->on_stream_handle_sasl_auth($self->id, $auth);
+    $self->[SERVER]->on_stream_handle_sasl_auth($self->id, $self->domain, $auth);
 }
 
 sub on_protocol_handle_sasl_password {
@@ -396,7 +401,6 @@ sub on_protocol_handle_sasl_success_notification {
 
 sub on_protocol_handle_http_auth {
     my ($self, $cookie, $domain) = @_;
-    $self->[DOMAIN] = $domain;
     $self->[SERVER]->on_stream_handle_http_auth($self->id, $cookie);
 }
 
@@ -547,7 +551,7 @@ sub on_protocol_completed_http_auth {
 
     $self->[USER_ID] = $user_id;
 
-    my $domain = Ocean::Config->instance->get(server => q{domain});
+    my $domain = $self->[DOMAIN];
     $self->[BOUND_JID] = Ocean::JID->build($username, $domain, $session_id);
 
     $self->[CLIENT_IO]->on_protocol_completed_http_auth($params);
@@ -562,7 +566,7 @@ sub on_protocol_completed_http_session_auth {
 
     $self->[USER_ID] = $user_id;
 
-    my $domain = Ocean::Config->instance->get(server => q{domain});
+    my $domain = $self->[DOMAIN];
     $self->[BOUND_JID] = Ocean::JID->build($username, $domain, $session_id);
 
     $self->[STATUS] = STATUS_AUTHENTICATED;
@@ -580,7 +584,6 @@ sub on_protocol_open_stream {
     my $stream_id = Ocean::Util::String::gen_random(10);
     # XXX should be keeped?
     # $self->{_current_stream_id} = $stream_id;
-    $self->[DOMAIN] = $domain;
     $self->[CLIENT_IO]->on_protocol_open_stream(
         $stream_id, $domain, $features);
 }
@@ -600,8 +603,7 @@ sub on_protocol_completed_sasl_auth {
 
     $self->[USER_ID] = $user_id;
 
-    # XXX should be bundle at Handler?
-    my $domain = Ocean::Config->instance->get(server => q{domain});
+    my $domain = $self->[DOMAIN];
     $self->[BOUND_JID] = Ocean::JID->build($username, $domain, $session_id);
 
     $self->[STATUS] = STATUS_AUTHENTICATED;
@@ -642,16 +644,16 @@ sub on_protocol_bound_jid {
     my $jid = $result->jid;
     #$self->[BOUND_JID] = $jid;
     $self->[STATUS] = STATUS_BOUND;
-    $self->[CLIENT_IO]->on_protocol_bound_jid(
-        $iq_id, Ocean::Config->instance->get(server => q{domain}), $result);
-    $self->[SERVER]->on_stream_bound_jid(
-        $self->id, $self->bound_jid);
+
+    my $domain = $self->[DOMAIN];
+    $self->[CLIENT_IO]->on_protocol_bound_jid($iq_id, $domain, $result);
+    $self->[SERVER]->on_stream_bound_jid($self->id, $self->bound_jid);
 }
 
 sub on_protocol_started_session {
     my ($self, $iq_id) = @_;
-    $self->[CLIENT_IO]->on_protocol_started_session(
-        $iq_id, Ocean::Config->instance->get(server => q{domain}) );
+    my $domain = $self->[DOMAIN];
+    $self->[CLIENT_IO]->on_protocol_started_session($iq_id, $domain);
 }
 
 sub on_protocol_delivered_message {

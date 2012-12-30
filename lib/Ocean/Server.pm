@@ -281,7 +281,7 @@ sub on_stream_handle_too_many_auth_attempt {
 }
 
 sub on_stream_handle_sasl_auth {
-    my ($self, $stream_id, $auth) = @_;
+    my ($self, $stream_id, $domain, $auth) = @_;
 
     infof('<Stream:FD:%s> @%s { mechanism: %s } ',
         $stream_id,
@@ -290,6 +290,7 @@ sub on_stream_handle_sasl_auth {
 
     my $args = Ocean::HandlerArgs::SASLAuthRequest->new({
         stream_id => $stream_id,
+        domain    => $domain,
         mechanism => $auth->mechanism,
         text      => $auth->text || '',
     });
@@ -353,7 +354,7 @@ sub on_stream_handle_http_auth {
 }
 
 sub on_stream_handle_bind_request {
-    my ($self, $stream_id, $user_id, $req) = @_;
+    my ($self, $stream_id, $user_id, $domain, $req) = @_;
 
     infof('<Stream:FD:%s> @%s { user_id: %s }', 
         $stream_id,
@@ -363,6 +364,7 @@ sub on_stream_handle_bind_request {
     my $args = Ocean::HandlerArgs::BindRequest->new({
         stream_id   => $stream_id,
         user_id     => $user_id,
+        domain      => $domain,
         resource    => $req->resource    || '',
         want_extval => $req->want_extval || 0,
     });

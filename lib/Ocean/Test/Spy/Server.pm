@@ -108,18 +108,20 @@ sub on_stream_handle_unavailable_presence {
 }
 
 sub on_stream_handle_sasl_auth {
-    my ($self, $stream_id, $auth) = @_;
+    my ($self, $stream_id, $domain, $auth) = @_;
     $self->push_event(auth => {
         stream_id => $stream_id,
+        domain    => $domain,
         auth      => $auth,
         });
 }
 
 sub on_stream_handle_bind_request {
-    my ($self, $stream_id, $user_id) = @_;
+    my ($self, $stream_id, $user_id, $domain) = @_;
     $self->push_event(bind_request => {
         user_id   => $user_id,
         stream_id => $stream_id,
+        domain    => $domain,
         });
 }
 

@@ -22,16 +22,19 @@ use Ocean::XML::Namespaces qw(
     JINGLE_INFO
 );
 
-sub classify {
-    my ($class, $elem) = @_;
+use List::MoreUtils qw(any);
+use Log::Minimal;
 
-    my $domain = Ocean::Config->instance->get(server => 'domain');
+sub classify {
+    my ($class, $elem, $domain) = @_;
+
     my $to = $elem->attr('to') || $domain;
     my $to_jid = Ocean::JID->new($to);
 
-    if ($to eq $domain || !$to_jid->resource) {
+    my $domains = Ocean::Config->instance->get(server => 'domain');
 
-        return $class->classify_iq_toward_server($elem);
+    if ((any { $to eq $_ } @$domains) || !$to_jid->resource) {
+        return $class->classify_iq_toward_server($elem, $domain);
 
     } elsif( (!$to_jid->is_host) && $to_jid->resource ) {
 
@@ -39,13 +42,15 @@ sub classify {
          && Ocean::Config->instance->get(muc => q{domain}) eq $to_jid->domain) {
             return $class->classify_iq_toward_room_member($elem);
         } else {
-            return $class->classify_iq_toward_user($elem);
+            return $class->classify_iq_toward_user($elem, $domain);
         }
     }
 }
 
 sub classify_iq_toward_server {
-    my ($class, $elem) = @_;
+    my ($class, $elem, $domain) = @_;
+
+    debugf('classify_iq_toward_server');
     if ($elem->get_first_element_ns(BIND, q{bind})) {
         return Ocean::Constants::EventType::BIND_REQUEST;
     }
@@ -67,10 +72,10 @@ sub classify_iq_toward_server {
         return Ocean::Constants::EventType::VCARD_REQUEST;
     }
     elsif ($elem->get_first_element_ns(DISCO_INFO, q{query})) {
-        return $class->classify_iq_towerd_server_disco_info($elem);
+        return $class->classify_iq_towerd_server_disco_info($elem, $domain);
     }
     elsif ($elem->get_first_element_ns(DISCO_ITEMS, q{query})) {
-        return $class->classify_iq_towerd_server_disco_items($elem);
+        return $class->classify_iq_towerd_server_disco_items($elem, $domain);
     }
     elsif ($elem->get_first_element_ns(JINGLE_INFO, q{query})) {
         return Ocean::Constants::EventType::JINGLE_INFO_REQUEST;
@@ -83,13 +88,13 @@ sub classify_iq_towerd_server_disco_info {
 
     my $config = Ocean::Config->instance;
 
-    my $domain = $config->get(server => 'domain');
-    my $to = $elem->attr('to') || $domain;
+    my $to = $elem->attr('to') || '';
     my $to_jid = Ocean::JID->new($to);
 
     return unless $to_jid && $to_jid->domain;
 
-    if ($to_jid->domain eq $domain) {
+    my $domains = $config->get(server => 'domain');
+    if (any { $to_jid->domain eq $_} @$domains) {
         return Ocean::Constants::EventType::DISCO_INFO_REQUEST;
     } 
 
@@ -109,13 +114,13 @@ sub classify_iq_towerd_server_disco_items {
     my ($self, $elem) = @_;
 
     my $config = Ocean::Config->instance;
-    my $domain = $config->get(server => 'domain');
-    my $to = $elem->attr('to') || $domain;
+    my $to = $elem->attr('to') || '';
     my $to_jid = Ocean::JID->new($to);
 
     return unless $to_jid && $to_jid->domain;
 
-    if ($to_jid->domain eq $domain) {
+    my $domains = $config->get(server => 'domain');
+    if (any { $to_jid->domain eq $_} @$domains) {
         return Ocean::Constants::EventType::DISCO_ITEMS_REQUEST;
     } 
 

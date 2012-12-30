@@ -9,6 +9,7 @@ use MIME::Base64;
 use XML::Writer;
 use Encode;
 use Ocean::Util::XML qw(filter_xml_chars);
+use Log::Minimal; # TODO remove
 
 use Ocean::XML::Namespaces qw(
     STREAM
@@ -308,6 +309,8 @@ sub send_roster_push {
 sub send_bind_result {
     my ($self, $id, $domain, $result) = @_;
     my $jid = $result->jid;
+    use Data::Dumper;
+    debugf('<Encoder> send_bind_result %s', Dumper($result)); # TODO remove
     $jid = $jid->as_string if $jid->isa('Ocean::JID');
     $self->send_iq(Ocean::Constants::IQType::RESULT, 
         $id, $domain, sub {

@@ -10,9 +10,10 @@ use Ocean::Error;
 use Ocean::Constants::StreamErrorType;
 use Ocean::Constants::ProtocolPhase;
 
+use List::MoreUtils qw(none);
+
 sub on_client_received_stream {
     my ($self, $attrs) = @_;
-
     my $version = $attrs->{version} || '';
     unless ($version eq '1.0') {
         Ocean::Error::ProtocolError->throw(
@@ -20,7 +21,7 @@ sub on_client_received_stream {
     }
     my $to = $attrs->{to} || '';
 
-    $domains = Ocean::Config->instance->get(server => q{domain});
+    my $domains = Ocean::Config->instance->get(server => q{domain});
 
     if (none { $to eq $_ } @$domains ) {
         Ocean::Error::ProtocolError->throw(
@@ -28,8 +29,9 @@ sub on_client_received_stream {
         );
     }
 
+    $self->{_delegate}->set_domain($to);
     $self->{_delegate}->on_protocol_open_stream(
-        $self->get_features(), $domain);
+        $self->get_features(), $to);
 
     $self->{_delegate}->on_protocol_step(
          $self->get_next_phase());

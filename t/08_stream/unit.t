@@ -214,7 +214,6 @@ TEST_CORRECT_SCENARIO: {
     # RESOURCE BINDING
     # =====================#
     $socket->emulate_client_write(q{<iq type='set' id='bind_2'><bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'><resource>someresource</resource></bind></iq>});
-
     is($delegate->get_last_event->{type}, 'bind_request');
     is($delegate->get_last_event->{data}->{user_id}, 'user2');
     is($delegate->get_last_event->{data}->{stream_id}, 'dummy_id');

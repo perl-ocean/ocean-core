@@ -42,7 +42,7 @@ sub on_message {
 
             my $to_jid = Ocean::JID->build(
                 $conn->username,
-                $self->domain,
+                $conn->domain,
                 $conn->resource,
             );
 

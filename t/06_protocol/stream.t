@@ -21,6 +21,8 @@ use Ocean::XML::Namespaces qw(TLS SASL BIND SESSION);
 
 use Ocean::Test::Spy::Stream;
 
+my $streamok = 0;
+my $streamnotok = 0;
 sub stream_ok {
     my ($protocol, $attr, $phase, $features) = @_;
     my $delegate = Ocean::Test::Spy::Stream->new;
@@ -55,7 +57,7 @@ sub stream_not_ok {
 
 &stream_ok(
     Ocean::StreamComponent::Protocol::SASLStream->new,
-    { version => '1.0' },
+    { to => 'xmpp.example.net', version => '1.0' },
     Ocean::Constants::ProtocolPhase::SASL,
     [ [ mechanisms => SASL, [
         [mechanism => 'PLAIN'],     
@@ -72,9 +74,9 @@ sub stream_not_ok {
 
 &stream_ok(
     Ocean::StreamComponent::Protocol::TLSStream->new,
-    { version => '1.0' },
+    { to => 'xmpp.example.net', version => '1.0' },
     Ocean::Constants::ProtocolPhase::TLS,
-    [ [starttls => TLS ] ],
+    [[ starttls => TLS ]],
 );
 
 &stream_ok(
@@ -89,7 +91,7 @@ sub stream_not_ok {
 
 &stream_ok(
     Ocean::StreamComponent::Protocol::BindAndSessionStream->new,
-    { version => '1.0' },
+    { to => 'xmpp.example.net', version => '1.0' },
     Ocean::Constants::ProtocolPhase::BIND_AND_SESSION,
     [
         [session => SESSION],
@@ -97,17 +99,23 @@ sub stream_not_ok {
     ],
 );
 
-
 for my $stream ( 
     Ocean::StreamComponent::Protocol::SASLStream->new,
     Ocean::StreamComponent::Protocol::TLSStream->new,
     Ocean::StreamComponent::Protocol::BindAndSessionStream->new
 ) {
 
-    # invalid host
+    # invalid host (not specified in the config)
     &stream_not_ok(
         $stream,
         { to => 'invalid.org', version => '1.0' },
+        q{host-unknown: error},
+    );
+
+    # invalid host (no host)
+    &stream_not_ok(
+        $stream,
+        { version => '1.0' },
         q{host-unknown: error},
     );
 

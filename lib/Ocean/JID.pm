@@ -3,6 +3,7 @@ package Ocean::JID;
 use strict;
 use warnings;
 
+use Log::Minimal; # TODO remove
 # most of this code is borrowed from DJabberd::JID
 
 use overload
@@ -31,6 +32,8 @@ sub new {
 
 sub build {
     my ($class, $username, $domain, $resource) = @_;
+    debugf('<JID> build %s, %s, %s', $username || 'undef', $domain || 'undef', $resource || 'undef');
+    die 'bad JID' unless ( $username && $username ne '' && $domain && $domain ne '' ); # TODO remove
     my $jid = join('@', $username, $domain);
     $jid = join('/', $jid, $resource) if ($resource);
     return Ocean::JID->new($jid);

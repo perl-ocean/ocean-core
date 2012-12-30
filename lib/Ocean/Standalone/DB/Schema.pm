@@ -30,6 +30,7 @@ table {
         user_id
         username
         resource
+        domain
         presence_show
         presence_status
         node_id

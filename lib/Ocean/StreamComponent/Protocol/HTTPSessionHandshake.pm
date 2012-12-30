@@ -23,6 +23,9 @@ sub on_client_negotiated_tls {
 
 sub on_client_received_http_handshake {
     my ($self, $params) = @_;
+
+    $self->{_delegate}->set_domain($params->{host} || '');
+
     if (!$self->{_authenticated}) {
         $self->{_handshake_params} = $params;
         my $cookie = delete $params->{cookie} || '';

@@ -133,7 +133,7 @@ sub on_stream_handle_too_many_auth_attempt {
 }
 
 sub on_stream_handle_sasl_auth {
-    my ($self, $stream_id, $auth) = @_;
+    my ($self, $stream_id, $domain, $auth) = @_;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::StreamManager::on_stream_handle_sasl_auth}, 
     );
@@ -161,7 +161,7 @@ sub on_stream_handle_sasl_success_notification {
 }
 
 sub on_stream_handle_bind_request {
-    my ($self, $stream_id, $user_id, $req) = @_;
+    my ($self, $stream_id, $user_id, $domain, $req) = @_;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::StreamManager::on_stream_handle_bind_request}, 
     );

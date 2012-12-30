@@ -183,6 +183,7 @@ sub insert_connection {
         user_id  => $args{user_id},
         username => $args{username},
         resource => $args{resource},
+        domain   => $args{domain},
     );
 
     for my $key ( qw(node_id presence_show presence_status) ) {

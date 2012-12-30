@@ -38,14 +38,15 @@ sub on_bind_request {
 
     my $jid = Ocean::JID->build(
         $user->username, 
-        $self->domain, 
-        $resource
+        $args->domain,
+        $resource,
     );
 
     $ctx->get('db')->insert_connection(
         user_id  => $user->user_id,
         username => $user->username,
         resource => $resource,
+        domain   => $args->domain,
         #presence => undef,
     );
 
@@ -86,7 +87,7 @@ sub on_presence {
 
             my $receiver_jid = Ocean::JID->build(
                 $follower_conn->username,
-                $self->domain,
+                $follower_conn->domain,
                 $follower_conn->resource,
             );
 
@@ -143,7 +144,7 @@ sub on_initial_presence {
 
             my $receiver_jid = Ocean::JID->build(
                 $follower_conn->username,
-                $self->domain, 
+                $follower_conn->domain,
                 $follower_conn->resource,
             );
 
@@ -182,7 +183,7 @@ sub on_initial_presence {
 
             my $followee_jid = Ocean::JID->build(
                   $followee_conn->username,
-                  $self->domain, 
+                  $followee_conn->domain,
                   $followee_conn->resource,
             );
 
@@ -237,7 +238,7 @@ sub on_unavailable_presence {
 
             my $receiver_jid = Ocean::JID->build(
                 $follower_conn->username,
-                $self->domain,
+                $follower_conn->domain,
                 $follower_conn->resource,
             );
 
