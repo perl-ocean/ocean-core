@@ -5,7 +5,9 @@ use warnings;
 
 use HTTP::Parser::XS qw(parse_http_request);
 use Log::Minimal;
+use List::MoreUtils qw(any);
 
+use Ocean::Config;
 use Ocean::Constants::StreamErrorType;
 use Ocean::Error;
 use Ocean::Util::HTTPBinding;
@@ -95,6 +97,22 @@ sub _parse {
             }
 
             my %header_params = ();
+
+            # check host
+            my $domains = Ocean::Config->instance->get(server => q{domain});
+            my $host = Ocean::Util::HTTPBinding::parse_host($env->{HTTP_HOST});
+            unless (exists $env->{HTTP_HOST} && (any { $host eq $_ } @$domains) ) {
+                $self->reset();
+                debugf("<Stream> <Decoder> invalid domain: '%s'", $header);
+                Ocean::Error::HTTPHandshakeError->throw(
+                    code => 400,
+                    type => q{Bad Request},
+                );
+                return;
+            }
+
+            # get host
+            $header_params{host} = $host;
 
             # get cookie
             if ( exists $env->{HTTP_COOKIE} ) {
