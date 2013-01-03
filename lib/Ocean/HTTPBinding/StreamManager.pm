@@ -154,14 +154,14 @@ sub on_stream_handle_sasl_auth {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $cookie) = @_;
-    $self->{_server}->on_stream_handle_http_auth($stream_id, $cookie);
+    my ($self, $stream_id, $cookie, $domain) = @_;
+    $self->{_server}->on_stream_handle_http_auth($stream_id, $cookie, $domain);
 }
 
 sub on_stream_handle_bind_request {
     my ($self, $stream_id, $user_id, $domain, $req) = @_;
     $self->{_server}->on_stream_handle_bind_request(
-        $stream_id, $user_id, $req);
+        $stream_id, $user_id, $domain, $req);
 }
 
 sub on_stream_handle_message {

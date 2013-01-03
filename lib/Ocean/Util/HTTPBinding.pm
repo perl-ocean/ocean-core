@@ -10,6 +10,7 @@ use URI::Escape ();
 our %EXPORT_TAGS = (all => [qw(
     bake_cookie
     parse_cookie
+    parse_host
 )]);
 
 our @EXPORT_OK = map { @$_ } values %EXPORT_TAGS;
@@ -80,6 +81,12 @@ sub parse_cookie {
     }
 
     return \%results;
+}
+
+sub parse_host {
+    my $str = shift;
+    my ($host, $port) = split /:/, $str;
+    return $host;
 }
 
 

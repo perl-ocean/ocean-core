@@ -96,7 +96,7 @@ sub register_stream {
     if ($self->[CONNECTION_STATE] == CONNECTION_STATE_INIT) {
         debugf("<Session> register_stream INIT");
         $self->[CONNECTION_STATE] = CONNECTION_STATE_AVAILABLE;
-        $self->_send_bind_request();
+        $self->_send_bind_request($stream);
     }
     elsif ($self->[CONNECTION_STATE] == CONNECTION_STATE_AVAILABLE) {
         debugf("<Session> register_stream AVAILABLE");
@@ -127,11 +127,11 @@ sub _recover_from_pending {
 }
 
 sub _send_bind_request {
-    my $self = shift;
+    my ($self, $stream) = @_;
     # TODO edit id and resource
     my $req = Ocean::Stanza::Incoming::BindResource->new('id', $self->id);
     $self->[SERVER]->on_stream_handle_bind_request(
-        $self->id, $self->user_id, $self->domain, $req);
+        $self->id, $self->user_id, $stream->domain, $req);
 }
 
 sub _send_initial_presence {

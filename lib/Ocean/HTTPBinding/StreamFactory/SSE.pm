@@ -5,8 +5,6 @@ use warnings;
 
 use parent 'Ocean::StreamFactory';
 
-use AnyEvent::Handle;
-
 use Ocean::Stream;
 use Ocean::StreamComponent::IO;
 use Ocean::StreamComponent::IO::Decoder::JSON;

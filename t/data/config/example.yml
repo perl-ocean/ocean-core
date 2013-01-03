@@ -3,6 +3,7 @@ server:
   domain:
     - xmpp.example.org
     - xmpp.example.net
+    - sse.example.org
   host: 127.0.0.1
   port: 5222
   backlog: 5
