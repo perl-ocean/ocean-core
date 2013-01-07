@@ -23,7 +23,6 @@ use Ocean::XML::Namespaces qw(
 );
 
 use List::MoreUtils qw(any);
-use Log::Minimal;
 
 sub classify {
     my ($class, $elem, $domain) = @_;
@@ -50,7 +49,6 @@ sub classify {
 sub classify_iq_toward_server {
     my ($class, $elem, $domain) = @_;
 
-    debugf('classify_iq_toward_server');
     if ($elem->get_first_element_ns(BIND, q{bind})) {
         return Ocean::Constants::EventType::BIND_REQUEST;
     }
