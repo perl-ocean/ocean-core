@@ -17,14 +17,14 @@ sub on_pubsub_event {
     my $items        = $args->items || [];
 
     my @conns = $ctx->get('db')->search_connection_by_username( 
-        $receiver_jid->node );
+        $receiver_jid->node, $receiver_jid->domain );
 
     for my $conn ( @conns ) {
         my $builder = 
             Ocean::Stanza::DeliveryRequestBuilder::PubSubEvent->new;
         my $to_jid = Ocean::JID->build(
             $conn->username,
-            $self->domain,
+            $conn->domain,
             $conn->resource,
         );
         $builder->from($sender_jid);

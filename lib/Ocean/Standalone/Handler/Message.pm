@@ -13,6 +13,8 @@ sub on_message {
     my $sender_jid   = $args->from;
     my $receiver_jid = $args->to;
 
+    # XXX check if sender and receiver are in the same domain
+
     # XXX check relation?
     my $receiver = 
         $ctx->get('db')->find_user_by_username($receiver_jid->node);
@@ -33,7 +35,7 @@ sub on_message {
     } else {
 
         my @conns = $ctx->get('db')->search_available_connection_by_username( 
-            $receiver_jid->node );
+            $receiver_jid->node, $receiver_jid->domain );
 
         for my $conn ( @conns ) {
 

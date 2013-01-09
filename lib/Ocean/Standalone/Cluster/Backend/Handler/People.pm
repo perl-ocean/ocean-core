@@ -41,7 +41,7 @@ sub on_roster_request {
         next unless $user;
         my $item_jid = Ocean::JID->build(
             $user->username, 
-            $self->domain
+            $sender_jid->domain,
         );
 
         my $item_builder =

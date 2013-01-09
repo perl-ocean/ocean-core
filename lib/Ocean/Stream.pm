@@ -364,7 +364,7 @@ sub on_protocol_handle_vcard_request {
         $self->bound_jid, $req);
 }
 
-sub on_protocol_handle_too_manay_auth_attempt {
+sub on_protocol_handle_too_many_auth_attempt {
     my $self = shift;
     $self->[SERVER]->on_stream_handle_too_many_auth_attempt(
         $self->host, $self->port);

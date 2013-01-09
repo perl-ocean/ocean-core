@@ -31,16 +31,6 @@ sub port {
     $self->_server_config('port');
 }
 
-sub domain {
-    my $self = shift;
-    $self->_worker_config('domain');
-}
-
-sub _worker_config {
-    my ($self, $field) = @_;
-    return Ocean::Config->instance->get(worker => $field);
-}
-
 sub log_debug { 
     my $self     = shift;
     my $template = shift;

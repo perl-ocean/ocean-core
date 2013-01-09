@@ -222,38 +222,42 @@ sub find_connection_by_jid {
     my ($self, $jid) = @_;
 
     my $username = $jid->node;
+    my $domain   = $jid->domain;
     my $resource = $jid->resource;
 
     return $self->{_db}->single( connection => {
         username => $username,
+        domain   => $domain,
         resource => $resource,
     });
 }
 
 sub search_connection_by_username {
-    my ($self, $username) = @_;
+    my ($self, $username, $domain) = @_;
     return $self->{_db}->search( connection => {
-        username => $username,     
+        username => $username,
+        domain   => $domain,
     })->all;
 }
 
 sub search_available_connection_by_username {
-    my ($self, $username) = @_;
-    my @conns = $self->search_connection_by_username($username);
+    my ($self, $username, $domain) = @_;
+    my @conns = $self->search_connection_by_username($username, $domain);
     @conns = grep { $_->presence_show } @conns;
     return @conns;
 }
 
 sub search_connection_by_user_id {
-    my ($self, $user_id) = @_;
+    my ($self, $user_id, $domain) = @_;
     return $self->{_db}->search( connection => {
-        user_id => $user_id,     
+        user_id => $user_id,
+        domain  => $domain,
     } )->all;
 }
 
 sub search_available_connection_by_user_id {
-    my ($self, $user_id) = @_;
-    my @conns = $self->search_connection_by_user_id($user_id);
+    my ($self, $user_id, $domain) = @_;
+    my @conns = $self->search_connection_by_user_id($user_id, $domain);
     @conns = grep { $_->presence_show } @conns;
     return @conns;
 }

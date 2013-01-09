@@ -15,30 +15,33 @@ use Ocean::Stanza::DeliveryRequestBuilder::UnavailablePresence;
 sub on_bind_request {
     my ($self, $ctx, $args) = @_;
 
-    my $stream_id = $args->stream_id;
-    my $user_id   = $args->user_id;
+    my $user_id     = $args->user_id;
+    my $domain      = $args->domain;
+    my $stream_id   = $args->stream_id;
+    my $resource    = $args->resource;
+    my $want_extval = $args->want_extval;
 
     $self->log_debug("on_bind_request");
 
     my $user = $ctx->get('db')->find_user_by_id($user_id);
     unless ($user) {
         $self->log_debug("user not found");
-        # ignore?
-        # throw error?
+        Ocean::Error::ProtocolError->throw(
+            message => q{user not found},
+        );
         return;
     }
 
     #my $resource = $args->resource || sha1_hex( gen_random(32) );
-    my $resource = $args->resource;
     unless ($resource) {
         Ocean::Error::ProtocolError->throw(
-            message => q{resource not found}, 
+            message => q{resource not found},
         );
     }
 
     my $jid = Ocean::JID->build(
         $user->username, 
-        $args->domain,
+        $domain,
         $resource,
     );
 
@@ -54,15 +57,19 @@ sub on_bind_request {
         Ocean::Stanza::DeliveryRequestBuilder::BoundJID->new;
     $builder->stream_id($stream_id);
     $builder->jid($jid);
-    if ($args->want_extval) {
+
+    if ($want_extval) {
         $builder->nickname($user->nickname);
         $builder->photo_url($user->profile_img_url || '');
     }
+
     $ctx->deliver($builder->build());
 }
 
 sub on_presence {
     my ($self, $ctx, $args) = @_;
+
+    $self->log_debug("on_presence");
 
     my $sender_jid = $args->from;
 
@@ -81,7 +88,8 @@ sub on_presence {
     for my $follower_id ( @followers ) {
 
         my @follower_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($follower_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $follower_id, $sender_conn->domain);
 
         for my $follower_conn ( @follower_conns ) {
 
@@ -101,9 +109,7 @@ sub on_presence {
                 if $sender->profile_img_hash;
 
             $ctx->deliver($builder->build());
-
         }
-
     }
 }
 
@@ -138,7 +144,8 @@ sub on_initial_presence {
     for my $follower_id ( @followers ) {
 
         my @follower_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($follower_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $follower_id, $sender_conn->domain);
 
         for my $follower_conn ( @follower_conns ) {
 
@@ -175,7 +182,8 @@ sub on_initial_presence {
     for my $followee_id ( @followees ) {
 
         my @followee_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($followee_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $followee_id, $sender_conn->domain);
 
         for my $followee_conn ( @followee_conns ) {
 
@@ -232,7 +240,8 @@ sub on_unavailable_presence {
     for my $follower_id ( @followers ) {
 
         my @follower_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($follower_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $follower_id, $sender_conn->domain);
 
         for my $follower_conn ( @follower_conns ) {
 
