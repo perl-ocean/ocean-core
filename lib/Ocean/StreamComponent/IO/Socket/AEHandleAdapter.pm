@@ -57,7 +57,6 @@ sub _release_delegate {
 
 sub _initialize_handle {
     my ($self, $handle) = @_;
-    $handle->timeout($self->{_timeout});
     $handle->on_timeout(sub {
        $self->{_delegate}->on_socket_timeout(); 
     });
