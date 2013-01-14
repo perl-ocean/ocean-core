@@ -17,7 +17,7 @@ use Ocean::Util::TLS;
 use constant {
     ID           => 0,
     CLIENT_IO    => 1,
-    SERVER       => 2,
+    SERVER       => 2, # StreamManager
     PROTOCOL     => 3,
     BOUND_JID    => 4,
     USER_ID      => 5,
@@ -328,6 +328,10 @@ sub on_protocol_step {
         Ocean::StreamComponent::ProtocolFactory->get_protocol($next_phase);
     $protocol->set_delegate($self);
     $self->[PROTOCOL] = $protocol;
+
+    if ( $next_phase eq Ocean::Constants::ProtocolPhase::AVAILABLE) {
+        $self->[CLIENT_IO]->on_stream_upgraded_to_available();
+    }
 }
 
 =head3 PROTOCOL -> SERVER

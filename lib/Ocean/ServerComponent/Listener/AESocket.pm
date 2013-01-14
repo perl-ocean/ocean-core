@@ -78,6 +78,7 @@ sub _create_handle {
         no_delay => 1,
         rbuf_max => $self->{_max_read_buffer},
         timeout  => $self->{_timeout},
+        wtimeout => $self->{_timeout_preauth},
     );
 
     if ( Ocean::Util::TLS::require_initialtls() ) {

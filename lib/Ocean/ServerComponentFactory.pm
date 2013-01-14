@@ -60,6 +60,7 @@ sub create_listener {
         backlog         => $config->get(server => q{backlog}),
         max_read_buffer => $config->get(server => q{max_read_buffer}),
         timeout         => $config->get(server => q{timeout}),
+        timeout_preauth => $config->get(server => q{timeout_preauth}),
     );
 }
 

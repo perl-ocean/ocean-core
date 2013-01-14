@@ -19,6 +19,7 @@ server:
   backlog: 1024
   max_connection: 100000
   timeout: 300
+  timeout_preauth: 10
   max_read_buffer: 10000
   report_interval: 60
   use_stanza_counter: yes

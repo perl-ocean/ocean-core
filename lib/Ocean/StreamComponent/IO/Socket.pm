@@ -53,4 +53,9 @@ sub push_write {
     );
 }
 
+sub on_stream_upgraded_to_available {
+    my $self = shift;
+    # do nothing
+}
+
 1;

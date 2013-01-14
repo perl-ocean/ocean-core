@@ -6,6 +6,7 @@ server:
   backlog: 5
   max_connection: 10000000
   timeout: 10
+  timeout_preauth: 10
   report_interval: 10
   max_read_buffer: 1000000
 

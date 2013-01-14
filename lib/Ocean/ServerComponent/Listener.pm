@@ -13,6 +13,7 @@ sub new {
         _backlog         => $args{backlog},
         _max_read_buffer => $args{max_read_buffer},
         _timeout         => $args{timeout},
+        _timeout_preauth => $args{timeout_preauth},
         _listener        => undef,
         _delegate        => undef,
     }, $class;

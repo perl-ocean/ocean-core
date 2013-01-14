@@ -524,6 +524,11 @@ sub on_protocol_delivered_iq_error {
 }
 
 # CONNECTION STATE MANAGEMENT
+sub on_stream_upgraded_to_available {
+    my $self = shift;
+    $self->[SOCKET]->on_stream_upgraded_to_available();
+}
+
 sub is_closing { $_[0]->[IS_CLOSING] }
 
 sub close_with_http_handshake_error {

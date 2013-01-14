@@ -21,6 +21,7 @@ sub config {
                     backlog         => { type => 'int', required => 1 }, 
                     max_connection  => { type => 'int', required => 1 }, 
                     timeout         => { type => 'int', required => 1 }, 
+                    timeout_preauth => { type => 'int', required => 1 },
                     max_read_buffer => { type => 'int', required => 1 }, 
                     report_interval => { type => 'int', required => 1 }, 
                     pid_file        => { type => 'str' }, 

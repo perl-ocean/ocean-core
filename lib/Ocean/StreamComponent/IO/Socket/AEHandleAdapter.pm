@@ -58,7 +58,11 @@ sub _release_delegate {
 sub _initialize_handle {
     my ($self, $handle) = @_;
     $handle->on_timeout(sub {
-       $self->{_delegate}->on_socket_timeout(); 
+        $self->{_delegate}->on_socket_timeout();
+    });
+    $handle->on_wtimeout(sub {
+        infof('<Stream> <Socket> write timeout');
+        $self->{_delegate}->on_socket_timeout();
     });
     $handle->on_read(sub {
         my $data = $handle->rbuf;
@@ -117,6 +121,13 @@ sub push_write {
     infof('<Stream> <Socket> @packet_out ' . $data)
             if value_is_true( Ocean::Config->instance->get(log => q{show_packets}) );
     $self->{_handle}->push_write($data);
+}
+
+sub on_stream_upgraded_to_available {
+    my $self = shift;
+    my $handle = $self->{_handle};
+    # clear pre auth response timeout here
+    $handle->wtimeout(undef);
 }
 
 1;

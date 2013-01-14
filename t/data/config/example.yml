@@ -7,6 +7,7 @@ server:
   max_connection: 100
   report_interval: 60
   timeout: 10
+  timeout_preauth: 10
   max_read_buffer: 1000
 event_handler:
   node:       Ocean::Standalone::Handler::Node
