@@ -29,12 +29,8 @@ sub on_client_received_stream {
         );
     }
 
-    $self->{_delegate}->set_domain($to);
-    $self->{_delegate}->on_protocol_open_stream(
-        $self->get_features(), $to);
-
-    $self->{_delegate}->on_protocol_step(
-         $self->get_next_phase());
+    $self->{_delegate}->on_protocol_open_stream($self->get_features(), $to);
+    $self->{_delegate}->on_protocol_step($self->get_next_phase());
 }
 
 sub get_features {

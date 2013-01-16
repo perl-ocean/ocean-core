@@ -14,6 +14,7 @@ sub on_bind_request {
         {
             stream_id   => $args->stream_id, 
             user_id     => $args->user_id,
+            domain      => $args->domain,
             resource    => $args->resource || '',
             want_extval => $args->want_extval,
         }

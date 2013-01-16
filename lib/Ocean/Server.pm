@@ -283,10 +283,12 @@ sub on_stream_handle_too_many_auth_attempt {
 sub on_stream_handle_sasl_auth {
     my ($self, $stream_id, $domain, $auth) = @_;
 
-    infof('<Stream:FD:%s> @%s { mechanism: %s } ',
+    infof('<Stream:FD:%s> @%s { mechanism: %s, domain: %s } ',
         $stream_id,
         Ocean::Constants::EventType::SASL_AUTH_REQUEST, 
-        $auth->mechanism);
+        $auth->mechanism,
+        $domain,
+    );
 
     my $args = Ocean::HandlerArgs::SASLAuthRequest->new({
         stream_id => $stream_id,

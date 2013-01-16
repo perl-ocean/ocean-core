@@ -551,8 +551,7 @@ sub on_protocol_completed_http_auth {
 
     $self->[USER_ID] = $user_id;
 
-    my $domain = $self->[DOMAIN];
-    $self->[BOUND_JID] = Ocean::JID->build($username, $domain, $session_id);
+    $self->[BOUND_JID] = Ocean::JID->build($username, $self->domain, $session_id);
 
     $self->[CLIENT_IO]->on_protocol_completed_http_auth($params);
 
@@ -566,8 +565,7 @@ sub on_protocol_completed_http_session_auth {
 
     $self->[USER_ID] = $user_id;
 
-    my $domain = $self->[DOMAIN];
-    $self->[BOUND_JID] = Ocean::JID->build($username, $domain, $session_id);
+    $self->[BOUND_JID] = Ocean::JID->build($username, $self->domain, $session_id);
 
     $self->[STATUS] = STATUS_AUTHENTICATED;
 
@@ -584,8 +582,9 @@ sub on_protocol_open_stream {
     my $stream_id = Ocean::Util::String::gen_random(10);
     # XXX should be keeped?
     # $self->{_current_stream_id} = $stream_id;
+    $self->set_domain($domain);
     $self->[CLIENT_IO]->on_protocol_open_stream(
-        $stream_id, $domain, $features);
+        $stream_id, $self->domain, $features);
 }
 
 sub on_protocol_starttls {
@@ -603,8 +602,7 @@ sub on_protocol_completed_sasl_auth {
 
     $self->[USER_ID] = $user_id;
 
-    my $domain = $self->[DOMAIN];
-    $self->[BOUND_JID] = Ocean::JID->build($username, $domain, $session_id);
+    $self->[BOUND_JID] = Ocean::JID->build($username, $self->domain, $session_id);
 
     $self->[STATUS] = STATUS_AUTHENTICATED;
 
@@ -645,15 +643,13 @@ sub on_protocol_bound_jid {
     #$self->[BOUND_JID] = $jid;
     $self->[STATUS] = STATUS_BOUND;
 
-    my $domain = $self->[DOMAIN];
-    $self->[CLIENT_IO]->on_protocol_bound_jid($iq_id, $domain, $result);
+    $self->[CLIENT_IO]->on_protocol_bound_jid($iq_id, $self->domain, $result);
     $self->[SERVER]->on_stream_bound_jid($self->id, $self->bound_jid);
 }
 
 sub on_protocol_started_session {
     my ($self, $iq_id) = @_;
-    my $domain = $self->[DOMAIN];
-    $self->[CLIENT_IO]->on_protocol_started_session($iq_id, $domain);
+    $self->[CLIENT_IO]->on_protocol_started_session($iq_id, $self->domain);
 }
 
 sub on_protocol_delivered_message {
