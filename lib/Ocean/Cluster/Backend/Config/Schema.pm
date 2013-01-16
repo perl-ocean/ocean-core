@@ -14,7 +14,6 @@ sub config {
                 required => 1, 
                 mapping => {
                     max_workers   => { type => 'int', required => 1 }, 
-                    domain        => { type => 'str', required => 1 }, 
                     node_inboxes  => {
                         type => 'seq',
                         sequence => [

@@ -1,5 +1,4 @@
 worker:
-  domain: xmpp.example.org
   max_workers: 1
   node_inboxes:
     - node_id: xmpp00
