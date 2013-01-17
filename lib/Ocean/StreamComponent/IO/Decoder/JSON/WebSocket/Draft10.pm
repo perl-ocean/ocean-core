@@ -3,6 +3,8 @@ package Ocean::StreamComponent::IO::Decoder::JSON::WebSocket::Draft10;
 use strict;
 use warnings;
 
+use parent 'Ocean::StreamComponent::IO::Decoder::JSON::Base';
+
 use Config;
 use Digest::SHA1;
 use MIME::Base64;
@@ -17,17 +19,12 @@ use Ocean::Util::HTTPBinding;
 
 use constant GUID => '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
-use constant {
-    STATE_INIT       => 0,
-    STATE_HANDSHAKED => 1,
-};
-
 sub new {
     my ($class, %args) = @_;
     my $self = bless {
         _buffer        => '', 
         _message       => '',
-        _state         => STATE_INIT,
+        _state         => Ocean::StreamComponent::IO::Decoder::JSON::Base::STATE_INIT,
         _on_handshake  => sub {},
         _on_read_frame => sub {},
         # XXX move to config?
@@ -38,42 +35,9 @@ sub new {
     return $self;
 }
 
-sub on_handshake {
-    my ($self, $callback) = @_;
-    $self->{_on_handshake} = $callback;
-}
-
-sub on_read_frame {
-    my ($self, $callback) = @_;
-    $self->{_on_read_frame} = $callback;
-}
-
-sub reset {
-    my $self = shift;
-    $self->{_state} = STATE_INIT;
-    $self->{_buffer} = '';
-}
-
-sub release {
-    my $self = shift;
-    delete $self->{_on_handshake}
-        if $self->{_on_handshake};
-    delete $self->{_on_read_frame}
-        if $self->{_on_read_frame};
-}
-
-sub parse_more {
-    my ($self, $data) = @_;
-    $self->{_buffer} .= $data;
-    $self->_parse();
-    #if (length $self->{buffer} > $self->{_max_buffer_size}) {
-    #    Ocean::Error::ProtocolError->throw;
-    #}
-}
-
 sub _parse {
     my $self = shift;
-    if ($self->{_state} == STATE_INIT) {
+    if ($self->{_state} == Ocean::StreamComponent::IO::Decoder::JSON::Base::STATE_INIT) {
         debugf("<Stream> <Decoder> start to parse header");
         my $pos = index($self->{_buffer}, "\r\n\r\n");
         if ($pos >= 0) {
@@ -103,16 +67,10 @@ sub _parse {
                 );
             }
 
-            # TODO
-            #if ( $env->{HTTP_HOST} eq $self->{_domain}) {
-            #    $self->reset();
-            #    debugf("<Stream> <Decoder> invalid host, '%s'", $header);
-            #    Ocean::Error::HTTPHandshakeError->throw(
-            #        code => 400,
-            #        type => q{Bad Request}, 
-            #    );
-            #    return;
-            #}
+            my %header_params = ();
+
+            # check/get host
+            $header_params{host} = Ocean::Util::HTTPBinding::check_host($self, $env->{HTTP_HOST});
 
             #if ( $env->{HTTP_SEC_WEBSOCKET_ORIGIN} eq $self->{_domain}) {
             #    $self->reset();
@@ -135,8 +93,6 @@ sub _parse {
                 );
                 return;
             }
-
-            my %header_params = ();
 
             my $protocol = $env->{HTTP_SEC_WEBSOCKET_PROTOCOL};
             # TODO protocol check
@@ -176,16 +132,11 @@ sub _parse {
                 $header_params{cookie} = $cookie;
             }
 
-            if ( exists $env->{HTTP_HOST} ) {
-                debugf("<Stream> <Decoder> found host - %s", $env->{HTTP_HOST});
-                $header_params{host} = $env->{HTTP_HOST};
-            }
-
             $self->{_on_handshake}->(\%header_params);
 
             debugf("<Stream> <Decoder> shakehand completed");
 
-            $self->{_state} = STATE_HANDSHAKED;
+            $self->{_state} = Ocean::StreamComponent::IO::Decoder::JSON::Base::STATE_HANDSHAKED;
             $self->_parse() if length $self->{_buffer} > 0;
         }
     } else {

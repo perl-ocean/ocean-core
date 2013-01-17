@@ -308,7 +308,6 @@ sub send_roster_push {
 sub send_bind_result {
     my ($self, $id, $domain, $result) = @_;
     my $jid = $result->jid;
-    use Data::Dumper;
     $jid = $jid->as_string if $jid->isa('Ocean::JID');
     $self->send_iq(Ocean::Constants::IQType::RESULT, 
         $id, $domain, sub {
