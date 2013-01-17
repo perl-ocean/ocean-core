@@ -13,7 +13,8 @@ __DATA__
 ---
 server:
   type: xmpp
-  domain: xmpp.example.org
+  domain:
+    - xmpp.example.org
   host: 192.168.0.1
   port: 5222
   backlog: 1024
