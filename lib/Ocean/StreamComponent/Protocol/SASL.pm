@@ -36,7 +36,7 @@ sub on_client_received_sasl_auth {
     # too many attempt
     if ($self->{_attempt_counter} > $max_attempt) {
         # notify operator
-        $self->{_delegate}->on_protocol_handle_too_manay_auth_attempt();
+        $self->{_delegate}->on_protocol_handle_too_many_auth_attempt();
         # force to close stream
         Ocean::Error::ProtocolError->throw(
             type => Ocean::Constants::StreamErrorType::NOT_AUTHORIZED, 

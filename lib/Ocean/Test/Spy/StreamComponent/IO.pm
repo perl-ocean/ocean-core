@@ -5,6 +5,11 @@ use warnings;
 
 sub new { bless {}, $_[0] }
 
+sub domain {
+    my $self = shift;
+    return $self->{domain};
+}
+
 sub clear {
     my $self = shift;
     for my $key (keys %$self) {

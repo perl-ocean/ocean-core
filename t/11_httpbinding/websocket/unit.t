@@ -87,18 +87,33 @@ $server->initialize();
 $server->start();
 
 sub build_http_header {
-    my ($cookie) = @_;
+    my (%params) = @_;
+    $params{host}   ||= 'xmpp.example.org';
+    $params{path}   ||= '/path';
+
     my $header = Protocol::WebSocket::Request->new(
-        host          => q{xmpp.example.org},
-        resource_name => '/path',
+        host          => $params{host},
+        resource_name => $params{path},
     );
     my $str = $header->to_string();
-    if ($cookie) {
+    if ($params{cookie}) {
         my @lines = split("\r\n", $str);
-        return join("\r\n", (@lines[0..$#lines-1], sprintf('Cookie: %s', $cookie), ""))."\r\n";
+        return join("\r\n", (@lines[0..$#lines-1], sprintf('Cookie: %s', $params{cookie}), ""))."\r\n";
     } else {
         return $str;
     }
+}
+
+INVALID_DOMAIN: {
+    # SETUP dummy client
+    my $dummy_fd0 = q{dummy_id_1};
+    my $client0 = $listener->emulate_accept($dummy_fd0);
+    my @client0_events;
+    $client0->client_on_read(sub { push(@client0_events, $_[0]) });
+
+    my $header = &build_http_header(host => 'invalid.domain.example.org');
+    $client0->emulate_client_write($header);
+    like($client0_events[0], qr|^HTTP/1.1 400 Bad Request|, 'invalid domain');
 }
 
 NON_COOKIE: {
@@ -120,7 +135,7 @@ INVALID_COOKIE: {
     my @client1_events;
     $client1->client_on_read(sub { push(@client1_events, $_[0]) });
 
-    my $header = &build_http_header('foo="bar"; bar=baz;');
+    my $header = &build_http_header(cookie => 'foo="bar"; bar=baz;');
     $client1->emulate_client_write($header);
     like($client1_events[0], qr|^HTTP/1.1 401 Unauthorized|, 'invalid cookie request');
 }
@@ -133,7 +148,7 @@ VALID_COOKIE: {
     $client1 = $listener->emulate_accept($dummy_fd1);
     $client1->client_on_read(sub { push(@client1_events, $_[0]) });
 
-    my $header = &build_http_header('foo="tarotaro"; bar=baz;');
+    my $header = &build_http_header(cookie => 'foo="tarotaro"; bar=baz;');
     $client1->emulate_client_write($header);
     like($client1_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
     is(scalar(@client1_events), 1, 'client1 events should be 1');
@@ -144,7 +159,7 @@ APPEND_ONE_MORE_VALID_CONNECTION: {
     $client2 = $listener->emulate_accept($dummy_fd2);
     $client2->client_on_read(sub { push(@client2_events, $_[0]) });
 
-    my $header = &build_http_header('foo="tarotaro"; bar=baz;');
+    my $header = &build_http_header(cookie => 'foo="tarotaro"; bar=baz;');
     $client2->emulate_client_write($header);
     like($client2_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
     is(scalar(@client2_events), 1, 'client2 events should be 1');
@@ -156,7 +171,7 @@ CONNECT_ANOTHER_USER: {
     $client3 = $listener->emulate_accept($dummy_fd3);
     $client3->client_on_read(sub { push(@client3_events, $_[0]) });
 
-    my $header = &build_http_header('foo=jirojiro;');
+    my $header = &build_http_header(cookie => 'foo=jirojiro;');
     $client3->emulate_client_write($header);
     like($client3_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
 
@@ -255,7 +270,7 @@ RECOVER_BEFORE_TIMEOUT: {
     $client4 = $listener->emulate_accept($dummy_fd4);
     $client4->client_on_read(sub { push(@client4_events, $_[0]) });
 
-    my $header = &build_http_header('foo=tarotaro');
+    my $header = &build_http_header(cookie => 'foo=tarotaro');
     $client4->emulate_client_write($header);
     like($client4_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
 

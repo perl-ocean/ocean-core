@@ -11,7 +11,6 @@ sub default_name { 'ocean-cluster.yml' }
 1;
 __DATA__
 worker:
-  domain: xmpp.example.org
   max_workers: 1
   node_inboxes:
     - node_id: xmpp00

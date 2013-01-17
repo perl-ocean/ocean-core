@@ -23,9 +23,12 @@ sub on_client_negotiated_tls {
 
 sub on_client_received_http_handshake {
     my ($self, $params) = @_;
+
     if (!$self->{_authenticated}) {
         $self->{_handshake_params} = $params;
         my $cookie = delete $params->{cookie} || '';
+        my $domain = delete $params->{host} || '';
+        $self->{_delegate}->set_domain($domain);
         $self->{_delegate}->on_protocol_handle_http_auth($cookie);
     } else {
         $self->{_delegate}->on_protocol_failed_http_auth();

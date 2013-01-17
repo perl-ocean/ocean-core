@@ -16,26 +16,32 @@ sub on_bind_request {
     my ($self, $ctx, $node_id, $args) = @_;
 
     my $user_id     = $args->user_id;
+    my $domain      = $args->domain;
     my $stream_id   = $args->stream_id;
     my $resource    = $args->resource;
     my $want_extval = $args->want_extval;
 
+    $self->log_debug("on_bind_request");
+
     my $user = $ctx->get('db')->find_user_by_id($user_id);
     unless ($user) {
-        # ignore?
-        # throw error?
+        $self->log_debug("user not found");
+        Ocean::Error::ProtocolError->throw(
+            message => q{user not found},
+        );
         return;
     }
 
     unless ($resource) {
-        # ignore?
-        # throw error?
+        Ocean::Error::ProtocolError->throw(
+            message => q{resource not found},
+        );
         return;
     }
 
     my $jid = Ocean::JID->build(
         $user->username, 
-        $self->domain, 
+        $domain,
         $resource
     );
 
@@ -44,6 +50,7 @@ sub on_bind_request {
         user_id  => $user->user_id,
         username => $user->username,
         resource => $resource,
+        domain   => $args->domain,
     );
 
     my $builder = 
@@ -62,6 +69,8 @@ sub on_bind_request {
 sub on_presence {
     my ($self, $ctx, $node_id, $args) = @_;
 
+    $self->log_debug("on_presence");
+
     my $sender_jid = $args->from;
 
     my $sender = $ctx->get('db')->find_user_by_username( $sender_jid->node );
@@ -79,13 +88,14 @@ sub on_presence {
     for my $follower_id ( @followers ) {
 
         my @follower_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($follower_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $follower_id, $sender_conn->domain);
 
         for my $follower_conn ( @follower_conns ) {
 
             my $receiver_jid = Ocean::JID->build(
                 $follower_conn->username,
-                $self->domain,
+                $follower_conn->domain,
                 $follower_conn->resource,
             );
 
@@ -134,13 +144,14 @@ sub on_initial_presence {
     for my $follower_id ( @followers ) {
 
         my @follower_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($follower_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $follower_id, $sender_conn->domain);
 
         for my $follower_conn ( @follower_conns ) {
 
             my $receiver_jid = Ocean::JID->build(
                 $follower_conn->username,
-                $self->domain, 
+                $follower_conn->domain,
                 $follower_conn->resource,
             );
 
@@ -171,7 +182,8 @@ sub on_initial_presence {
     for my $followee_id ( @followees ) {
 
         my @followee_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($followee_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $followee_id, $sender_conn->domain);
 
         for my $followee_conn ( @followee_conns ) {
 
@@ -179,7 +191,7 @@ sub on_initial_presence {
 
             my $followee_jid = Ocean::JID->build(
                   $followee_conn->username,
-                  $self->domain, 
+                  $followee_conn->domain,
                   $followee_conn->resource,
             );
 
@@ -228,13 +240,14 @@ sub on_unavailable_presence {
     for my $follower_id ( @followers ) {
 
         my @follower_conns = 
-            $ctx->get('db')->search_available_connection_by_user_id($follower_id);
+            $ctx->get('db')->search_available_connection_by_user_id(
+                $follower_id, $sender_conn->domain);
 
         for my $follower_conn ( @follower_conns ) {
 
             my $receiver_jid = Ocean::JID->build(
                 $follower_conn->username,
-                $self->domain,
+                $follower_conn->domain,
                 $follower_conn->resource,
             );
 

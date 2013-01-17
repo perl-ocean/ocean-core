@@ -24,6 +24,7 @@ sub on_sasl_auth_request {
         Ocean::Constants::EventType::SASL_AUTH_REQUEST, 
         {
             stream_id => $args->stream_id, 
+            domain    => $args->domain,
             mechanism => $args->mechanism,
             text      => $args->text,
         }
@@ -59,6 +60,7 @@ sub on_http_auth_request {
         {
             stream_id => $args->stream_id, 
             cookie    => $args->cookie,
+            domain    => $args->domain,
         }
     );
 }

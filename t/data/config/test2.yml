@@ -1,6 +1,7 @@
 server:
   type: xmpp
-  domain: xmpp.example.org
+  domain:
+    - xmpp.example.org
   host: 127.0.0.1
   port: 5222
   backlog: 5

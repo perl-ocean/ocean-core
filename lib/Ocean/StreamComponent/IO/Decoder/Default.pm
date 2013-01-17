@@ -265,8 +265,10 @@ sub _handle_presence_event {
 sub _handle_iq_event {
     my ($self, $elem) = @_;
 
+    my $domain = $self->[DELEGATE]->domain;
+
     my $event_type = 
-        Ocean::XML::StanzaClassifier::IQ->classify($elem);
+        Ocean::XML::StanzaClassifier::IQ->classify($elem, $domain);
     return unless $event_type;
 
     $self->_dispatch_event($event_type, $elem);

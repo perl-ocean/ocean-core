@@ -9,6 +9,8 @@ use Ocean::Constants::PresenceType;
 use Ocean::Config;
 use Ocean::JID;
 
+use List::MoreUtils qw(any);
+
 sub classify {
     my ($self, $elem) = @_;
 

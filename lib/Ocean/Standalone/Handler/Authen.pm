@@ -26,6 +26,7 @@ sub on_http_auth_request {
 
     my $stream_id = $args->stream_id;
     my $cookie    = $args->cookie;
+    my $domain    = $args->domain;
 
     if (!$cookie) {
         $self->log_debug("on_http_auth cookie not found");
@@ -55,7 +56,7 @@ sub on_http_auth_request {
     $builder->user_id($user->user_id);
     $builder->username($user->username);
     $builder->add_cookie(foo => $cookie_value);
-    $builder->add_cookie(bar => { value => 'fugafuga', domain => 'xmpp.example.org', path => '/foo' });
+    $builder->add_cookie(bar => { value => 'fugafuga', domain => $domain, path => '/foo' });
     $ctx->deliver($builder->build());
 }
 

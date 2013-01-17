@@ -28,7 +28,7 @@ $decoder->set_delegate( $delegate );
 TEST_INVALID_ROOT: {
 
     $decoder->feed(q{<?xml version="1.0" encoding="UTF-8"?>});
-    $decoder->feed(q{<stream:notstream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="example.com" version="1.0">});
+    $decoder->feed(q{<stream:notstream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
     ok($delegate->{error});
     ok($delegate->{error}->isa('Ocean::Error::ProtocolError'));
     $delegate->clear();
@@ -38,7 +38,7 @@ TEST_INVALID_ROOT: {
     $decoder->set_delegate( $delegate );
 
     $decoder->feed(q{<?xml version="1.0" encoding="UTF-8"?>});
-    $decoder->feed(q{<stream:stream xmlns:stream="http://etherx.jabber.org/notstreams" xmlns="jabber:client" to="example.com" version="1.0">});
+    $decoder->feed(q{<stream:stream xmlns:stream="http://etherx.jabber.org/notstreams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
     ok($delegate->{error});
     ok($delegate->{error}->isa('Ocean::Error::ProtocolError'));
     $delegate->clear();
@@ -51,9 +51,9 @@ TEST_STREAM: {
     $decoder->set_delegate( $delegate );
 
     $decoder->feed(q{<?xml version="1.0" encoding="UTF-8"?>});
-    $decoder->feed(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="example.com" version="1.0">});
+    $decoder->feed(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    is($delegate->{stream_attrs}{to}, 'example.com');
+    is($delegate->{stream_attrs}{to}, 'xmpp.example.org');
     is($delegate->{stream_attrs}{version}, '1.0');
 
     is($decoder->depth(), 1);
@@ -312,6 +312,7 @@ TEST_UNAVAILABLE_PRESENCE: {
 TEST_BIND_REQUEST: {
 
     # WITHOUT RESOURCE
+    $delegate->{domain} = 'xmpp.example.org';
     $decoder->feed(q{<iq id="my_bind_id" type="set"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind" /></iq>});
     ok($delegate->{bind_request}, "bind request");
     is($delegate->{bind_request}->id, 'my_bind_id', "bind request");
@@ -319,6 +320,7 @@ TEST_BIND_REQUEST: {
     $delegate->clear();
 
     # WITH RESOURCE
+    $delegate->{domain} = 'xmpp.example.org';
     $decoder->feed(q{<iq id="my_bind_id2" type="set"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><resource>someresource</resource></bind></iq>});
     ok($delegate->{bind_request});
     is($delegate->{bind_request}->id, 'my_bind_id2');
@@ -329,6 +331,7 @@ TEST_BIND_REQUEST: {
 
 TEST_SESSION_REQUEST: {
 
+    $delegate->{domain} = 'xmpp.example.org';
     ok(!$delegate->{session_request});
     $decoder->feed(q{<iq id="my_session_id" type="set"><session xmlns="urn:ietf:params:xml:ns:xmpp-session"/></iq>});
     ok($delegate->{session_request});
@@ -338,6 +341,7 @@ TEST_SESSION_REQUEST: {
 
 TEST_ROSTER_REQUEST: {
 
+    $delegate->{domain} = 'xmpp.example.org';
     ok(!$delegate->{roster_request});
     $decoder->feed(q{<iq id="my_roster_id" type="get"><query xmlns="jabber:iq:roster" /></iq>});
     ok($delegate->{roster_request}, 'roster request not found');
@@ -346,6 +350,7 @@ TEST_ROSTER_REQUEST: {
 }
 
 TEST_PING: {
+    $delegate->{domain} = 'xmpp.example.org';
     ok(!$delegate->{ping}, 'ping');
     $decoder->feed(q{<iq id="my_ping_id" type="get"><ping xmlns="urn:xmpp:ping" /></iq>});
     ok($delegate->{ping}, 'ping');

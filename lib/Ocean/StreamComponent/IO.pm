@@ -46,6 +46,8 @@ sub set_delegate {
 sub host { $_[0]->[SOCKET]->host }
 sub port { $_[0]->[SOCKET]->port }
 
+sub domain { $_[0]->[STREAM]->domain }
+
 sub _handle_client_event_error {
     my ($self, $error) = @_;
     if (!(ref $error)) {
@@ -66,7 +68,7 @@ sub _handle_client_event_error {
             error_type   => $error->type, 
             error_reason => $error->condition,
             error_text   => $error->message,
-            from         => Ocean::Config->instance->get(server => q{domain}),
+            from         => $self->domain,
         });
         $self->[ENCODER]->send_message_error($delivery_request);
     }
@@ -76,7 +78,7 @@ sub _handle_client_event_error {
             error_type   => $error->type, 
             error_reason => $error->condition,
             error_text   => $error->message,
-            from         => Ocean::Config->instance->get(server => q{domain}),
+            from         => $self->domain,
         });
         $self->[ENCODER]->send_iq_error($delivery_request);
     }
@@ -462,7 +464,7 @@ sub on_protocol_delivered_ping {
 
     $self->[ENCODER]->send_pong(
         $iq_id, 
-        Ocean::Config->instance->get('server', 'domain'),
+        $self->domain,
         $receiver_jid->as_string
     );
 }

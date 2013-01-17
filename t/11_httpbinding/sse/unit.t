@@ -125,6 +125,18 @@ INVALID_HEADER: {
     ok($client0->is_closed(), "connection should be closed");
 }
 
+INVALID_DOMAIN: {
+    # SETUP dummy client
+    my $dummy_fd0 = q{dummy_id_1};
+    my $client0 = $listener->emulate_accept($dummy_fd0);
+    my @client0_events;
+    $client0->client_on_read(sub { push(@client0_events, $_[0]) });
+
+    my $header = &build_http_header(host => 'invalid.domain.example.org');
+    $client0->emulate_client_write($header);
+    like($client0_events[0], qr|^HTTP/1.1 400 Bad Request|, 'invalid domain');
+}
+
 NON_COOKIE: {
     # SETUP dummy client1
     my $dummy_fd1 = q{dummy_id_1};

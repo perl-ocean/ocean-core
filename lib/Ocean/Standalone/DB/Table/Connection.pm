@@ -9,7 +9,7 @@ sub get_create_table_sql {  get_data_section('create_table.sql') }
 
 sub get_create_index_sql { [ 
     map { get_data_section($_) } 
-        qw(create_index_01.sql create_index_02.sql) ] 
+        qw(create_index_01.sql create_index_02.sql create_index_03.sql) ]
 }
 
 1;
@@ -21,6 +21,7 @@ CREATE TABLE `connection` (
     , `user_id`         INTEGER
     , `username`        TEXT
     , `resource`        TEXT
+    , `domain`          TEXT
     , `presence_show`   TEXT DEFAULT ''
     , `presence_status` TEXT DEFAULT ''
     , `node_id`         TEXT
@@ -33,3 +34,5 @@ CREATE INDEX connection_idx_01 ON connection (username);
 @@ create_index_02.sql
 CREATE INDEX connection_idx_02 ON connection (username, resource);
 
+@@ create_index_03.sql
+CREATE INDEX connection_idx_03 ON connection (username, resource, domain);

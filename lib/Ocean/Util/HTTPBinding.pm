@@ -6,10 +6,17 @@ use warnings;
 use base 'Exporter';
 
 use URI::Escape ();
+use Log::Minimal;
+use List::MoreUtils qw(any);
+
+use Ocean::Error;
+use Ocean::Config;
 
 our %EXPORT_TAGS = (all => [qw(
     bake_cookie
     parse_cookie
+    parse_host
+    check_host
 )]);
 
 our @EXPORT_OK = map { @$_ } values %EXPORT_TAGS;
@@ -82,5 +89,30 @@ sub parse_cookie {
     return \%results;
 }
 
+sub parse_host {
+    my $str = shift;
+    return unless $str;
+    my ($host, $port) = split /:/, $str;
+    return $host;
+}
+
+sub check_host {
+    my ($decoder, $env_host) = @_;
+
+    my $domains = Ocean::Config->instance->get(server => q{domain});
+    my $host = parse_host($env_host);
+
+    unless (defined $host && (any { $host eq $_ } @$domains) ) {
+        $decoder->reset() if $decoder;
+        debugf("<Stream> <Decoder> invalid domain: '%s'", $host);
+        Ocean::Error::HTTPHandshakeError->throw(
+            code => 400,
+            type => q{Bad Request},
+        );
+        return;
+    }
+
+    return $host;
+}
 
 1;

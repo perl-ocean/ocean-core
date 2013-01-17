@@ -100,8 +100,8 @@ sub on_stream_handle_too_many_auth_attempt {
 }
 
 sub on_stream_handle_sasl_auth {
-    my ($self, $stream_id, $auth) = @_;
-    $self->{_server}->on_stream_handle_sasl_auth($stream_id, $auth);
+    my ($self, $stream_id, $domain, $auth) = @_;
+    $self->{_server}->on_stream_handle_sasl_auth($stream_id, $domain, $auth);
 }
 
 sub on_stream_handle_sasl_password {
@@ -120,9 +120,9 @@ sub on_stream_handle_http_auth {
 }
 
 sub on_stream_handle_bind_request {
-    my ($self, $stream_id, $user_id, $req) = @_;
+    my ($self, $stream_id, $user_id, $domain, $req) = @_;
     $self->{_server}->on_stream_handle_bind_request(
-        $stream_id, $user_id, $req);
+        $stream_id, $user_id, $domain, $req);
 }
 
 sub on_stream_handle_message {

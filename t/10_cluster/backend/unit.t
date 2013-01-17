@@ -134,6 +134,7 @@ TEST_RESOURCE_BINDING: {
         args  => {
             stream_id   => 'taro00',
             user_id     => '0',
+            domain      => 'xmpp.example.org',
             want_extval => '1',
             resource    => 'foobar',
         },
@@ -167,6 +168,7 @@ TEST_RESOURCE_BINDING_WITHOUT_EXTVAL: {
             stream_id   => 'jiro00',
             user_id     => '1',
             want_extval => '0',
+            domain      => 'xmpp.example.org',
             resource    => 'foobar',
         },
     );

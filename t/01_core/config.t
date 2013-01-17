@@ -72,7 +72,7 @@ sub validate_config_file_ok {
 &validate_config_file_ok(q{t/data/config/test2.yml});
 &validate_config_file_ok(q{t/data/config/test3.yml});
 
-is(Ocean::Config->instance->get('server','domain'), 'xmpp.example.org');
+is_deeply(Ocean::Config->instance->get('server','domain'), ['xmpp.example.org']);
 is(Ocean::Config->instance->get('server','port'), 5222);
 is(Ocean::Config->instance->get('server','backlog'), 5);
 is(Ocean::Config->instance->get('server','max_connection'), 100);

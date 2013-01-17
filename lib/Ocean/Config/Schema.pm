@@ -15,7 +15,13 @@ sub config {
                 required => 1,
                 mapping  => {
                     type            => { type => 'str', required => 1 }, 
-                    domain          => { type => 'str', required => 1 }, 
+                    domain          => {
+                        type     => 'seq',
+                        required => 1,
+                        sequence => [
+                            { type => 'str' }
+                        ],
+                    }, 
                     host            => { type => 'str', required => 1 }, 
                     port            => { type => 'int', required => 1 }, 
                     backlog         => { type => 'int', required => 1 }, 

@@ -31,11 +31,6 @@ sub port {
     $self->_server_config('port');
 }
 
-sub domain {
-    my $self = shift;
-    $self->_server_config('domain');
-}
-
 sub _server_config {
     my ($self, $field) = @_;
     return Ocean::Config->instance->get(server => $field);
