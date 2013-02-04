@@ -68,13 +68,7 @@ sub build_args {
     ) unless exists $self->{_session_id};
 
     $args->{session_id} = $self->{_session_id};
-
-    Ocean::Error::ParamNotFound->throw(
-        message => q{'cookies' not found}, 
-    ) unless exists $self->{_cookies};
-
-    # XXX $args->{cookies} = $self->{_cookies}->as_hash();
-    $args->{cookies} = $self->{_cookies};
+    $args->{cookies} = $self->{_cookies} || {};
 
     return $args;
 }
