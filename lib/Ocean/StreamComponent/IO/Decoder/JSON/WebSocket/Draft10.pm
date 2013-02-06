@@ -69,9 +69,13 @@ sub _parse {
 
             my %header_params = ();
 
-            # check/get host
-            $header_params{host} = Ocean::Util::HTTPBinding::check_host($self, $env->{HTTP_HOST});
+            # parse request uri
+            my $req_uri = Ocean::Util::HTTPBinding::parse_uri_from_request($env);
 
+            # check/get host
+            $header_params{host} = Ocean::Util::HTTPBinding::check_host($self, $req_uri->host);
+
+            # TODO
             #if ( $env->{HTTP_SEC_WEBSOCKET_ORIGIN} eq $self->{_domain}) {
             #    $self->reset();
             #    debugf("<Stream> <Decoder> invalid host, '%s'", $header);
@@ -131,6 +135,13 @@ sub _parse {
                 my $cookie = Ocean::Util::HTTPBinding::parse_cookie($env->{HTTP_COOKIE});
                 $header_params{cookie} = $cookie;
             }
+
+            # uri query parameters
+            my %query_params = ();
+            for my $key ($req_uri->query_param) {
+                $query_params{$key} = $req_uri->query_param($key);
+            }
+            $header_params{query_params} = \%query_params;
 
             $self->{_on_handshake}->(\%header_params);
 

@@ -222,7 +222,7 @@ sub on_stream_handle_sasl_auth {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $cookie) = @_;
+    my ($self, $stream_id, $domain, $cookie, $query_params) = @_;
     # not supported
     Ocean::Error::ProtocolError->throw;
 }

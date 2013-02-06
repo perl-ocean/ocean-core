@@ -115,8 +115,8 @@ sub on_stream_handle_sasl_success_notification {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $cookie) = @_;
-    $self->{_server}->on_stream_handle_http_auth($stream_id, $cookie);
+    my ($self, $stream_id, $domain, $cookie, $query_params) = @_;
+    $self->{_server}->on_stream_handle_http_auth($stream_id, $domain, $cookie, $query_params);
 }
 
 sub on_stream_handle_bind_request {
