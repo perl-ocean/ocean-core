@@ -9,6 +9,7 @@ __PACKAGE__->mk_accessors(qw(
     stream_id    
     cookie
     domain
+    query_params
 ));
 
 1;

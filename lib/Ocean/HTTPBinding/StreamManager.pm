@@ -154,8 +154,8 @@ sub on_stream_handle_sasl_auth {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $cookie, $domain) = @_;
-    $self->{_server}->on_stream_handle_http_auth($stream_id, $cookie, $domain);
+    my ($self, $stream_id, $domain, $cookie, $query_params) = @_;
+    $self->{_server}->on_stream_handle_http_auth($stream_id, $domain, $cookie, $query_params);
 }
 
 sub on_stream_handle_bind_request {

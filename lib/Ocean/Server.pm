@@ -339,16 +339,17 @@ sub on_stream_handle_sasl_success_notification {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $cookie, $domain) = @_;
+    my ($self, $stream_id, $domain, $cookie, $query_params) = @_;
 
     infof('<Stream:FD:%s> @%s',
         $stream_id,
         Ocean::Constants::EventType::HTTP_AUTH_REQUEST);
 
     my $args = Ocean::HandlerArgs::HTTPAuthRequest->new({
-        stream_id => $stream_id,     
-        cookie    => $cookie || '',
-        domain    => $domain,
+        stream_id    => $stream_id,
+        cookie       => $cookie || '',
+        domain       => $domain,
+        query_params => $query_params,
     });
 
     $self->{_event_dispatcher}->dispatch(

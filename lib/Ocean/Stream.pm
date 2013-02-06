@@ -400,8 +400,8 @@ sub on_protocol_handle_sasl_success_notification {
 }
 
 sub on_protocol_handle_http_auth {
-    my ($self, $cookie) = @_;
-    $self->[SERVER]->on_stream_handle_http_auth($self->id, $cookie, $self->domain);
+    my ($self, $cookie, $query_params) = @_;
+    $self->[SERVER]->on_stream_handle_http_auth($self->id, $self->domain, $cookie, $query_params);
 }
 
 sub on_protocol_handle_message {
