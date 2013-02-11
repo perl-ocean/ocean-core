@@ -1,5 +1,22 @@
 Revision history for Perl extension Ocean.
 
+0.02  Mon Feb 11 21:42:45 2013
+    - Accept connections from multiple domains
+        - separating presence on per domain basis can be implemented on the integration logic
+    - New timeout configuration for unauthenticated sessions
+    - Starter script has a new option to specify configuration file
+    - OAuth authentication support
+    - MUC (Multi User Chat) support implemented
+    - Added performance testing tools
+    - Accept and forward cookies to authentication handlers (when using http-binding)
+    - Handlers to publish PubSub events
+        - no support for publishing stanzas
+          use ocean-publisher to publish pubsub events to connected users
+    - Several bug fixes and tests additions
+        - broken connection timeout
+        - JID utils
+        - and many others
+
 0.01  Wed Jan 12 15:54:03 2011
 	- original version; created by h2xs 1.23 with options
 		-XA Ocean
