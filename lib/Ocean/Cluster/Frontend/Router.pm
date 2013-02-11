@@ -126,6 +126,7 @@ my %EVENTS = (
     'room_presence'                   => Ocean::Constants::EventType::ROOM_PRESENCE,
     'leave_room_presence'             => Ocean::Constants::EventType::LEAVE_ROOM_PRESENCE,
     'iq_toward_room_member'           => Ocean::Constants::EventType::SEND_IQ_TOWARD_ROOM_MEMBER,
+    'publish_pubsub_event'            => Ocean::Constants::EventType::PUBLISH_EVENT,
 );
 
 my %REVERSED_EVENTS = reverse %EVENTS;
