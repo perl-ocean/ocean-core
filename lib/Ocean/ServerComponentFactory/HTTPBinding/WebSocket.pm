@@ -9,15 +9,13 @@ use Ocean::HTTPBinding::StreamFactory::WebSocket;
 use Ocean::HTTPBinding::StreamManager;
 
 sub create_stream_manager {
-    my $self = shift;
-    my $stream_manager = Ocean::HTTPBinding::StreamManager->new;
-    return $stream_manager;
+    my ($self, $config) = @_;
+    return Ocean::HTTPBinding::StreamManager->new;
 }
 
 sub create_stream_factory {
-    my ($self, %args) = @_;
-    my $stream_factory = Ocean::HTTPBinding::StreamFactory::WebSocket->new;
-    return $stream_factory;
+    my ($self, $config) = @_;
+    return Ocean::HTTPBinding::StreamFactory::WebSocket->new;
 }
 
 1;
