@@ -58,9 +58,10 @@ sub on_http_auth_request {
     $ctx->post_job(
         Ocean::Constants::EventType::HTTP_AUTH_REQUEST, 
         {
-            stream_id => $args->stream_id, 
-            cookie    => $args->cookie,
-            domain    => $args->domain,
+            stream_id    => $args->stream_id,
+            cookie       => $args->cookie,
+            domain       => $args->domain,
+            query_params => $args->query_params,
         }
     );
 }
