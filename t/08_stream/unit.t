@@ -14,6 +14,7 @@ use Ocean::StreamComponent::IO::Socket::Stub;
 use Ocean::Stanza::DeliveryRequest::BoundJID;
 use Ocean::Stanza::DeliveryRequest::ChatMessage;
 use Ocean::Stanza::DeliveryRequest::Presence;
+use Ocean::Stanza::DeliveryRequest::PubSubEvent;
 use Ocean::Stanza::DeliveryRequest::vCard;
 use Ocean::Stanza::DeliveryRequest::Roster;
 use Ocean::Stanza::DeliveryRequest::RosterItem;
@@ -66,14 +67,14 @@ TEST_INVALID_STANZA_SCHEME: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
 
     $socket->emulate_client_write(q{<hoge:hoge xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>});
 
     is($delegate->get_event(0)->{type}, 'unbound_closed');
-    is($client_read_data[2], '<stream:error><invalid-xml xmlns="urn:ietf:params:xml:ns:xmpp-streams" /><text xmlns="urn:ietf:params:xml:ns:xmpp-streams">error</text></stream:error>');
-    is($client_read_data[3], '</stream:stream>');
+    is($client_read_data[ $#client_read_data -1 ], '<stream:error><invalid-xml xmlns="urn:ietf:params:xml:ns:xmpp-streams" /><text xmlns="urn:ietf:params:xml:ns:xmpp-streams">error</text></stream:error>');
+    is($client_read_data[ $#client_read_data ], '</stream:stream>');
 }
 
 TEST_INVALID_TLS_SCENARIO: {
@@ -81,11 +82,11 @@ TEST_INVALID_TLS_SCENARIO: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
 
     $socket->emulate_client_write(q{<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>});
-    is($client_read_data[2], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
+    is($client_read_data[ $#client_read_data ], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
 
     $socket->emulate_client_starttls(0);
 
@@ -97,21 +98,21 @@ TEST_FAILED_SASL_SCENARIO_UNSUPPORTED_MECH: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
 
     $socket->emulate_client_write(q{<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>});
-    is($client_read_data[2], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
+    is($client_read_data[ $#client_read_data ], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
 
     $socket->emulate_client_starttls(1);
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
-    like($client_read_data[3], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
 
     $socket->emulate_client_write(q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>});
 
-    is($client_read_data[5], '<failure xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><invalid-mechanism /></failure>');
+    is($client_read_data[ $#client_read_data ], '<failure xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><invalid-mechanism /></failure>');
 }
 
 TEST_FAILED_SASL_SCENARIO_INVALID_PASSWORD_AND_REAUTH: {
@@ -119,17 +120,17 @@ TEST_FAILED_SASL_SCENARIO_INVALID_PASSWORD_AND_REAUTH: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
 
     $socket->emulate_client_write(q{<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>});
-    is($client_read_data[2], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
+    is($client_read_data[ $#client_read_data ], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
 
     $socket->emulate_client_starttls(1);
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
-    like($client_read_data[3], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
 
     # invalid pass
     $socket->emulate_client_write(q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>INVALID_PASS</auth>});
@@ -140,7 +141,7 @@ TEST_FAILED_SASL_SCENARIO_INVALID_PASSWORD_AND_REAUTH: {
     is($delegate->get_last_event->{data}->{auth}->text, 'INVALID_PASS');
 
     $stream->on_server_failed_sasl_auth();
-    is($client_read_data[5], '<failure xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><not-authorized /></failure>');
+    is($client_read_data[ $#client_read_data ], '<failure xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><not-authorized /></failure>');
 
     # retry
     $socket->emulate_client_write(q{<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>VALID_PASS</auth>});
@@ -151,7 +152,7 @@ TEST_FAILED_SASL_SCENARIO_INVALID_PASSWORD_AND_REAUTH: {
     is($delegate->get_last_event->{data}->{auth}->text, 'VALID_PASS');
 
     $stream->on_server_completed_sasl_auth(q{user2}, q{user2}, q{resource});
-    is($client_read_data[6], '<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />');
+    is($client_read_data[ $#client_read_data ], '<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />');
 }
 
 TEST_CORRECT_SCENARIO: {
@@ -163,14 +164,14 @@ TEST_CORRECT_SCENARIO: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><starttls xmlns="urn:ietf:params:xml:ns:xmpp-tls" /></stream:features>});
 
     # =====================#
     # REQUIRE STARTTLS
     # =====================#
     $socket->emulate_client_write(q{<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>});
-    is($client_read_data[2], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
+    is($client_read_data[ $#client_read_data ], '<proceed xmlns="urn:ietf:params:xml:ns:xmpp-tls" />');
 
     # =====================#
     # TLS NEGOTIATION
@@ -182,8 +183,8 @@ TEST_CORRECT_SCENARIO: {
     # =====================#
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
-    like($client_read_data[3], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[4], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], q{<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>});
 
 
     # =====================#
@@ -197,7 +198,7 @@ TEST_CORRECT_SCENARIO: {
     is($delegate->get_last_event->{data}->{auth}->text, 'VALID_PASS');
 
     $stream->on_server_completed_sasl_auth(q{user2}, q{user2}, q{resource});
-    is($client_read_data[5], '<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />');
+    is($client_read_data[ $#client_read_data ], '<success xmlns="urn:ietf:params:xml:ns:xmpp-sasl" />');
 
     is($stream->user_id, 'user2');
 
@@ -206,8 +207,8 @@ TEST_CORRECT_SCENARIO: {
     # =====================#
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[6], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[7], '<stream:features><session xmlns="urn:ietf:params:xml:ns:xmpp-session" /><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind" /></stream:features>');
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], '<stream:features><session xmlns="urn:ietf:params:xml:ns:xmpp-session" /><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind" /></stream:features>');
 
 
     # =====================#
@@ -233,14 +234,14 @@ TEST_CORRECT_SCENARIO: {
     is($delegate->get_last_event->{data}->{stream_id}, 'dummy_id');
     is($delegate->get_last_event->{data}->{bound_jid}->as_string, 'user2@xmpp.example.org/resource');
 
-    is($client_read_data[8], '<iq from="xmpp.example.org" id="bind_2" type="result"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><jid>user2@xmpp.example.org/resource</jid></bind></iq>');
+    is($client_read_data[ $#client_read_data ], '<iq from="xmpp.example.org" id="bind_2" type="result"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"><jid>user2@xmpp.example.org/resource</jid></bind></iq>');
 
     # =====================#
     # SESSION ESTABLISHMENT
     # =====================#
     $socket->emulate_client_write(q{<iq to='example.com' type='set' id='sess_1'><session xmlns='urn:ietf:params:xml:ns:xmpp-session'/></iq>});
     # XXX need <session /> ?
-    is($client_read_data[9], '<iq from="xmpp.example.org" id="sess_1" type="result"><session xmlns="urn:ietf:params:xml:ns:xmpp-session" /></iq>');
+    is($client_read_data[ $#client_read_data ], '<iq from="xmpp.example.org" id="sess_1" type="result"><session xmlns="urn:ietf:params:xml:ns:xmpp-session" /></iq>');
 
     # =====================#
     # INITIAL PRESENCE
@@ -275,7 +276,7 @@ TEST_CORRECT_SCENARIO: {
         }),
     ] });
     $stream->on_server_delivered_roster(q{roster_1}, $roster);
-    is($client_read_data[10], '<iq to="user2@xmpp.example.org/resource" from="user2@xmpp.example.org" id="roster_1" type="result"><query xmlns="jabber:iq:roster"><item jid="taro@xmpp.example.org" subscription="none" name="Taro"/><item jid="jiro@xmpp.example.org" subscription="none" name="Jiro"/></query></iq>');
+    is($client_read_data[ $#client_read_data ], '<iq to="user2@xmpp.example.org/resource" from="user2@xmpp.example.org" id="roster_1" type="result"><query xmlns="jabber:iq:roster"><item jid="taro@xmpp.example.org" subscription="none" name="Taro"/><item jid="jiro@xmpp.example.org" subscription="none" name="Jiro"/></query></iq>');
 
     # =====================#
     # ROSTER PUSH
@@ -285,7 +286,7 @@ TEST_CORRECT_SCENARIO: {
         nickname => q{Saburo},
     });
     $stream->on_server_delivered_roster_push(q{roster_push_1}, $item);
-    is($client_read_data[11], '<iq to="user2@xmpp.example.org/resource" from="user2@xmpp.example.org" id="roster_push_1" type="set"><query xmlns="jabber:iq:roster"><item jid="saburo@xmpp.example.org" subscription="none" name="Saburo"/></query></iq>');
+    is($client_read_data[ $#client_read_data ], '<iq to="user2@xmpp.example.org/resource" from="user2@xmpp.example.org" id="roster_push_1" type="set"><query xmlns="jabber:iq:roster"><item jid="saburo@xmpp.example.org" subscription="none" name="Saburo"/></query></iq>');
 
     # =====================#
     # SEND MESSAGE
@@ -313,7 +314,7 @@ TEST_CORRECT_SCENARIO: {
 
     $stream->on_server_delivered_message($message_1);
 
-    is($client_read_data[12], '<message type="chat" from="user3@example.org/res1" to="user2@xmpp.example.org/resource"><subject>subject</subject><thread>thread</thread><body>body</body></message>');
+    is($client_read_data[ $#client_read_data ], '<message type="chat" from="user3@example.org/res1" to="user2@xmpp.example.org/resource"><subject>subject</subject><thread>thread</thread><body>body</body></message>');
 
     # =====================#
     # SEND PRESENCE
@@ -337,7 +338,7 @@ TEST_CORRECT_SCENARIO: {
         to     => Ocean::JID->new(q{user2@xmpp.example.org/resource}),
     });
     $stream->on_server_delivered_presence($presence_1);
-    is($client_read_data[13], '<presence from="user4@example.org/res1" to="user2@xmpp.example.org/resource"><status>foobar</status><show>chat</show><priority>0</priority></presence>');
+    is($client_read_data[ $#client_read_data ], '<presence from="user4@example.org/res1" to="user2@xmpp.example.org/resource"><status>foobar</status><show>chat</show><priority>0</priority></presence>');
 
     # =====================#
     # RECEIVED UNAVAILABLE PRESENCE
@@ -345,7 +346,25 @@ TEST_CORRECT_SCENARIO: {
 
     my $sender_jid_3 = Ocean::JID->new(q{user5@example.org/res1});
     $stream->on_server_delivered_unavailable_presence($sender_jid_3);
-    is($client_read_data[14], '<presence from="user5@example.org/res1" to="user2@xmpp.example.org/resource" type="unavailable" />');
+    is($client_read_data[ $#client_read_data ], '<presence from="user5@example.org/res1" to="user2@xmpp.example.org/resource" type="unavailable" />');
+
+    # =====================#
+    # RECEIVE PUBSUB EVENT
+    # =====================#
+    my $event_1 = Ocean::Stanza::DeliveryRequest::PubSubEvent->new({
+        from  => Ocean::JID->new(q{example.org}),
+        to    => Ocean::JID->new(q{user2@xmpp.example.org/resource}),
+        node  => 'user_event',
+        items => [{
+            id        => 'xxx000111',
+            name      => 'voice',
+            namespace => 'http://mixi.jp/ns#voice',
+            fields    => { foo => 'bar' }
+            }],
+    });
+    $stream->on_server_delivered_pubsub_event($event_1);
+
+    is($client_read_data[ $#client_read_data ], '<message from="example.org" to="user2@xmpp.example.org/resource"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://mixi.jp/ns#voice"><foo>bar</foo></voice></item></items></event></message>');
 
     # =====================#
     # VCARD REQUEST
@@ -368,7 +387,7 @@ TEST_CORRECT_SCENARIO: {
     });
     $stream->on_server_delivered_vcard('vcard_1', $vcard);
 
-    is($client_read_data[15], '<iq to="user2@xmpp.example.org/resource" from="user3@example.org" id="vcard_1" type="result"><vCard xmlns="vcard-temp"><FN>nick</FN><PHOTO><TYPE>image/jpeg</TYPE><BINVAL>DATA</BINVAL></PHOTO></vCard></iq>');
+    is($client_read_data[ $#client_read_data ], '<iq to="user2@xmpp.example.org/resource" from="user3@example.org" id="vcard_1" type="result"><vCard xmlns="vcard-temp"><FN>nick</FN><PHOTO><TYPE>image/jpeg</TYPE><BINVAL>DATA</BINVAL></PHOTO></vCard></iq>');
 
     # =====================#
     # UNAVAILABLE PRESENCE
@@ -589,8 +608,8 @@ TEST_WITHOUT_TLS: {
     $socket->emulate_client_write(q{<?xml version="1.0" encoding="utf-8"?>});
     $socket->emulate_client_write(q{<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" to="xmpp.example.org" version="1.0">});
 
-    like($client_read_data[0], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
-    is($client_read_data[1], '<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>', "First features should not include TLS but SASL");
+    like($client_read_data[ $#client_read_data -1 ], qr{<\?xml version="1\.0"\?><stream\:stream from="xmpp\.example\.org" id="[0-9a-zA-Z]+" version="1\.0" xml\:lang=\"en\" xmlns:stream=\"http\:\/\/etherx\.jabber\.org\/streams\" xmlns=\"jabber\:client\">});
+    is($client_read_data[ $#client_read_data ], '<stream:features><mechanisms xmlns="urn:ietf:params:xml:ns:xmpp-sasl"><mechanism>PLAIN</mechanism><mechanism>X-OAUTH2</mechanism></mechanisms></stream:features>', "First features should not include TLS but SASL");
 }
 
 done_testing;

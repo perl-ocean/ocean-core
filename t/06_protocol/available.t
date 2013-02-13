@@ -14,6 +14,7 @@ use Ocean::Stanza::Incoming::vCardRequest;
 use Ocean::Stanza::DeliveryRequest::vCard;
 use Ocean::Stanza::DeliveryRequest::ChatMessage;
 use Ocean::Stanza::DeliveryRequest::Presence;
+use Ocean::Stanza::DeliveryRequest::PubSubEvent;
 use Ocean::Stanza::DeliveryRequest::Roster;
 use Ocean::Stanza::DeliveryRequest::RosterItem;
 use Try::Tiny;
@@ -93,6 +94,30 @@ TEST_SERVER_MESSAGE: {
     is($delegate->get_protocol_state(q{server_message})->type, 'chat');
     is($delegate->get_protocol_state(q{server_message})->body, 'foobar');
     is($delegate->get_protocol_state(q{server_message_sender_jid})->as_string, q{user2@example.org/resource});
+}
+
+TEST_SERVER_PUBSUB_EVENT: {
+    my $protocol = Ocean::StreamComponent::Protocol::Available->new;
+    my $delegate = Ocean::Test::Spy::Stream->new;
+    $protocol->set_delegate($delegate);
+
+    my $sender_jid   = Ocean::JID->new(q{example.org});
+    my $receiver_jid = Ocean::JID->new(q{user2@example.org/resource});
+
+    my $event = Ocean::Stanza::DeliveryRequest::PubSubEvent->new({
+        to    => $receiver_jid,
+        from  => $sender_jid,
+        node  => 'test',
+        items => [{foo => 'bar'}, {foo2 => 'bar2'}],
+    });
+    $protocol->on_server_delivered_pubsub_event($event);
+
+    is($delegate->get_protocol_state(q{server_pubsub_event})->to->as_string, 'user2@example.org/resource');
+    is($delegate->get_protocol_state(q{server_pubsub_event})->from->as_string, 'example.org');
+    is($delegate->get_protocol_state(q{server_pubsub_event})->node, 'test');
+    is(@{$delegate->get_protocol_state(q{server_pubsub_event})->items}, 2);
+    is($delegate->get_protocol_state(q{server_pubsub_event})->items->[0]->{foo}, 'bar');
+    is($delegate->get_protocol_state(q{server_pubsub_event})->items->[1]->{foo2}, 'bar2');
 }
 
 TEST_SERVER_PRESENCE: {

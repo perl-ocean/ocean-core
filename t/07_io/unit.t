@@ -11,6 +11,7 @@ use Ocean::XML::Namespaces qw(BIND SESSION);
 use Ocean::Stanza::DeliveryRequest::ChatMessage;
 use Ocean::Stanza::DeliveryRequest::BoundJID;
 use Ocean::Stanza::DeliveryRequest::Presence;
+use Ocean::Stanza::DeliveryRequest::PubSubEvent;
 use Ocean::Stanza::DeliveryRequest::vCard;
 use Ocean::JID;
 use Ocean::Stanza::DeliveryRequest::Roster;
@@ -330,6 +331,33 @@ TEST_PROTOCOL_EVENT_DELIVERED_UNAVAILABLE_PRESENCE: {
     my $receiver_jid = Ocean::JID->new(q{user4@example.org/res1});
     $io->on_protocol_delivered_unavailable_presence($sender_jid, $receiver_jid);
     is($client_read_data[2], '<presence from="user3@example.org/res1" to="user4@example.org/res1" type="unavailable" />');
+}
+
+TEST_PROTOCOL_EVENT_DELIVERED_PUBSUB_EVENT: {
+    &reset();
+    my $stream_id = 'foobar';
+    my $host      = 'xmpp.example.org';
+    my $features  = [
+        ['bind'    => BIND],
+        ['session' => SESSION],
+    ];
+    $io->on_protocol_open_stream($stream_id, $host, $features);
+
+    my $sender_jid   = Ocean::JID->new(q{example.org});
+    my $receiver_jid = Ocean::JID->new(q{user4@example.org/res1});
+    my $event = Ocean::Stanza::DeliveryRequest::PubSubEvent->new({
+        from  => $sender_jid,
+        to    => $receiver_jid,
+        node  => 'user_event',
+        items => [{
+            id        => 'xxx000111',
+            name      => 'voice',
+            namespace => 'http://mixi.jp/ns#voice',
+            fields    => { foo => 'bar' }
+            }],
+    });
+    $io->on_protocol_delivered_pubsub_event($event);
+    is($client_read_data[2], '<message from="example.org" to="user4@example.org/res1"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://mixi.jp/ns#voice"><foo>bar</foo></voice></item></items></event></message>');
 }
 
 TEST_PROTOCOL_EVENT_DELIVERED_ROSTER: {

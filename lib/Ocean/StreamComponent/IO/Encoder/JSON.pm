@@ -399,8 +399,35 @@ sub send_message_error {
 
 sub send_pubsub_event {
     my ($self, $event) = @_;
-    # TODO
-    # $self->send_packet({ event => $event->as_hash() });
+
+    my $from = $event->from;
+    my $to   = $event->to;
+
+    $from = $from->as_string if $from->isa("Ocean::JID");
+    $to   = $to->as_string   if $to->isa("Ocean::JID");
+
+    my @items = map {
+        my $item = $_;
+
+        my $fields = {};
+        for my $key (@{ $item->keys }) {
+            $fields->{$key} = $item->param($key);
+        }
+
+        {
+            id     => $item->id,
+            name   => $item->name,
+            fields => $fields,
+        };
+    } @{ $event->items };
+
+    my $obj = {
+        from  => $from,
+        to    => $to,
+        node  => $event->node,
+        items => \@items,
+    };
+    $self->send_packet({ event => $obj });
 }
 
 =pod bind JSON design

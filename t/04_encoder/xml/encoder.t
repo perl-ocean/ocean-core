@@ -10,6 +10,7 @@ use Ocean::Stanza::DeliveryRequest::Roster;
 use Ocean::Stanza::DeliveryRequest::RosterItem;
 use Ocean::Stanza::DeliveryRequest::ChatMessage;
 use Ocean::Stanza::DeliveryRequest::Presence;
+use Ocean::Stanza::DeliveryRequest::PubSubEvent;
 use Ocean::Stanza::DeliveryRequest::vCard;
 use Ocean::Stanza::DeliveryRequest::MessageError;
 use Ocean::Stanza::DeliveryRequest::PresenceError;
@@ -115,6 +116,22 @@ is($out, q{<presence from="sender@example.org/resource1" to="receiver@example.or
 $encoder->send_unavailable_presence(q{sender@example.org/resource1}, q{receiver@example.org/resource1});
 is($out, q{<presence from="sender@example.org/resource1" to="receiver@example.org/resource1" type="unavailable" />});
 
+# pubsub event
+my $event = Ocean::Stanza::DeliveryRequest::PubSubEvent->new({
+    from  => q{example.org},
+    to    => q{user2@xmpp.example.org/resource},
+    node  => 'user_event',
+    items => [{
+        id        => 'xxx000111',
+        name      => 'voice',
+        namespace => 'http://mixi.jp/ns#voice',
+        fields    => { foo => 'bar' }
+        }],
+});
+$encoder->send_pubsub_event($event);
+is($out, q{<message from="example.org" to="user2@xmpp.example.org/resource"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://mixi.jp/ns#voice"><foo>bar</foo></voice></item></items></event></message>});
+
+# iq
 #$encoder->send_iq(type, id, domain, callback, to);
 $encoder->send_iq(q{set}, q{foobar}, q{xmpp.example.org});
 is($out, q{<iq from="xmpp.example.org" id="foobar" type="set"></iq>});

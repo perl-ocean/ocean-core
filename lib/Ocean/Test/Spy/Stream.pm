@@ -225,6 +225,11 @@ sub on_protocol_delivered_unavailable_presence {
     $self->{_protocol_state}{server_unavailable_presence_sender_jid} = $sender_jid; 
 }
 
+sub on_protocol_delivered_pubsub_event {
+    my ($self, $event) = @_;
+    $self->{_protocol_state}{server_pubsub_event} = $event;
+}
+
 sub on_protocol_delivered_roster {
     my ($self, $iq_id, $roster) = @_;
     $self->{_protocol_state}{server_roster_iqid} = $iq_id;
