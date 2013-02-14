@@ -5,7 +5,7 @@ use warnings;
 
 use parent 'Ocean::ServerComponentFactory';
 
-use Ocean::StreamFactory::WebSocket::Draft10;
+use Ocean::StreamFactory::WebSocket;
 use Ocean::StreamManager::Default;
 
 sub create_stream_manager {
@@ -15,7 +15,7 @@ sub create_stream_manager {
 
 sub create_stream_factory {
     my ($self, $config) = @_;
-    return Ocean::StreamFactory::WebSocket::Draft10->new;
+    return Ocean::StreamFactory::WebSocket->new;
 }
 
 1;

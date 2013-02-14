@@ -44,7 +44,7 @@ sub send_http_handshake {
 }
 
 sub send_http_handshake_error {
-    my ($self, $code, $type, $message) = @_;
+    my ($self, $code, $type, $message, $headers) = @_;
     $message ||= $type;
     my @lines = (
         sprintf(q{HTTP/1.1 %d %s}, $code, $type), 
@@ -53,6 +53,9 @@ sub send_http_handshake_error {
         "Content-Type: text/plain",
         sprintf(q{Content-Length: %d}, length($message)),
     );
+    foreach my $header_name (keys %$headers) {
+        push @lines, sprintf(q{%s: %s}, $header_name, $headers->{$header_name});
+    }
     my $header = join("\r\n", @lines);
     $header .= "\r\n\r\n";
     $self->_write($header . $message);

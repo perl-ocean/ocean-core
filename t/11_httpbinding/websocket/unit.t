@@ -88,20 +88,35 @@ $server->start();
 
 sub build_http_header {
     my (%params) = @_;
-    $params{host}   ||= 'xmpp.example.org';
-    $params{path}   ||= '/path';
+    $params{host}    ||= 'xmpp.example.org';
+    $params{path}    ||= '/path';
+    $params{version} ||= 'draft-ietf-hybi-17';
 
     my $header = Protocol::WebSocket::Request->new(
         host          => $params{host},
         resource_name => $params{path},
+        version       => $params{version},
     );
     my $str = $header->to_string();
     if ($params{cookie}) {
         my @lines = split("\r\n", $str);
-        return join("\r\n", (@lines[0..$#lines-1], sprintf('Cookie: %s', $params{cookie}), ""))."\r\n";
+        return join("\r\n", (@lines[0..$#lines], sprintf('Cookie: %s', $params{cookie}), ""))."\r\n";
     } else {
         return $str;
     }
+}
+
+UNSUPPORTED_WEBSOCKET_VERSION: {
+    # SETUP dummy client
+    my $dummy_fd0 = q{dummy_id_1};
+    my $client0 = $listener->emulate_accept($dummy_fd0);
+    my @client0_events;
+    $client0->client_on_read(sub { push(@client0_events, $_[0]) });
+
+    my $header = &build_http_header(version => 'draft-ietf-hybi-00');
+    $client0->emulate_client_write($header);
+    like($client0_events[0], qr|^HTTP/1.1 400 Unsupported version|, 'unsupported websocket version');
+    like($client0_events[0], qr|\r\nSec-WebSocket-Version: 13, 8\r\n\r\n|, 'version negotiation header');
 }
 
 INVALID_DOMAIN: {

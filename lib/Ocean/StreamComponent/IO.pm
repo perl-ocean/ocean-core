@@ -57,7 +57,7 @@ sub _handle_client_event_error {
     }
     elsif ($error->isa('Ocean::Error::HTTPHandshakeError')) {
         return $self->close_with_http_handshake_error(
-            $error->code, $error->type);
+            $error->code, $error->type, $error->headers);
     }
     elsif ($error->isa('Ocean::Error::ProtocolError')) {
         return $self->close_with_ending_stream(
@@ -534,9 +534,9 @@ sub on_stream_upgraded_to_available {
 sub is_closing { $_[0]->[IS_CLOSING] }
 
 sub close_with_http_handshake_error {
-    my ($self, $code, $type) = @_;
+    my ($self, $code, $type, $headers) = @_;
     return if $self->[IS_CLOSING];
-    $self->[ENCODER]->send_http_handshake_error($code, $type);
+    $self->[ENCODER]->send_http_handshake_error($code, $type, undef, $headers);
     $self->close();
 }
 

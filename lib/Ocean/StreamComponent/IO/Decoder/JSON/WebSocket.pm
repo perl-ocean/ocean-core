@@ -1,4 +1,4 @@
-package Ocean::StreamComponent::IO::Decoder::JSON::WebSocket::Draft10;
+package Ocean::StreamComponent::IO::Decoder::JSON::WebSocket;
 
 use strict;
 use warnings;
@@ -19,10 +19,12 @@ use Ocean::Util::HTTPBinding;
 
 use constant GUID => '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
+use constant SUPPORTED_VERSIONS => qw( 13 8 );
+
 sub new {
     my ($class, %args) = @_;
     my $self = bless {
-        _buffer        => '', 
+        _buffer        => '',
         _message       => '',
         _state         => Ocean::StreamComponent::IO::Decoder::JSON::Base::STATE_INIT,
         _on_handshake  => sub {},
@@ -52,7 +54,7 @@ sub _parse {
 
                 Ocean::Error::HTTPHandshakeError->throw(
                     code => 400,
-                    type => q{Bad Request}, 
+                    type => q{Bad Request},
                 );
                 return;
             }
@@ -63,11 +65,22 @@ sub _parse {
                 debugf("<Stream> <Decoder> invalid request method, '%s'", $header);
                 Ocean::Error::HTTPHandshakeError->throw(
                     code => 400,
-                    type => q{Bad Request}, 
+                    type => q{Bad Request},
                 );
             }
 
             my %header_params = ();
+
+            my $ws_version = $env->{HTTP_SEC_WEBSOCKET_VERSION} || '';
+            if ( $ws_version ne '8' and $ws_version ne '13' ) {
+                $self->reset();
+                debugf("<Stream> <Decoder> invalid request method, '%s'", $header);
+                Ocean::Error::HTTPHandshakeError->throw(
+                    code    => 400,
+                    type    => sprintf(q{Unsupported version}),
+                    headers => { 'Sec-WebSocket-Version' => join (', ', SUPPORTED_VERSIONS) },
+                );
+            }
 
             # parse request uri
             my $req_uri = Ocean::Util::HTTPBinding::parse_uri_from_request($env);
@@ -75,25 +88,27 @@ sub _parse {
             # check/get host
             $header_params{host} = Ocean::Util::HTTPBinding::check_host($self, $req_uri->host);
 
-            # TODO
-            #if ( $env->{HTTP_SEC_WEBSOCKET_ORIGIN} eq $self->{_domain}) {
+            # TODO origin check
+            my $ws_origin = $ws_version eq '13' ? $env->{HTTP_ORIGIN} : $env->{HTTP_SEC_WEBSOCKET_ORIGIN};
+            #if ( $ws_origin eq $self->{_domain}) {
             #    $self->reset();
             #    debugf("<Stream> <Decoder> invalid host, '%s'", $header);
             #    Ocean::Error::HTTPHandshakeError->throw(
             #        code => 400,
-            #        type => q{Bad Request}, 
+            #        type => q{Bad Request},
             #    );
             #    return;
             #}
+            $header_params{origin} = $ws_origin;
 
             # TODO better condition
-            unless ( $env->{HTTP_CONNECTION} =~ /upgrade/i 
+            unless ( $env->{HTTP_CONNECTION} =~ /upgrade/i
                 &&   $env->{HTTP_UPGRADE}    =~ /websocket/i) {
                 $self->reset();
                 debugf("<Stream> <Decoder> invalid header 'Connection' or 'Upgrade', '%s'", $header);
                 Ocean::Error::HTTPHandshakeError->throw(
                     code => 400,
-                    type => q{Bad Request}, 
+                    type => q{Bad Request},
                 );
                 return;
             }
@@ -107,7 +122,7 @@ sub _parse {
                 debugf("<Stream> <Decoder> invalid header, 'Sec-WebSocket-Key' '%s'", $header);
                 Ocean::Error::HTTPHandshakeError->throw(
                     code => 400,
-                    type => q{Bad Request}, 
+                    type => q{Bad Request},
                 );
                 return;
             }
@@ -117,7 +132,7 @@ sub _parse {
                 debugf("<Stream> <Decoder> 'SEC-WEBSOCKET-KEY' not found");
                 Ocean::Error::HTTPHandshakeError->throw(
                     code => 400,
-                    type => q{Bad Request}, 
+                    type => q{Bad Request},
                 );
                 return;
             }
@@ -153,7 +168,7 @@ sub _parse {
     } else {
         while (my $frame = $self->_parse_frame()) {
 
-            my $op = $frame->[1] 
+            my $op = $frame->[1]
                 || Ocean::Constants::WebSocketOpcode::CONTINUATION;
 
             if ( $op == Ocean::Constants::WebSocketOpcode::PING ) {
@@ -191,7 +206,7 @@ sub _parse_frame {
 
     # get first 16bit
     my $head = substr $buffer, 0, 2;
-    debugf("<Stream> <Decoder> websocket frame header <%s>", 
+    debugf("<Stream> <Decoder> websocket frame header <%s>",
         unpack('B*', $head));
 
     # first bit is FIN flag
@@ -244,7 +259,7 @@ sub _parse_frame {
     # Unmask payload
     if ($masked) {
         debugf("<Stream> <Decoder> unmasking payload");
-        $payload = Ocean::Util::WebSocket::xor_mask($payload, 
+        $payload = Ocean::Util::WebSocket::xor_mask($payload,
             substr($payload, 0, 4, ''));
     }
 

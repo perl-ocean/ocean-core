@@ -1,4 +1,4 @@
-package Ocean::StreamComponent::IO::Encoder::WebSocket::Draft10;
+package Ocean::StreamComponent::IO::Encoder::WebSocket;
 
 use strict;
 use warnings;
@@ -27,11 +27,11 @@ sub send_http_handshake {
     }
     if ($params->{cookies}) {
         while (my ($name, $value) = each %{ $params->{cookies} } ) {
-            my $cookie = Ocean::Util::HTTPBinding::bake_cookie($name, $value); 
+            my $cookie = Ocean::Util::HTTPBinding::bake_cookie($name, $value);
             push(@lines, "Set-Cookie: $cookie");
         }
     }
-    my $header = join("\r\n", 
+    my $header = join("\r\n",
         @lines,
         "",
     );
@@ -50,7 +50,7 @@ sub send_closing_http_handshake {
     debugf("<Stream> <Encoder> send closing handshake");
 
     my $packet = $self->build_websocket_frame(
-        Ocean::Constants::WebSocketOpcode::CLOSE, 
+        Ocean::Constants::WebSocketOpcode::CLOSE,
         '');
     $self->_write($packet);
 }
@@ -110,7 +110,7 @@ sub build_websocket_frame {
 sub build_websocket_text {
     my ($self, $message) = @_;
     my $packet = $self->build_websocket_frame(
-        Ocean::Constants::WebSocketOpcode::TEXT_FRAME, 
+        Ocean::Constants::WebSocketOpcode::TEXT_FRAME,
         $message);
     return $packet;
 }

@@ -56,7 +56,8 @@ our @ISA = qw(Ocean::Error);
 
 package Ocean::Error::HTTPHandshakeError;
 our @ISA = qw(Ocean::Error);
-sub code { $_[0]->{code} || '' }
+sub code    { $_[0]->{code} || '' }
+sub headers { $_[0]->{headers} }
 
 package Ocean::Error::MessageError;
 our @ISA = qw(Ocean::Error);
