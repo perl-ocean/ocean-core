@@ -30,7 +30,7 @@ use Event;
 
 my $help        = 0;
 my $daemonize   = 0;
-my $config_file = '';
+my $config_file = 'config/xmpp.yml';
 
 GetOptions(
     'help|?'      => \$help,
