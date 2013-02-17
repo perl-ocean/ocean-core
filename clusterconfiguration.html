@@ -6,6 +6,7 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/prettify.css" rel="stylesheet">
 </head>
 
 <body>
@@ -67,7 +68,10 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="">Hoge</a></li>
+            <li><a href="#node">フロントエンドノードの設定</a></li>
+            <li><a href="#config">フロントエンドノードのコンフィグ設定</a></li>
+            <li><a href="#routing">フロントエンドノードのルーティング設定</a></li>
+            <li><a href="#delivery">デリバリーサービスの設定</a></li>
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -76,14 +80,14 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>フロントエンドノードの設定</h2>
+            <h2 id="node">フロントエンドノードの設定</h2>
             <p>クラスターで利用する場合、<b>コンフィグファイル</b>だけでなく<b>ルーティングスクリプト</b>も用意しなければなりません。</p>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>フロントエンドノードのコンフィグ設定</h2>
+            <h2 id="config">フロントエンドノードのコンフィグ設定</h2>
             <p>概要で説明したように、フロントエンドノードとは、ただのOcean XMPPサーバーで、クラスター用の動作が既に記述されたイベントハンドラを利用してるだけに過ぎません。ですので、基本的なコンフィグ設定は<a href="configuration.html">開発ガイド - コンフィギュレーション</a>で説明したものと同じです。</p>
 
             <p>クラスターのために意識しなければいけないのは、<a href="#custom">カスタムセクション</a>のみです。</p>
@@ -94,7 +98,7 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="custom">カスタムセクション</h3>
-            <pre>handler:
+            <pre class="prettyprint lang-yaml">handler:
   node_id: node01
   serializer: json
   router: __path_to(config/router.pl)__
@@ -193,7 +197,7 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>デリバリーサービスの設定</h2>
+            <h2 id="delivery">デリバリーサービスの設定</h2>
             <p>設定ファイルはプロジェクトルートの中の<b>configディレクトリ</b>の中にあります。</p>
             <pre>vi ./config/ocean-cluster.yml</pre>
 
@@ -204,7 +208,7 @@
         <div class="row-fluid">
           <div class="span12">
             <h3 id="worker">ワーカーセクション</h3>
-            <pre>worker:
+            <pre class="prettyprint lang-yaml">worker:
   domain: xmpp.example.org
   max_workers: 1
   node_inboxes:
@@ -250,7 +254,7 @@
 
             <p>イベントカテゴリやハンドラクラスについて詳しくは前章の<a href="integration.html">イベント</a>を参照してください。</p>
 
-            <pre>event_handler:
+            <pre class="prettyprint lang-yaml">event_handler:
   node:       Hoge::Handler::Node
   authen:     Hoge::Handler::Authen
   connection: Hoge::Handler::Connection
@@ -306,6 +310,11 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
-
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      prettyPrint();
+    });
+  </script>
 </body>
 </html>

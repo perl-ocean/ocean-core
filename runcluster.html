@@ -68,7 +68,12 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">目次</li>
-            <li><a href="">Hoge</a></li>
+            <li><a href="#start">サービスの開始</a></li>
+            <li><a href="#gearman">Gearmanの準備</a></li>
+            <li><a href="#deliveryservice">デリバリーサービスの準備</a></li>
+            <li><a href="#frontendnode">フロントエンドノードの準備</a></li>
+            <li><a href="#alert">注意</a></li>
+
           </ul>
         </div><!--/.well -->
       </div><!--/span-->
@@ -77,18 +82,18 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>サービスの開始</h2>
+            <h2 id="start">サービスの開始</h2>
           </div><!--/span-->
         </div><!--/row-->
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>Gearmanの準備</h2>
+            <h2 id="gearman">Gearmanの準備</h2>
             <p>gearmandを起動しておきます。<a href="cluster.html">概要</a>で説明した通り、二つのタイプのgearmandを準備しておかなければなりません。</p>
             <h3>Background Dispatcher</h3>
             <p>フロントエンドノードから受け取ったイベントを、デリバリーサービスに配送するために利用されるのが、このタイプのキューです。</p>
-
-            <h3>Inbox</h3>
+  
+          <h3>Inbox</h3>
             <p>フロントエンドノード一台に対して、一つのgearmandが割り当てられます。</p>
             <div class="alert alert-block">
               <p>フロントエンドノードと一蓮托生なので、同じマシンで起動しておくのがよいでしょう。</p>
@@ -102,7 +107,7 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>デリバリーサービスの準備</h2>
+            <h2 id="deliveryservice">デリバリーサービスの準備</h2>
             <p>事前に起動してある<b>Background Dispatcher</b>や、各フロントエンドノードのための<b>Inbox</b>キューのアドレスなどをコンフィグで指定しておきます。詳しくは<a href="clusterconfiguration.html">クラスターコンフィギュレーション [ デリバリーサービス ]</a>を参照して下さい。</p>
 
             <p>起動と同時に<b>Background Dispatcher</b>につなぎにいくので、デリバリーサービスを起動するのは、<b>Background Dispatcher</b>が起動した後でなければなりません。</p>
@@ -113,7 +118,7 @@
         <div class="row-fluid">
           <div class="span12">
 
-            <h2>フロントエンドノードの準備</h2>
+            <h2 id="frontendnode">フロントエンドノードの準備</h2>
 
             <p>最後に、フロントエンドノードを起動します。フロントエンドノードを起動するときは、<b>Background Dispatcher</b>、<b>デリバリーサービス</b>や、このノードに対応する<b>Inbox</b>は、既に起動していなければなりません。</p>
             <p>次の三つを除けば、<a href="runserver.html">開発ガイド - サービスの開始</a>で説明した手順と同じです。</p>
@@ -130,7 +135,7 @@
 
         <div class="row-fluid">
           <div class="span12">
-            <h2>注意</h2>
+            <h2 id="alert">注意</h2>
             <p>以上のように、手順としては次のようになります。</p>
             <ol>
               <li>Background Dispatcherとなるgearmandの起動</li> 
