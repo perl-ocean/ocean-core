@@ -6,6 +6,7 @@
   <title>Perl Ocean</title>
 
   <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="google-code-prettify/sons-of-obsidian.css" rel="stylesheet">
 </head>
 
 <body>
@@ -120,23 +121,130 @@
             <p>という三つの段階を踏むだけで、簡単にサービスを開始することが出来ます。</p>
             <p>まずはコンフィグファイルを編集してみましょう。</p>
             <p>コンフィグファイルは、必要最低限のものがデフォルト値で埋められた状態で生成されています。</p>
-            <p>場所は、<b>プロジェクトルートディレクトリ/config/ocean.yml</b>になります。</p>
+            <p>場所は、<b>プロジェクトルートディレクトリ/config/xmpp.yml</b>になります。</p>
             <p>では早速編集してみましょう。</p>
 
-            <pre>vi ./config/ocean.yml</pre>
+            <pre>vi ./config/xmpp.yml</pre>
 
-            <img src="img/getting_started/config.png"/>
+            <pre class="prettyprint linenums lang-yaml">
+---
+server:
+  type: xmpp
+  domain:
+    - xmpp.example.org
+  host: 192.168.0.1
+  port: 5222
+  backlog: 1024
+  max_connection: 100000
+  timeout: 300
+  timeout_preauth: 10
+  max_read_buffer: 10000
+  report_interval: 60
+  use_stanza_counter: yes
+  stanza_counter_expiration: 60
+  max_stanza_count: 1000
+  pid_file: __path_to(var/run/xmpp.pid)__
+  context_class: Foo::Context
+
+log:
+  type: print
+  formatter: color
+  level: info
+  show_packets: yes
+  filepath: __path_to(var/log/xmpp.log)__
+
+sasl:
+  mechanisms:
+    - PLAIN
+    - X-OAUTH2
+#   - CRAM-MD5
+#   - DIGEST-MD5
+
+#tls:
+#  cert_file: __path_to(certs/cert.pem)__
+#  key_file: __path_to(certs/server.nopass.key)__
+#  cipher_list: ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:-LOW:-SSLv2:-EXP:+eNULL
+
+event_handler:
+  node:       Foo::Handler::Node
+  authen:     Foo::Handler::Authen
+  connection: Foo::Handler::Connection
+  message:    Foo::Handler::Message
+  people:     Foo::Handler::People
+  room:       Foo::Handler::Room
+  p2p:        Foo::Handler::P2P
+
+handler:
+  db_file_path: __path_to(db/database.db)__</pre>
 
             <p>hostを <b>192.168.0.1</b> から、<b>127.0.0.1</b> に変更し、domainを、<b>xmpp.example.org</b>から、<b>localhost</b> に変更しておきます。</p>
 
-            <img src="img/getting_started/config2.png"/>
+            <pre class="prettyprint linenums:2 lang-yaml">
+server:
+  type: xmpp
+  domain:
+    - localhost
+  host: 127.0.0.1
+  port: 5222
+  backlog: 1024</pre>
 
             <p>次に、<b>フィクスチャファイル</b>を覗いてみます。</p>
             <p>ファイルパスは、<b>プロジェクトルートディレクトリ/config/fixture.yml</b>です。</p>
 
             <pre>vi ./config/fixture.yml</pre>
 
-            <img src="img/getting_started/fixture.png"/>
+            <pre class="prettyprint linenums lang-yaml">
+users:
+    - id:               user_01
+      username:         kusanagi
+      nickname:         Kusanagi
+      password:         foobar
+      oauth_token:      aaaaaa
+      profile_img_file: __path_to(asset/img/example01.jpg)__
+    - id:               user_02 
+      username:         aramaki
+      nickname:         Aramaki
+      password:         foobar
+      oauth_token:      bbbbbb
+      profile_img_file: __path_to(asset/img/example02.jpg)__
+    - id:               user_03 
+      username:         batou
+      nickname:         Batou
+      password:         foobar
+      oauth_token:      cccccc
+      profile_img_file: __path_to(asset/img/example03.jpg)__
+    - id:               user_04 
+      username:         togusa
+      nickname:         Togusa
+      password:         foobar
+      oauth_token:      dddddd
+      profile_img_file: __path_to(asset/img/example04.jpg)__
+    - id:               user_05 
+      username:         ishikawa
+      nickname:         Ishikawa
+      password:         foobar
+      oauth_token:      eeeeee
+      profile_img_file: __path_to(asset/img/example05.jpg)__
+    - id:               user_06 
+      username:         saito
+      nickname:         Saito
+      password:         foobar
+      oauth_token:      ffffff
+      profile_img_file: __path_to(asset/img/example06.jpg)__
+    - id:               user_07 
+      username:         paz
+      nickname:         Paz
+      password:         foobar
+      oauth_token:      gggggg
+      profile_img_file: __path_to(asset/img/example07.jpg)__
+    - id:               user_08 
+      username:         borma
+      nickname:         Borma
+      password:         foobar
+      oauth_token:      hhhhhh
+      profile_img_file: __path_to(asset/img/example08.jpg)__
+relations:
+    - follower: user_01</pre>
 
             <p>ユーザー名、ニックネーム、プロフィール画像等、ユーザーの最低限の情報が設定されていることがわかります。プロジェクトテンプレート生成時に、8人のデモユーザーが登録されています。</p>
             <p>必要であれば、このファイルを編集して、ユーザーの追加、削除、編集を行います。</p>
@@ -222,6 +330,11 @@
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
-
+  <script src="google-code-prettify/prettify.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      prettyPrint();
+    });
+  </script>
 </body>
 </html>
