@@ -25,7 +25,7 @@ use Getopt::Long;
 use Pod::Usage;
 
 my $help     = 0;
-my $pid_file = '';
+my $pid_file = 'var/run/xmpp.pid';
 
 GetOptions(
     'help|?' => \$help,
