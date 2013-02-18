@@ -80,6 +80,7 @@ sub _parse {
                     type    => sprintf(q{Unsupported version}),
                     headers => { 'Sec-WebSocket-Version' => join (', ', SUPPORTED_VERSIONS) },
                 );
+                return;
             }
 
             # parse request uri
@@ -88,17 +89,8 @@ sub _parse {
             # check/get host
             $header_params{host} = Ocean::Util::HTTPBinding::check_host($self, $req_uri->host);
 
-            # TODO origin check
+            # get origin
             my $ws_origin = $ws_version eq '13' ? $env->{HTTP_ORIGIN} : $env->{HTTP_SEC_WEBSOCKET_ORIGIN};
-            #if ( $ws_origin eq $self->{_domain}) {
-            #    $self->reset();
-            #    debugf("<Stream> <Decoder> invalid host, '%s'", $header);
-            #    Ocean::Error::HTTPHandshakeError->throw(
-            #        code => 400,
-            #        type => q{Bad Request},
-            #    );
-            #    return;
-            #}
             $header_params{origin} = $ws_origin;
 
             # TODO better condition

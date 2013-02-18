@@ -90,6 +90,7 @@ sub build_http_header {
     $params{method} ||= 'GET';
     $params{path}   ||= '/';
     $params{host}   ||= 'sse.example.org';
+    $params{origin} ||= 'http://example.org';
     $params{port}   ||= '80';
     $params{last_event_id} ||= 0;
     my $header =<<EOF;
@@ -98,6 +99,7 @@ Host: $params{host}:$params{port}
 User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; de-DE) 
 Accept-Encoding: gzip, deflate
 Accept: text/event-stream
+Origin: $params{origin}
 Last-Event-Id: $params{last_event_id}
 Cache-Control: no-cache
 Connection: keep-alive

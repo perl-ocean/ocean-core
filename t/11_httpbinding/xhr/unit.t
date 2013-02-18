@@ -89,12 +89,14 @@ sub build_http_header {
     $params{method} ||= 'GET';
     $params{path}   ||= '/';
     $params{host}   ||= 'sse.example.org';
+    $params{origin} ||= 'http://example.org';
     $params{port}   ||= '80';
     my $header =<<EOF;
 $params{method} $params{path} HTTP/1.1
 Host: $params{host}:$params{port}
 User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; de-DE) 
 Accept: application/json
+Origin: $params{origin}
 Cache-Control: no-cache
 Connection: close
 EOF

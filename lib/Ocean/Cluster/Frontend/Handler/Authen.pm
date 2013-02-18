@@ -61,6 +61,7 @@ sub on_http_auth_request {
             stream_id    => $args->stream_id,
             cookie       => $args->cookie,
             domain       => $args->domain,
+            origin       => $args->origin,
             query_params => $args->query_params,
         }
     );

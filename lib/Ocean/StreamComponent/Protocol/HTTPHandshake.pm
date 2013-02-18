@@ -37,7 +37,8 @@ sub on_client_received_http_handshake {
             $self->{_handshake_params} = $params;
             my $cookie = delete $params->{cookie} || '';
             my $query_params = delete $params->{query_params} || {};
-            $self->{_delegate}->on_protocol_handle_http_auth($cookie, $query_params);
+            my $origin = delete $params->{origin};
+            $self->{_delegate}->on_protocol_handle_http_auth($cookie, $origin, $query_params);
         } else {
             $self->{_delegate}->on_protocol_failed_http_auth();
         }

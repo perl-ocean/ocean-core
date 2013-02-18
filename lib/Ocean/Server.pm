@@ -339,7 +339,7 @@ sub on_stream_handle_sasl_success_notification {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $domain, $cookie, $query_params) = @_;
+    my ($self, $stream_id, $domain, $cookie, $origin, $query_params) = @_;
 
     infof('<Stream:FD:%s> @%s',
         $stream_id,
@@ -349,6 +349,7 @@ sub on_stream_handle_http_auth {
         stream_id    => $stream_id,
         cookie       => $cookie || '',
         domain       => $domain,
+        origin       => $origin,
         query_params => $query_params,
     });
 

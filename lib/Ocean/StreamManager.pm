@@ -140,7 +140,7 @@ sub on_stream_handle_sasl_auth {
 }
 
 sub on_stream_handle_http_auth {
-    my ($self, $stream_id, $domain, $cookie, $query_params) = @_;
+    my ($self, $stream_id, $domain, $cookie, $origin, $query_params) = @_;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::StreamManager::on_stream_handle_http_auth}, 
     );

@@ -105,6 +105,9 @@ sub _parse {
             # check/get host
             $header_params{host} = Ocean::Util::HTTPBinding::check_host($self, $req_uri->host);
 
+            # get origin
+            $header_params{origin} = $env->{HTTP_ORIGIN};
+
             # get cookie
             if ( exists $env->{HTTP_COOKIE} ) {
                 debugf("<Stream> <Decoder> found cookie: %s", $env->{HTTP_COOKIE});

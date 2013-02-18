@@ -27,6 +27,7 @@ sub on_http_auth_request {
     my $stream_id = $args->stream_id;
     my $cookie    = $args->cookie;
     my $domain    = $args->domain;
+    my $origin    = $args->origin;
 
     if (!$cookie) {
         $self->log_debug("on_http_auth cookie not found");
