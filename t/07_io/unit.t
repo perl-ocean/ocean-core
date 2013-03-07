@@ -352,12 +352,12 @@ TEST_PROTOCOL_EVENT_DELIVERED_PUBSUB_EVENT: {
         items => [{
             id        => 'xxx000111',
             name      => 'voice',
-            namespace => 'http://mixi.jp/ns#voice',
+            namespace => 'http://example.org/ns#voice',
             fields    => { foo => 'bar' }
             }],
     });
     $io->on_protocol_delivered_pubsub_event($event);
-    is($client_read_data[2], '<message from="example.org" to="user4@example.org/res1"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://mixi.jp/ns#voice"><foo>bar</foo></voice></item></items></event></message>');
+    is($client_read_data[2], '<message from="example.org" to="user4@example.org/res1"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://example.org/ns#voice"><foo>bar</foo></voice></item></items></event></message>');
 }
 
 TEST_PROTOCOL_EVENT_DELIVERED_ROSTER: {

@@ -358,13 +358,13 @@ TEST_CORRECT_SCENARIO: {
         items => [{
             id        => 'xxx000111',
             name      => 'voice',
-            namespace => 'http://mixi.jp/ns#voice',
+            namespace => 'http://example.org/ns#voice',
             fields    => { foo => 'bar' }
             }],
     });
     $stream->on_server_delivered_pubsub_event($event_1);
 
-    is($client_read_data[ $#client_read_data ], '<message from="example.org" to="user2@xmpp.example.org/resource"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://mixi.jp/ns#voice"><foo>bar</foo></voice></item></items></event></message>');
+    is($client_read_data[ $#client_read_data ], '<message from="example.org" to="user2@xmpp.example.org/resource"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://example.org/ns#voice"><foo>bar</foo></voice></item></items></event></message>');
 
     # =====================#
     # VCARD REQUEST

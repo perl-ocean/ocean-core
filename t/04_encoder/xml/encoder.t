@@ -124,12 +124,12 @@ my $event = Ocean::Stanza::DeliveryRequest::PubSubEvent->new({
     items => [{
         id        => 'xxx000111',
         name      => 'voice',
-        namespace => 'http://mixi.jp/ns#voice',
+        namespace => 'http://example.org/ns#voice',
         fields    => { foo => 'bar' }
         }],
 });
 $encoder->send_pubsub_event($event);
-is($out, q{<message from="example.org" to="user2@xmpp.example.org/resource"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://mixi.jp/ns#voice"><foo>bar</foo></voice></item></items></event></message>});
+is($out, q{<message from="example.org" to="user2@xmpp.example.org/resource"><event xmlns="http://jabber.org/protocol/pubsub#event"><items node="user_event"><item id="xxx000111"><voice xmlns="http://example.org/ns#voice"><foo>bar</foo></voice></item></items></event></message>});
 
 # iq
 #$encoder->send_iq(type, id, domain, callback, to);
