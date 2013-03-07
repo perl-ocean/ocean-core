@@ -13,6 +13,10 @@ sub new {
     return $self;
 }
 
+sub initialize {
+    my $self = shift;
+}
+
 sub push_deliver_request {
     my ($self, $host, $data) = @_;
     push(@{ $self->{_stack} }, {

@@ -24,14 +24,14 @@ sub create_fetcher {
 sub create_deliverer {
     my ($self, $config) = @_;
 
-    my $deliverer = Ocean::Cluster::Backend::Deliverer::Gearman->new;
-
-    # FIXME
     my $node_inboxes = $config->get(worker => q{node_inboxes});
+    my $override_priorities = $config->get(worker => q{override_priorities});
 
-    for my $node_inbox ( @$node_inboxes ) {
-        $deliverer->register_node($node_inbox->{node_id}, [$node_inbox->{address}]);
-    }
+    my $deliverer = Ocean::Cluster::Backend::Deliverer::Gearman->new(
+        priorities      => $override_priorities,
+        node_inboxes    => $node_inboxes,
+    );
+
     return $deliverer;
 }
 

@@ -26,6 +26,19 @@ sub config {
                             }, 
                         ],
                     },
+                    override_priorities => {
+                        type => 'seq',
+                        required => 0,
+                        sequence => [
+                            {
+                                type => 'map',
+                                mapping => {
+                                    name  => { type => 'str', },
+                                    level => { type => 'str', },
+                                },
+                            },
+                        ],
+                    },
                     broker_servers => {
                         type => 'seq', 
                         sequence => [

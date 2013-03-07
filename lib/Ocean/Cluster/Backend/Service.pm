@@ -36,6 +36,7 @@ sub service_initialize {
     my $self = shift;
     infof('<Service> @initialize');
 
+    $self->{_deliverer}->initialize();
     $self->{_context}->set_delegate($self);
     $self->{_context}->service_initialize();
 }
@@ -134,7 +135,7 @@ sub on_delivery_request {
     my ($self, $node_id, $req) = @_;
     infof('<Deliverer> @%s { node: %s }', $req->type, $node_id);
     my $data = $self->{_serializer}->serialize($req->as_hash());
-    $self->{_deliverer}->deliver($node_id, $data);
+    $self->{_deliverer}->deliver($node_id, $data, $req->type);
 }
 
 sub _on_job_step {
