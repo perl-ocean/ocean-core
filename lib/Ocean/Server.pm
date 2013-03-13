@@ -751,7 +751,7 @@ sub deliver_http_auth_completion {
     my ($self, $result) = @_;
     $self->{_stream_manager}->on_server_completed_http_auth(
         $result->stream_id, $result->user_id, 
-        $result->username, $result->session_id, $result->cookies);
+        $result->username, $result->session_id, $result->cookies, $result->headers);
 }
 
 sub deliver_sasl_password {

@@ -40,6 +40,13 @@ sub add_cookie {
     return $self;
 }
 
+sub add_header {
+    my ($self, $name, $value) = @_;
+    $self->{_headers} = {} unless exists $self->{_headers};
+    $self->{_headers}{$name} = $value;
+    return $self;
+}
+
 sub build_args {
     my $self = shift;
 
@@ -69,6 +76,7 @@ sub build_args {
 
     $args->{session_id} = $self->{_session_id};
     $args->{cookies} = $self->{_cookies} || {};
+    $args->{headers} = $self->{_headers} || {};
 
     return $args;
 }

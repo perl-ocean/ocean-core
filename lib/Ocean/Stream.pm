@@ -768,10 +768,10 @@ sub on_server_completed_sasl_auth {
 }
 
 sub on_server_completed_http_auth {
-    my ($self, $user_id, $username, $session_id, $cookies) = @_;
+    my ($self, $user_id, $username, $session_id, $cookies, $headers) = @_;
     try {
         $self->[PROTOCOL]->on_server_completed_http_auth(
-            $user_id, $username, $session_id, $cookies);
+            $user_id, $username, $session_id, $cookies, $headers);
     } catch {
         if ($_->isa(q{Ocean::Error::ConditionMismatchedServerEvent})) {
             $self->_critf($_->message);

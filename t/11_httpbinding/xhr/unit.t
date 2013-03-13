@@ -200,11 +200,17 @@ CONNECT_ANOTHER_USER: {
 
     # check if initial presence is broadcasted correctly
     is(scalar(@client1_events), 2, 'client1 events should be 2');
+    like($client1_events[0], qr|^HTTP/1.1 200 OK|);
+    like($client1_events[0], qr|Set-Cookie: foo=tarotaro|);
+    like($client1_events[0], qr|X-Ocean-Test: foobar|);
     like($client1_events[1], qr|\{\"presence\"\:\{\"show\"\:\"chat\"\,\"to\"\:\"taro|);
     like($client1_events[1], qr|\"from\"\:\"jiro|);
     ok($client1->is_closed(), q{Clinet1 should be closed});
 
     is(scalar(@client2_events), 2, 'client2 events should be 2');
+    like($client2_events[0], qr|^HTTP/1.1 200 OK|);
+    like($client2_events[0], qr|Set-Cookie: foo=tarotaro|);
+    like($client2_events[0], qr|X-Ocean-Test: foobar|);
     like($client2_events[1], qr|\{\"presence\"\:\{\"show\"\:\"chat\"\,\"to\"\:\"taro|);
     like($client2_events[1], qr|\"from\"\:\"jiro|);
     ok($client2->is_closed(), q{Clinet2 should be closed});

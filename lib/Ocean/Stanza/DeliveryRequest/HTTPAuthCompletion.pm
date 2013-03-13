@@ -11,6 +11,7 @@ __PACKAGE__->mk_accessors(qw(
     username
     session_id
     cookies
+    headers
 ));
 
 1;

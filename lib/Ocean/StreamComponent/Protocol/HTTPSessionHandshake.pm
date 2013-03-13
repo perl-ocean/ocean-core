@@ -38,11 +38,12 @@ sub on_client_received_http_handshake {
 }
 
 sub on_server_completed_http_auth {
-    my ($self, $user_id, $username, $session_id, $cookies) = @_;
+    my ($self, $user_id, $username, $session_id, $cookies, $headers) = @_;
 
     if (!$self->{_authenticated} && $self->{_handshake_params}) {
         my $params = $self->{_handshake_params} || +{};
         $params->{cookies} = $cookies;
+        $params->{headers} = $headers;
         $self->{_authenticated} = 1;
         $self->{_delegate}->on_protocol_completed_http_session_auth(
             $user_id, $username, $session_id);

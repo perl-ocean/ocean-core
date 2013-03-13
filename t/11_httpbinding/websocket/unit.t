@@ -166,6 +166,8 @@ VALID_COOKIE: {
     my $header = &build_http_header(cookie => 'foo="tarotaro"; bar=baz;');
     $client1->emulate_client_write($header);
     like($client1_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
+    like($client1_events[0], qr|Set-Cookie: foo=tarotaro|);
+    like($client1_events[0], qr|X-Ocean-Test: foobar|);
     is(scalar(@client1_events), 1, 'client1 events should be 1');
 }
 
@@ -177,6 +179,8 @@ APPEND_ONE_MORE_VALID_CONNECTION: {
     my $header = &build_http_header(cookie => 'foo="tarotaro"; bar=baz;');
     $client2->emulate_client_write($header);
     like($client2_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
+    like($client2_events[0], qr|Set-Cookie: foo=tarotaro|);
+    like($client2_events[0], qr|X-Ocean-Test: foobar|);
     is(scalar(@client2_events), 1, 'client2 events should be 1');
 }
 
@@ -189,6 +193,8 @@ CONNECT_ANOTHER_USER: {
     my $header = &build_http_header(cookie => 'foo=jirojiro;');
     $client3->emulate_client_write($header);
     like($client3_events[0], qr|^HTTP/1.1 101 Switching Protocols|);
+    like($client3_events[0], qr|Set-Cookie: foo=jirojiro|);
+    like($client3_events[0], qr|X-Ocean-Test: foobar|);
 
     # check if initial presence is broadcasted correctly
     is(scalar(@client1_events), 2, 'client1 events should be 2');

@@ -267,14 +267,18 @@ sub deliver_http_auth_completion {
     my $username   = $args->{username};
     my $session_id = $args->{session_id};
     my $cookies    = $args->{cookies};
+    my $headers    = $args->{headers};
 
     my $builder = Ocean::Stanza::DeliveryRequestBuilder::HTTPAuthCompletion->new;
     $builder->stream_id($stream_id);
     $builder->session_id($session_id);
     $builder->user_id($user_id);
     $builder->username($username);
-    for my $key (%$cookies) {
-        $builder->add_cookie($key => $cookies->{$key});
+    while (my ($key, $value) = each %$cookies) {
+        $builder->add_cookie($key => $value);
+    }
+    while (my ($name, $value) = each %$headers) {
+        $builder->add_header($name => $value);
     }
     $self->deliver($builder->build());
 }

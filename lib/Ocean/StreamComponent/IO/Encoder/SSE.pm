@@ -10,6 +10,7 @@ use Log::Minimal;
 
 sub send_http_handshake {
     my ($self, $params) = @_;
+
     my @lines = (
         "HTTP/1.1 200 OK", 
         sprintf(q{Date: %s}, HTTP::Date::time2str(time())),
@@ -18,6 +19,20 @@ sub send_http_handshake {
         #"Pragma: no-cache",
         "Connection: keep-alive",
     );
+
+    if ($params->{cookies}) {
+        while (my ($name, $value) = each %{ $params->{cookies} } ) {
+            my $cookie = Ocean::Util::HTTPBinding::bake_cookie($name, $value);
+            push(@lines, "Set-Cookie: $cookie");
+        }
+    }
+
+    if ($params->{headers}) {
+        while (my ($name, $value) = each %{ $params->{headers} }) {
+            push @lines, sprintf(q{%s: %s}, $name, $value);
+        }
+    }
+
     my $header = join("\r\n", @lines);
     $header .= "\r\n\r\n";
     $self->_write($header);

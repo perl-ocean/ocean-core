@@ -13,11 +13,13 @@ sub send_http_handshake {
     my ($self, $params) = @_;
     # do nothing
     $self->{_in_stream} = 1;
+    $self->{_cookies} = $params->{cookies};
+    $self->{_headers} = $params->{headers};
 }
 
 sub _build_http_header {
     my ($self, %params) = @_;
-    # TODO set cookie?
+
     my @lines = (
         sprintf("HTTP/1.1 %d %s", $params{code}, $params{type}), 
         sprintf(q{Date: %s}, HTTP::Date::time2str(time())),
@@ -28,6 +30,20 @@ sub _build_http_header {
         sprintf("Content-Length: %d", $params{length}),
         #"Connection: keep-alive",
     );
+
+    if ($self->{_cookies}) {
+        while (my ($name, $value) = each %{ $self->{_cookies} } ) {
+            my $cookie = Ocean::Util::HTTPBinding::bake_cookie($name, $value);
+            push(@lines, "Set-Cookie: $cookie");
+        }
+    }
+
+    if ($self->{_headers}) {
+        while (my ($name, $value) = each %{ $self->{_headers} }) {
+            push @lines, sprintf(q{%s: %s}, $name, $value);
+        }
+    }
+
     my $header = join("\r\n", @lines);
     $header .= "\r\n\r\n";
     return $header;

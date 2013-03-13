@@ -176,7 +176,9 @@ VALID_COOKIE: {
     my $header = &build_http_header(cookie => 'foo="tarotaro"; bar=baz;');
     $client1->emulate_client_write($header);
     like($client1_events[0], qr|^HTTP/1.1 200 OK|);
-    like($client1_events[0], qr|Content-Type\: text\/event\-stream|);
+    like($client1_events[0], qr|Content-Type: text/event-stream|);
+    like($client1_events[0], qr|Set-Cookie: foo=tarotaro|);
+    like($client1_events[0], qr|X-Ocean-Test: foobar|);
     is(scalar(@client1_events), 1, 'client1 events should be 1');
 }
 
@@ -188,7 +190,8 @@ APPEND_ONE_MORE_VALID_CONNECTION: {
     my $header = &build_http_header(cookie => 'foo="tarotaro"; bar=baz;');
     $client2->emulate_client_write($header);
     like($client2_events[0], qr|^HTTP/1.1 200 OK|);
-    like($client2_events[0], qr|Content\-Type\: text\/event\-stream|);
+    like($client2_events[0], qr|Content-Type: text/event-stream|);
+    like($client2_events[0], qr|X-Ocean-Test: foobar|);
     is(scalar(@client2_events), 1, 'client2 events should be 1');
 }
 
@@ -201,7 +204,8 @@ CONNECT_ANOTHER_USER: {
     my $header = &build_http_header(cookie => 'foo=jirojiro;');
     $client3->emulate_client_write($header);
     like($client3_events[0], qr|^HTTP/1.1 200 OK|);
-    like($client3_events[0], qr|Content\-Type\: text\/event\-stream|);
+    like($client3_events[0], qr|Content-Type: text/event-stream|);
+    like($client3_events[0], qr|X-Ocean-Test: foobar|);
 
     # check if initial presence is broadcasted correctly
     is(scalar(@client1_events), 2, 'client1 events should be 2');
@@ -289,7 +293,7 @@ RECOVER_BEFORE_TIMEOUT: {
     my $header = &build_http_header(cookie => 'foo=tarotaro');
     $client4->emulate_client_write($header);
     like($client4_events[0], qr|^HTTP/1.1 200 OK|);
-    like($client4_events[0], qr|Content\-Type\: text\/event\-stream|);
+    like($client4_events[0], qr|Content-Type: text/event-stream|);
 
     # doesn't change
     is(scalar(@client3_events), 4, 'client3 events should be 4');

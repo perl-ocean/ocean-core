@@ -58,6 +58,7 @@ sub on_http_auth_request {
     $builder->username($user->username);
     $builder->add_cookie(foo => $cookie_value);
     $builder->add_cookie(bar => { value => 'fugafuga', domain => $domain, path => '/foo' });
+    $builder->add_header('X-Ocean-Test' => 'foobar');
     $ctx->deliver($builder->build());
 }
 

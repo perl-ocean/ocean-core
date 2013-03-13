@@ -21,16 +21,25 @@ sub send_http_handshake {
         "Connection: Upgrade",
         "Sec-WebSocket-Accept: $params->{accept}",
     );
+
     if ($params->{protocol}) {
         push(@lines,
             "Sec-WebSocket-Protocol: $params->{protocol}");
     }
+
     if ($params->{cookies}) {
         while (my ($name, $value) = each %{ $params->{cookies} } ) {
             my $cookie = Ocean::Util::HTTPBinding::bake_cookie($name, $value);
             push(@lines, "Set-Cookie: $cookie");
         }
     }
+
+    if ($params->{headers}) {
+        while (my ($name, $value) = each %{ $params->{headers} }) {
+            push @lines, sprintf(q{%s: %s}, $name, $value);
+        }
+    }
+
     my $header = join("\r\n",
         @lines,
         "",
