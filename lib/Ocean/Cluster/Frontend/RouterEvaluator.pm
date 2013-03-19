@@ -11,7 +11,7 @@ sub evaluate {
 use Ocean::Cluster::Frontend::Router::Declare;
 {
     my $file = '%s';
-    my $r = require $file;
+    my $r = do $file;
     return $r;
 }
 __END_OF_ROUTER__

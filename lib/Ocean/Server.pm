@@ -224,6 +224,11 @@ sub on_signal_quit {
     $self->shutdown();
 }
 
+sub on_signal_refresh {
+    my $self = shift;
+    $self->refresh();
+}
+
 sub on_timer {
     my $self = shift;
 
@@ -250,6 +255,38 @@ sub shutdown {
     infof("<Server> started to disconnect all streams");
     $self->{_stream_manager}->disconnect_all();
     $self->{_exit_guard}->end();
+}
+
+sub refresh {
+    my $self = shift;
+
+    infof("<Server> started config refresh...");
+
+    # event_dispatcher
+    $self->{_event_dispatcher} = undef;
+    $self->{_event_dispatcher} = Ocean::ServerComponentFactory->new->create_event_dispatcher;
+    infof("<Server> rebuilt event dispatcher");
+
+    # listener
+    $self->{_listener}->stop;
+    $self->{_listener} = undef;
+    $self->{_listener} = Ocean::ServerComponentFactory->new->create_listener;
+    $self->{_listener}->set_delegate($self);
+    $self->{_listener}->start;
+    infof("<Server> rebuilt listener");
+
+    # timer
+    $self->{_timer}->stop;
+    $self->{_timer} = undef;
+    $self->{_timer} = Ocean::ServerComponentFactory->new->create_timer;
+    $self->{_timer}->set_delegate($self);
+    $self->{_timer}->start;
+    infof("<Server> rebuilt timer");
+
+    $self->{_context}->reinitialize;
+    infof("<Server> reinitialized context");
+
+    infof("<Server> refreshed!");
 }
 
 =head2 STREAM CALLBACKS

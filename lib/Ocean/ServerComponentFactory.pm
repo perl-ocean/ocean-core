@@ -5,6 +5,7 @@ use warnings;
 
 use Module::Load ();
 
+use Ocean::Config;
 use Ocean::Error;
 use Ocean::Server;
 use Ocean::ServerComponent::Listener::AESocket;
@@ -18,8 +19,8 @@ sub new { bless {}, $_[0] }
 
 
 sub create_context {
-    my ($self, $config) = @_;
-    my $context_class = $config->get(server => 'context_class')
+    my $self = shift;
+    my $context_class = Ocean::Config->instance->get(server => 'context_class')
         || 'Ocean::Context';
     
     Module::Load::load($context_class);
@@ -33,11 +34,11 @@ sub create_context {
 }
 
 sub create_event_dispatcher {
-    my ($self, $config) = @_;
+    my $self = shift;
 
     my $dispatcher = Ocean::EventDispatcher->new;
 
-    my $handlers = $config->get('event_handler');
+    my $handlers = Ocean::Config->instance->get('event_handler');
 
     for my $category ( keys %$handlers ) {
 
@@ -52,41 +53,41 @@ sub create_event_dispatcher {
 }
 
 sub create_listener {
-    my ($self, $config) = @_;
+    my $self = shift;
 
     return Ocean::ServerComponent::Listener::AESocket->new(
-        host            => $config->get(server => q{host}),
-        port            => $config->get(server => q{port}),
-        backlog         => $config->get(server => q{backlog}),
-        max_read_buffer => $config->get(server => q{max_read_buffer}),
-        timeout         => $config->get(server => q{timeout}),
-        timeout_preauth => $config->get(server => q{timeout_preauth}),
+        host            => Ocean::Config->instance->get(server => q{host}),
+        port            => Ocean::Config->instance->get(server => q{port}),
+        backlog         => Ocean::Config->instance->get(server => q{backlog}),
+        max_read_buffer => Ocean::Config->instance->get(server => q{max_read_buffer}),
+        timeout         => Ocean::Config->instance->get(server => q{timeout}),
+        timeout_preauth => Ocean::Config->instance->get(server => q{timeout_preauth}),
     );
 }
 
 sub create_stream_manager {
-    my ($self, $config) = @_;
+    my $self = shift;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::ServerComponentFactory::create_stream_manager}, 
     );
 }
 
 sub create_stream_factory {
-    my ($self, $config) = @_;
+    my $self = shift;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::ServerComponentFactory::create_stream_factory}, 
     );
 }
 
 sub create_signal_handler {
-    my ($self, $config) = @_;
+    my $self = shift;
     return Ocean::CommonComponent::SignalHandler::AESignal->new;
 }
 
 sub create_timer {
-    my ($self, $config) = @_;
+    my $self = shift;
 
-    my $interval = $config->get(server => 'report_interval');
+    my $interval = Ocean::Config->instance->get(server => 'report_interval');
 
     return Ocean::CommonComponent::Timer::AETimer->new(
         interval => $interval, 
@@ -95,9 +96,9 @@ sub create_timer {
 }
 
 sub create_daemonizer {
-    my ($self, $config, $daemonize) = @_;
+    my ($self, $daemonize) = @_;
 
-    my $pid_file = $config->get('server', 'pid_file');
+    my $pid_file = Ocean::Config->instance->get('server', 'pid_file');
 
     if ($daemonize && !$pid_file) {
         die "'pid_file' not found. "

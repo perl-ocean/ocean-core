@@ -120,6 +120,11 @@ sub on_signal_quit {
     $self->_child_quit();
 }
 
+sub on_signal_refresh {
+    my $self = shift;
+    infof("<Service> workers have no refresh: please restart the process");
+}
+
 sub on_fetch_job {
     my ($self, $raw_job) = @_;
 

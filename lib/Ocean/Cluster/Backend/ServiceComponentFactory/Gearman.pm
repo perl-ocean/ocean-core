@@ -9,10 +9,10 @@ use Ocean::Cluster::Backend::Fetcher::Gearman;
 use Ocean::Cluster::Backend::Deliverer::Gearman;
 
 sub create_fetcher {
-    my ($self, $config) = @_;
+    my $self = shift;
 
-    my $job_servers = $config->get(worker => q{broker_servers});
-    my $queue_name  = $config->get(worker => q{queue_name});
+    my $job_servers = Ocean::Config->instance->get(worker => q{broker_servers});
+    my $queue_name  = Ocean::Config->instance->get(worker => q{queue_name});
     my $fetcher = 
         Ocean::Cluster::Backend::Fetcher::Gearman->new(
             job_servers => $job_servers,
@@ -22,10 +22,10 @@ sub create_fetcher {
 }
 
 sub create_deliverer {
-    my ($self, $config) = @_;
+    my $self = shift;
 
-    my $node_inboxes = $config->get(worker => q{node_inboxes});
-    my $override_priorities = $config->get(worker => q{override_priorities});
+    my $node_inboxes = Ocean::Config->instance->get(worker => q{node_inboxes});
+    my $override_priorities = Ocean::Config->instance->get(worker => q{override_priorities});
 
     my $deliverer = Ocean::Cluster::Backend::Deliverer::Gearman->new(
         priorities      => $override_priorities,

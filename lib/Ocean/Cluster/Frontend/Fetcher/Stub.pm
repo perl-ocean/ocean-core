@@ -25,4 +25,8 @@ sub emulate_raw_job {
     $self->{_on_fetch_event}->($job);
 }
 
+sub destroy {
+    my $self = shift;
+}
+
 1;

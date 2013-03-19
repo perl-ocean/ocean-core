@@ -56,4 +56,10 @@ sub dispatch {
     $client->dispatch_background($queue_name, $data, {});
 }
 
+sub destroy {
+    my $self = shift;
+
+    $self->{_brokers} = undef;
+}
+
 1;

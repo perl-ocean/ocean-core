@@ -134,6 +134,20 @@ sub initialize {
     $self->{_router}->setup_dispatcher($self->{_dispatcher});
 }
 
+sub reinitialize {
+    my $self = shift;
+
+    $self->{_fetcher}->destroy;
+    $self->{_dispatcher}->destroy;
+
+    $self->{_serializer} = undef;
+    $self->{_fetcher}    = undef;
+    $self->{_dispatcher} = undef;
+    $self->{_router}     = undef;
+
+    $self->initialize;
+}
+
 sub on_fetcher_got_event {
     my ($self, $data) = @_;
 

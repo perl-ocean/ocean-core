@@ -58,4 +58,14 @@ sub _on_worker_got_job {
     $job->complete('');
 }
 
+sub destroy {
+    my $self = shift;
+    for my $js (@{ $self->{_worker}->job_servers }) {
+        $js->mark_dead;
+    }
+
+    $self->{_worker} = undef;
+    $self->{_on_fetch_event} = undef;
+}
+
 1;

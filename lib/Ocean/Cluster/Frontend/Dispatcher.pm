@@ -27,4 +27,11 @@ sub register_broker_client {
     );
 }
 
+sub destroy {
+    my $self = shift;
+    Ocean::Error::AbstractMethod->throw(
+        message => q{Ocean::Cluster::Frontend::Dispatcher::destroy},
+    );
+}
+
 1;

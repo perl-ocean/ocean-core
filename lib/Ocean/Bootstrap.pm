@@ -50,7 +50,7 @@ sub run {
     my $server_factory = $class->server_factory();
     my $server;
     try {
-        $server = $server_factory->create_server($config, $args{daemonize});
+        $server = $server_factory->create_server($args{daemonize});
     } catch {
         my $errmsg = $_->can('message') ? $_->message : "$_";
         critf('<Server> failed initialization: %s', $errmsg);

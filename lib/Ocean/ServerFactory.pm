@@ -5,14 +5,16 @@ use warnings;
 
 use Module::Load ();
 use Log::Minimal;
+
+use Ocean::Config;
 use Ocean::ServerBuilder;
 
 sub new { bless {}, $_[0] }
 
 sub create_server {
-    my ($self, $config, $daemonize) = @_;
+    my ($self, $daemonize) = @_;
 
-    my $type = $config->get(server => q{type});
+    my $type = Ocean::Config->instance->get(server => q{type});
 
     my $component_factory = 
         $self->_create_server_component_factory($type);
@@ -22,28 +24,28 @@ sub create_server {
     my $builder = Ocean::ServerBuilder->new;
 
     $builder->context(
-        $component_factory->create_context($config));
+        $component_factory->create_context);
 
     $builder->event_dispatcher(
-        $component_factory->create_event_dispatcher($config));
+        $component_factory->create_event_dispatcher);
 
     $builder->stream_manager(
-        $component_factory->create_stream_manager($config));
+        $component_factory->create_stream_manager);
 
     $builder->stream_factory(
-        $component_factory->create_stream_factory($config));
+        $component_factory->create_stream_factory);
 
     $builder->listener(
-        $component_factory->create_listener($config));
+        $component_factory->create_listener);
 
     $builder->daemonizer(
-        $component_factory->create_daemonizer($config, $daemonize));
+        $component_factory->create_daemonizer($daemonize));
 
     $builder->signal_handler(
-        $component_factory->create_signal_handler($config));
+        $component_factory->create_signal_handler);
 
     $builder->timer(
-        $component_factory->create_timer($config));
+        $component_factory->create_timer);
 
     return $builder->build();
 }

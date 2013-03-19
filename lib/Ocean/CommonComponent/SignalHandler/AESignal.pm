@@ -8,30 +8,48 @@ use AnyEvent;
 use Log::Minimal;
 
 my @DEFAULT_QUIT_SIGNALS = qw(QUIT TERM INT);
+my @DEFAULT_REFRESH_SIGNALS = qw(HUP);
 
 sub new {
     my ($class, %args) = @_;
     my $self = bless {
-        _quit_signals => $args{quit_signals} || \@DEFAULT_QUIT_SIGNALS, 
-        _delegate     => undef,
-        _handlers     => {},
+        _quit_signals       => $args{quit_signals} || \@DEFAULT_QUIT_SIGNALS,
+        _refresh_signals    => $args{refresh_signals} || \@DEFAULT_REFRESH_SIGNALS,
+        _delegate           => undef,
+        _handlers           => {},
     }, $class;
     return $self;
 }
 
 sub setup {
     my $self = shift;
+
+    # quit signals
     for my $sig_type ( @{ $self->{_quit_signals} } ) {
         $self->{_handlers}{$sig_type} = 
             AE::signal $sig_type, 
                 sub { $self->_do_quit_handler(); };
     }
+
+    # refresh signals
+    for my $sig_type ( @{ $self->{_refresh_signals} } ) {
+        $self->{_handlers}{$sig_type} =
+            AE::signal $sig_type,
+                sub { $self->_do_refresh_handler(); };
+    }
+
+
 }
 
 sub _do_quit_handler {
     my $self = shift;
     $self->_reset_quit_handlers();
     $self->{_delegate}->on_signal_quit();
+}
+
+sub _do_refresh_handler {
+    my $self = shift;
+    $self->{_delegate}->on_signal_refresh();
 }
 
 sub _reset_quit_handlers {

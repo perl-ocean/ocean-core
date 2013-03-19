@@ -12,8 +12,8 @@ use Ocean::Cluster::SerializerFactory;
 sub new { bless {}, $_[0] }
 
 sub create_process_manager {
-    my ($self, $config) = @_;
-    my $max_workers = $config->get(worker => q{max_workers});
+    my $self = shift;
+    my $max_workers = Ocean::Config->instance->get(worker => q{max_workers});
     Ocean::Cluster::Backend::ProcessManager::Parallel->new(
           max_workers => $max_workers);
     #return ($max_workers > 1) 
@@ -23,28 +23,28 @@ sub create_process_manager {
 }
 
 sub create_fetcher {
-    my ($self, $config) = @_;
+    my $self = shift;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::Cluster::Backend::ServiceComponentFactory::create_fetcher}, 
     );
 }
 
 sub create_deliverer {
-    my ($self, $config) = @_;
+    my $self = shift;
     Ocean::Error::AbstractMethod->throw(
         message => q{Ocean::Cluster::Backend::ServiceComponentFactory::create_deliverer}, 
     );
 }
 
 sub create_serializer {
-    my ($self, $config) = @_;
-    my $type = $config->get(worker => q{serializer}) || 'json';
+    my $self = shift;
+    my $type = Ocean::Config->instance->get(worker => q{serializer}) || 'json';
     return Ocean::Cluster::SerializerFactory->create($type);
 }
 
 sub create_context {
-    my ($self, $config) = @_;
-    my $context_class = $config->get(worker => 'context_class')
+    my $self = shift;
+    my $context_class = Ocean::Config->instance->get(worker => 'context_class')
         || 'Ocean::Cluster::Backend::Context';
     
     Module::Load::load($context_class);
@@ -58,11 +58,11 @@ sub create_context {
 }
 
 sub create_event_dispatcher {
-    my ($self, $config) = @_;
+    my $self = shift;
 
     my $dispatcher = Ocean::Cluster::Backend::EventDispatcher->new;
 
-    my $handlers = $config->get('event_handler');
+    my $handlers = Ocean::Config->instance->get('event_handler');
 
     for my $category ( keys %$handlers ) {
 
