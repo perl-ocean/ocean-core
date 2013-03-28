@@ -1,5 +1,14 @@
 Revision history for Perl extension Ocean.
 
+0.03  Thu Mar 28 15:03:44 JST 2013
+    - Added parameter to specify configuration on starter/stopper scripts
+    - PubSub event encoding for JSON based encoders
+    - Supports WebSocket RFC 6455 (hybi-17)
+    - Supports handling of Origin headers on the backend
+    - Priority delivery configuration for frontend nodes
+    - Send cookie and other headers from the backend
+    - Reloadable router/configuration for frontend nodes with SIGHUP
+
 0.02  Mon Feb 11 21:42:45 2013
     - Accept connections from multiple domains
         - separating presence on per domain basis can be implemented on the integration logic
