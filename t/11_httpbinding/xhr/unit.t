@@ -91,6 +91,7 @@ sub build_http_header {
     $params{host}   ||= 'sse.example.org';
     $params{origin} ||= 'http://example.org';
     $params{port}   ||= '80';
+    $params{huge_header} ||= 0;
     my $header =<<EOF;
 $params{method} $params{path} HTTP/1.1
 Host: $params{host}:$params{port}
@@ -102,12 +103,16 @@ Connection: close
 EOF
 
     my @lines = split("\n", $header);
-    push(@lines, "");
     if ($params{cookie}) {
-        return join("\r\n", (@lines[0..$#lines-1], sprintf('Cookie: %s', $params{cookie}), ""))."\r\n";
-    } else {
-        return join("\r\n", @lines)."\r\n";
+        push @lines, sprintf('Cookie: %s', $params{cookie});
     }
+
+    if ($params{huge_header}) {
+        push @lines, 'X-Huge: ' . '-' x $params{huge_header};
+    }
+
+    push(@lines, ("", ""));
+    return join("\r\n", @lines);
 }
 
 INVALID_DOMAIN: {
@@ -132,6 +137,20 @@ INVALID_HEADER: {
     my $header = &build_http_header(method => 'DELETE');
     $client0->emulate_client_write($header);
     like($client0_events[0], qr|^HTTP/1.1 400 Bad Request|, 'bad request');
+    ok($client0->is_closed(), "connection should be closed");
+}
+
+HUGE_HEADER: {
+    # SETUP dummy client1
+    my $dummy_fd0 = q{dummy_id_0};
+    my $client0 = $listener->emulate_accept($dummy_fd0);
+    my @client0_events;
+    $client0->client_on_read(sub { push(@client0_events, $_[0]) });
+
+    my $header = &build_http_header(huge_header => 1024*10 );
+    $client0->emulate_client_write($header);
+    like($client0_events[0], qr|^HTTP/1.1 400 Bad Request|, 'bad request (long header)');
+    like($client0_events[0], qr|X-Ocean-Error: long header|, 'bad request reason (long header)');
     ok($client0->is_closed(), "connection should be closed");
 }
 

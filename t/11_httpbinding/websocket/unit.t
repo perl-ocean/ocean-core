@@ -97,13 +97,20 @@ sub build_http_header {
         resource_name => $params{path},
         version       => $params{version},
     );
+
     my $str = $header->to_string();
+    my @lines = split("\r\n", $str);
+
     if ($params{cookie}) {
-        my @lines = split("\r\n", $str);
-        return join("\r\n", (@lines[0..$#lines], sprintf('Cookie: %s', $params{cookie}), ""))."\r\n";
-    } else {
-        return $str;
+        push @lines, sprintf('Cookie: %s', $params{cookie});
     }
+
+    if ($params{huge_header}) {
+        push @lines, 'X-Huge: ' . '-' x $params{huge_header};
+    }
+
+    push(@lines, ("", ""));
+    return join("\r\n", @lines);
 }
 
 UNSUPPORTED_WEBSOCKET_VERSION: {
@@ -129,6 +136,20 @@ INVALID_DOMAIN: {
     my $header = &build_http_header(host => 'invalid.domain.example.org');
     $client0->emulate_client_write($header);
     like($client0_events[0], qr|^HTTP/1.1 400 Bad Request|, 'invalid domain');
+}
+
+HUGE_HEADER: {
+    # SETUP dummy client1
+    my $dummy_fd0 = q{dummy_id_0};
+    my $client0 = $listener->emulate_accept($dummy_fd0);
+    my @client0_events;
+    $client0->client_on_read(sub { push(@client0_events, $_[0]) });
+
+    my $header = &build_http_header(huge_header => 1024*10 );
+    $client0->emulate_client_write($header);
+    like($client0_events[0], qr|^HTTP/1.1 400 Bad Request|, 'bad request (long header)');
+    like($client0_events[0], qr|X-Ocean-Error: long header|, 'bad request reason (long header)');
+    ok($client0->is_closed(), "connection should be closed");
 }
 
 NON_COOKIE: {

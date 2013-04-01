@@ -31,7 +31,7 @@ sub new {
         _on_read_frame => sub {},
         # XXX move to config?
         _masked          => $args{masked} || 0,
-#        _max_buffer_size => $args{max_buffer_size} || 1024 * 600,
+        _max_buffer_size => $args{max_buffer_size} || 1024 * 10,
 #        _max_packet_size => $args{max_packet_size} || 262144,
     }, $class;
     return $self;

@@ -24,7 +24,7 @@ sub new {
         _state           => STATE_INIT,
         _on_handshake    => sub {},
         _on_read_frame   => sub {},
-#        _max_buffer_size => $args{max_buffer_size} || 1024 * 10,
+        _max_buffer_size => $args{max_buffer_size} || 1024 * 10,
     }, $class;
     return $self;
 }
@@ -56,12 +56,22 @@ sub release {
 sub parse_more {
     my ($self, $data) = @_;
     $self->{_buffer} .= $data;
+
+    if (length $self->{_buffer} > $self->{_max_buffer_size}) {
+        Ocean::Error::HTTPHandshakeError->throw(
+            code => 400,
+            type => q{Bad Request},
+            headers => +{
+                'X-Ocean-Error' => 'long header',
+            },
+        );
+    }
+
     $self->_parse();
-    # TODO
-    #if (length $self->{buffer} > $self->{_max_buffer_size}) {
-    #    Ocean::Error::ProtocolError->throw();
-    #}
 }
+
+
+
 
 sub _parse {
     my $self = shift;
