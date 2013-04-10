@@ -31,7 +31,7 @@ Please install these libraries beforehand.
 
 ## Build status
 
-[![Build Status](https://secure.travis-ci.org/jfsso/ocean-core.png)](http://travis-ci.org/jfsso/ocean-core)
+[![Build Status](https://secure.travis-ci.org/perl-ocean/ocean-core.png)](http://travis-ci.org/perl-ocean/ocean-core)
 
 ## Copyright and License
 
